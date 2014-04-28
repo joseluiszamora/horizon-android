@@ -55,7 +55,6 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
 	
 	// Check new transaction type
 	String transactionTpye = null;
-	/** Called when the activity is first created. */
 	
 	// search functionality
 	EditText edittext;
@@ -67,15 +66,12 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
 	ArrayList<String> text_sort = new ArrayList<String>();
 	ArrayList<Integer> image_sort = new ArrayList<Integer>();
 	
-	
 	Customer customer = new Customer();
-	 
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.client_list);
-	    
 	    
 	    // Session Manager
 		SessionManager session = new SessionManager(getApplicationContext());
@@ -116,13 +112,9 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
 
 		  edittext.addTextChangedListener(new TextWatcher() {
 
-		   public void afterTextChanged(Editable s) {
+		   public void afterTextChanged(Editable s) { }
 
-		   }
-
-		   public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-		   }
+		   public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
 		   public void onTextChanged(CharSequence s, int start, int before, int count) {
 
@@ -142,7 +134,6 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
 		   }
 		  });
 	}
-	
 	
 	//** Pressed return button **// 
 	

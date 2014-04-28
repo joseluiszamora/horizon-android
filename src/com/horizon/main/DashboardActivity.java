@@ -407,6 +407,7 @@ public class DashboardActivity extends Activity{
 	// Select Dialog Create Interface
 	@Override
     protected Dialog onCreateDialog(int id) {
+		Log.i("log_tag", ":::::>>>> " + transactionTpye);
 		if (id == 1){
 			Dialog dialogo = transactionTypeSelectionDialog();
 			return dialogo;
@@ -418,25 +419,37 @@ public class DashboardActivity extends Activity{
 	
 	
 	private Dialog transactionTypeSelectionDialog(){
-    	final String[] items = {"Preventa", "Venta Directa"};
+    	final String[] items = {"Prestamo", "Cobro", "Preventa", "Venta Directa"};
     	
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
     	builder.setTitle("Nueva Transacción");
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opción elegida: " + items[item]);    	    	
-    	    	if (item == 0)
-    	    		transactionTpye = "preventa";
-				if (item == 1) 
+    	        Log.i("log_tag", "Opción elegida: " + items[item]);
+    	    	if (item == 0){
+    	    		Log.i("log_tag", "PRESTAMO ");
+        	    	transactionTpye = "prestamo";
+    				showDialog(DIALOGO_SELECCION);
+    	    	}
+				if (item == 1){
+					Log.i("log_tag", "COBROOO " );
+				}
+				if (item == 2){
+					transactionTpye = "preventa";
+					showDialog(DIALOGO_SELECCION);
+				}
+				if (item == 3){
 					transactionTpye = "venta_directa";
-				showDialog(DIALOGO_SELECCION);
+					showDialog(DIALOGO_SELECCION);
+				}
     	    }
     	});    	    	
     	return builder.create();
     }
 	
     private Dialog makeSelectionDialog(){
+    	Log.i("log_tag", "::::: " + transactionTpye);
     	final String[] items = {"Buscar en la lista", "Introducir Código", "Escanear  Código", "Transacción Temporal"};
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
