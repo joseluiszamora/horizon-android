@@ -669,10 +669,7 @@ public class DashboardActivity extends Activity{
     		// Building Parameters
     		List<NameValuePair> paramsProducts = new ArrayList<NameValuePair>();
     		// getting JSON string from URL
-    		//String jsonProducts = jsonParser.makeHttpRequest("http://www.ruizmier.com/systems/horizon/webservice/get_products", "GET", paramsProducts);
-    		//String jsonProducts = jsonParser.makeHttpRequest("http://mariani.bo/pruebas/horizon/webservice/get_products", "GET", paramsProducts);
-    		//String jsonProducts = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/webservice/get_products", "GET", paramsProducts);
-    		String jsonProducts = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/get_products", "GET", paramsProducts);
+    		String jsonProducts = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/get_products", "GET", paramsProducts);
     		
     		Log.d("log_tag", "PRODUCTOS JSON: > " + jsonProducts); // Check your log cat for JSON reponse
     				
@@ -724,10 +721,7 @@ public class DashboardActivity extends Activity{
     		Log.d("log_tag", ">**  " + paramsCustomers);
     		
     		// getting JSON string from URL
-    		//String json = jsonParser.makeHttpRequest("http://www.ruizmier.com/systems/horizon/index.php/webservice/get_customers", "POST", paramsCustomers);
-    		//String json = jsonParser.makeHttpRequest("http://mariani.bo/pruebas/horizon/webservice/get_customers", "POST", paramsCustomers);
-    		//String json = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/webservice/get_customers", "POST", paramsCustomers);
-    		String json = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/get_customers", "POST", paramsCustomers);
+    		String json = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/get_customers", "POST", paramsCustomers);
     		
     		// Check your log cat for JSON reponse
     		Log.d("log_tag", "CUSTOMERS RECEIBED > " + json);
@@ -768,11 +762,7 @@ public class DashboardActivity extends Activity{
     		dbLine.clearTable();
     		// Building Parameters
     		List<NameValuePair> paramsLines = new ArrayList<NameValuePair>();
-    		// getting JSON string from URL
-			//String jsonLines = jsonParser.makeHttpRequest("http://www.ruizmier.com/systems/horizon/index.php/webservice/get_lines", "GET", paramsLines);    		
-			//String jsonLines = jsonParser.makeHttpRequest("http://mariani.bo/pruebas/horizon/webservice/get_lines", "GET", paramsLines);
-    		//String jsonLines = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/webservice/get_lines", "GET", paramsLines);
-    		String jsonLines = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/get_lines", "GET", paramsLines);
+    		String jsonLines = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/get_lines", "GET", paramsLines);
 			
     		Log.d("log_tag", "JSON LINES >" + jsonLines);
     		
@@ -807,10 +797,7 @@ public class DashboardActivity extends Activity{
     		// Building Parameters
     		List<NameValuePair> paramsVolumes = new ArrayList<NameValuePair>();
     		// getting JSON string from URL
-    		//String jsonVolumes = jsonParser.makeHttpRequest("http://www.ruizmier.com/systems/horizon/index.php/webservice/get_volumes", "GET", paramsVolumes); 
-    		//String jsonVolumes = jsonParser.makeHttpRequest("http://mariani.bo/pruebas/horizon/webservice/get_volumes", "GET", paramsVolumes);
-    		//String jsonVolumes = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/webservice/get_volumes", "GET", paramsVolumes);
-    		String jsonVolumes = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/get_volumes", "GET", paramsVolumes);
+    		String jsonVolumes = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/get_volumes", "GET", paramsVolumes);
     		
     		try {				
     			products = new JSONArray(jsonVolumes);
@@ -842,10 +829,7 @@ public class DashboardActivity extends Activity{
     		// Building Parameters
     		List<NameValuePair> paramsLineVolumes = new ArrayList<NameValuePair>();
     		// getting JSON string from URL
-    		//String jsonLineVolumes = jsonParser.makeHttpRequest("http://www.ruizmier.com/systems/horizon/index.php/webservice/get_linevolumes", "GET", paramsLineVolumes);
-    		//String jsonLineVolumes = jsonParser.makeHttpRequest("http://mariani.bo/pruebas/horizon/webservice/get_linevolumes", "GET", paramsLineVolumes);
-    		//String jsonLineVolumes = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/webservice/get_linevolumes", "GET", paramsLineVolumes);
-    		String jsonLineVolumes = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/get_linevolumes", "GET", paramsLineVolumes);
+    		String jsonLineVolumes = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/get_linevolumes", "GET", paramsLineVolumes);
     		
     		//Log.d("PRODUCTOS JSON: ", "> " + jsonProducts); // Check your log cat for JSON reponse
     				
@@ -919,10 +903,7 @@ public class DashboardActivity extends Activity{
     		Log.d("log_tag", ">*****  " + paramsTrans);
 
     		// getting JSON string from URL
-    		//String jsonTrans = jsonParser.makeHttpRequest("http://www.ruizmier.com/systems/horizon/webservice/" + "get_transactions_for_this_user", "POST", paramsTrans);
-    		//String jsonTrans = jsonParser.makeHttpRequest("http://mariani.bo/pruebas/horizon/webservice/get_transactions_for_this_user", "POST", paramsTrans);
-    		//String jsonTrans = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/webservice/get_transactions_for_this_user", "POST", paramsTrans);
-    		String jsonTrans = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/get_transactions_for_this_user", "POST", paramsTrans);
+    		String jsonTrans = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/get_transactions_for_this_user", "POST", paramsTrans);
     		
     		
     		Log.d("log_tag", "TRANSACCIONES PENDIENTES:  > " + jsonTrans); // Check your log cat for JSON reponse
@@ -1185,7 +1166,7 @@ public class DashboardActivity extends Activity{
 				    		paramsTransactionGPS.add(new BasicNameValuePair("codeCustomer", objectTransactionGPS.toString()));
 				    			    		
 				    		// getting JSON string from URL
-				    		String returnJsonGPS = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/trackGPS", "POST", paramsTransactionGPS);				    		
+				    		String returnJsonGPS = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/trackGPS", "POST", paramsTransactionGPS);				    		
 				    		Log.d("log_tag", "GPS CONCILIADO -----> " + returnJsonGPS);
 				    		if (returnJsonGPS.trim().equals("ok")){
 				    			GpsObj.delete(thisGps.getID());
@@ -1270,10 +1251,7 @@ public class DashboardActivity extends Activity{
 					    		paramsTransaction.add(new BasicNameValuePair("codeCustomer", objectTransaction.toString()));	    		
 					    		
 					    		// getting JSON string from URL
-					    		//String returnJson = jsonParser.makeHttpRequest("http://www.ruizmier.com/systems/horizon/webservice/save_transaction", "POST", paramsTransaction);
-					    		//String returnJson = jsonParser.makeHttpRequest("http://mariani.bo/pruebas/horizon/webservice/save_transaction", "POST", paramsTransaction);
-					    		//String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/webservice/save_transaction", "POST", paramsTransaction);
-					    		String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/save_transaction", "POST", paramsTransaction);
+					    		String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/save_transaction", "POST", paramsTransaction);
 					    		
 					    		Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + returnJson.trim());
 					    		try {
@@ -1362,10 +1340,7 @@ public class DashboardActivity extends Activity{
 				    		paramsTransaction.add(new BasicNameValuePair("codeCustomer", objectTransaction.toString()));	    		
 				    		
 				    		// getting JSON string from URL
-				    		//String returnJson = jsonParser.makeHttpRequest("http://www.ruizmier.com/systems/horizon/webservice/update_transaction", "POST", paramsTransaction);
-				    		//String returnJson = jsonParser.makeHttpRequest("http://mariani.bo/pruebas/horizon/webservice/update_transaction", "POST", paramsTransaction);
-				    		//String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/webservice/update_transaction", "POST", paramsTransaction);
-				    		String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/update_transaction", "POST", paramsTransaction);
+				    		String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/update_transaction", "POST", paramsTransaction);
 				    		
 				    		try {
 				    			Log.d("PRODUCTOS JSON: ", "> " + returnJson.trim());
@@ -1407,7 +1382,7 @@ public class DashboardActivity extends Activity{
             		paramsCheckUser.add(new BasicNameValuePair("codeCustomer", objectCheckUser.toString()));
             			    		
             		// getting JSON string from URL
-            		String returnJsonCheckUser = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/check_if_is_valid_user", "POST", paramsCheckUser);
+            		String returnJsonCheckUser = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/check_if_is_valid_user", "POST", paramsCheckUser);
             			    	
             		Log.d("log_tag", "BACKGROUND 6 :::::: " + returnJsonCheckUser.trim());
             		
@@ -1471,7 +1446,7 @@ public class DashboardActivity extends Activity{
         		paramsCheckUser.add(new BasicNameValuePair("codeCustomer", objectCheckUser.toString()));
         			    		
         		// getting JSON string from URL
-        		String returnJsonCheckUser = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/check_if_is_valid_user", "POST", paramsCheckUser);
+        		String returnJsonCheckUser = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/check_if_is_valid_user", "POST", paramsCheckUser);
         			    	
         		Log.d("log_tag", ";( > " + returnJsonCheckUser.trim());
         		

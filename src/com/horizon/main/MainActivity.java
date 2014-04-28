@@ -266,10 +266,10 @@ public class MainActivity extends Activity {
     		paramsTransaction.add(new BasicNameValuePair("userPassword", pass));
     		
     		// getting JSON string from URL
-    		String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/check_if_user", "POST", paramsTransaction);
+    		String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/check_if_user", "POST", paramsTransaction);
     		//String returnJson = jsonParser.makeHttpRequest("https://mariani.bo/pruebas/horizon/webservice/check_if_user", "POST", paramsTransaction);
     		//String returnJson = jsonParser.makeHttpRequest("http://www.ruizmier.com/systems/horizon/webservice/check_user_mail", "POST", paramsTransaction);
-    		//String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/webservice/check_if_user", "POST", paramsTransaction);
+    		//String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/webservice/check_if_user", "POST", paramsTransaction);
     		
     		Log.d("PRODUCTOS JSON SENDING: ", "> " + returnJson.trim());
     		/*try {		
@@ -400,10 +400,10 @@ public class MainActivity extends Activity {
     		List<NameValuePair> paramsVerifyMail = new ArrayList<NameValuePair>();
     		paramsVerifyMail.add(new BasicNameValuePair("codeCustomer", codeCustomer));
     		// getting JSON string from URL
-    		String jsonProducts = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/check_user_mail", "GET", paramsVerifyMail);
+    		String jsonProducts = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/check_user_mail", "GET", paramsVerifyMail);
     		//String jsonProducts = jsonParser.makeHttpRequest("http://www.ruizmier.com/systems/horizon/webservice/check_user_mail", "GET", paramsVerifyMail);
     		//String jsonProducts = jsonParser.makeHttpRequest("http://mariani.bo/pruebas/horizon/webservice/check_user_mail", "GET", paramsVerifyMail);
-    		//String jsonProducts = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/webservice/check_user_mail", "GET", paramsVerifyMail);
+    		//String jsonProducts = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/webservice/check_user_mail", "GET", paramsVerifyMail);
     		
     		Log.d("PRODUCTOS JSON: ", "> " + jsonProducts); // Check your log cat for JSON repons
     				

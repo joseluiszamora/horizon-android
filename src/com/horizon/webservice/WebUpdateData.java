@@ -36,7 +36,7 @@ public class WebUpdateData extends Activity {
 	JSONArray albums = null;
 
 	// albums JSON url
-	private static final String URL_ALBUMS = "http://www.mariani.bo/horizon/client/report_android";
+	private static final String URL_ALBUMS = "http://www.mariani.bo/horizon-sc/client/report_android";
 
 	// ALL JSON node names
 	private static final String TAG_ID = "id";

@@ -51,7 +51,7 @@ public class WebSynchronize extends Activity {
 		// Building Parameters
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		// getting JSON string from URL
-		String jsonProducts = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/product/report_android", "GET", params);
+		String jsonProducts = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/product/report_android", "GET", params);
 
 		// Check your log cat for JSON reponse
 		Log.d("PRODUCTOS JSON: ", "> " + jsonProducts);
@@ -98,7 +98,7 @@ public class WebSynchronize extends Activity {
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 
 		// getting JSON string from URL
-		String json = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/client/report_android", "GET",
+		String json = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/client/report_android", "GET",
 				params);
 
 		// Check your log cat for JSON reponse

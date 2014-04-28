@@ -272,8 +272,8 @@ public class TabLastDeliveryActivity extends Activity implements OnItemClickList
 	    		// getting JSON string from URL
 	    		//String returnJson = jsonParser.makeHttpRequest("http://www.ruizmier.com/systems/horizon/webservice/update_transaction", "POST", paramsTransaction);
 	    		//String returnJson = jsonParser.makeHttpRequest("http://mariani.bo/pruebas/horizon/webservice/update_transaction", "POST", paramsTransaction);
-	    		//String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/webservice/update_transaction", "POST", paramsTransaction);
-	    		String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/update_transaction", "POST", paramsTransaction);
+	    		//String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/webservice/update_transaction", "POST", paramsTransaction);
+	    		String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/update_transaction", "POST", paramsTransaction);
 	    		
 	    		try {		
 	    			Log.d("PRODUCTOS JSON: ", "> " + returnJson.trim());
@@ -392,8 +392,8 @@ public class TabLastDeliveryActivity extends Activity implements OnItemClickList
 		    		// getting JSON string from URL
 		    		//String returnJson = jsonParser.makeHttpRequest("http://www.ruizmier.com/systems/horizon/webservice/update_transaction", "POST", paramsTransaction);
 		    		//String returnJson = jsonParser.makeHttpRequest("http://mariani.bo/pruebas/horizon/webservice/update_transaction", "POST", paramsTransaction);
-		    		//String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/webservice/update_transaction", "POST", paramsTransaction);
-		    		String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/update_transaction", "POST", paramsTransaction);
+		    		//String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/webservice/update_transaction", "POST", paramsTransaction);
+		    		String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/update_transaction", "POST", paramsTransaction);
 		    		
 		    		try {		
 		    			Log.d("PRODUCTOS JSON: ", "> " + returnJson.trim());

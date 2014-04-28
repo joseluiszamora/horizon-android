@@ -690,7 +690,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
     		paramsTransaction.add(new BasicNameValuePair("codeCustomer", objectTransaction.toString()));	    		
     		*/
     		// getting JSON string from URL
-    		/*String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon/index.php/webservice/save_transaction", "POST", paramsTransaction);
+    		/*String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/save_transaction", "POST", paramsTransaction);
     		try {		
     			if (returnJson.trim().equals("SAVED")){
     				// Close transaction
