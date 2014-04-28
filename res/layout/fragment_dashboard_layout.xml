@@ -1,0 +1,51 @@
+<com.horizon.main.DashboardLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_weight="1"
+    android:background="#eee" >
+
+	<!--  Ver Listados -->
+    <Button
+        android:id="@+id/btnViewList"
+        style="@style/DashboardButton"
+        android:drawableTop="@drawable/btn_viewlist"
+        android:text="Listados" />
+	
+    <!--  Nueva Transaccion -->
+    <Button
+        android:id="@+id/btnNewTransaction"
+        style="@style/DashboardButton"
+        android:drawableTop="@drawable/btn_new_transaction"
+        android:text="Transacciones" />
+    
+    <!--  Entregas -->
+    <Button
+        android:id="@+id/btn_delivery"
+        style="@style/DashboardButton"
+        android:drawableTop="@drawable/btn_entregas"
+        android:text="Entregas" />
+
+    <!--  Photos Button -->
+    <Button
+        android:id="@+id/btn_history"
+        style="@style/DashboardButton"
+        android:drawableTop="@drawable/btn_photos"
+        android:text="Historial"
+        />
+    	   
+	<!--  Sincronizar -->
+    <Button
+        android:id="@+id/btnUpdate"
+        style="@style/DashboardButton"
+        android:drawableTop="@drawable/btn_sincronize"
+         android:text="Sincronizar" />
+    
+    <!--  Logout -->
+    <Button
+        android:id="@+id/btnLogout"
+        style="@style/DashboardButton"
+        android:drawableTop="@drawable/btn_logout"
+        android:text="Salir" />
+    
+
+</com.horizon.main.DashboardLayout>
