@@ -13,10 +13,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -26,6 +30,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,12 +42,10 @@ import com.horizon.database.DatabaseHandlerTransactions;
 import com.horizon.database.Transaction;
 import com.horizon.main.DashboardActivity;
 import com.horizon.main.TransactionActivity;
-import com.horizon.reports.TabClientsActivity.CustomAdapter;
 import com.horizon.webservice.GPSTracker;
 import com.ruizmier.horizon.R;
 
-public class ClientsListActivity extends Activity implements OnItemClickListener {
-	
+public class ClientsPrestamoListActivity extends Activity implements OnItemClickListener {
 	// Progress Dialog
     private ProgressDialog pDialog;
     // GPS latitude longitude
@@ -97,11 +100,11 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
 			listview.setOnItemClickListener(this);
 
 		} catch (Exception e) {
-			Toast.makeText(ClientsListActivity.this, "No se pudo listar correctamente la lista de clientes, favor intentelo de nuevo", Toast.LENGTH_SHORT).show();
+			Toast.makeText(ClientsPrestamoListActivity.this, "No se pudo listar correctamente la lista de clientes, favor intentelo de nuevo", Toast.LENGTH_SHORT).show();
 		}
 		
 	    // GPS TRACKER
-		GPSTracker gps = new GPSTracker(ClientsListActivity.this);
+		GPSTracker gps = new GPSTracker(ClientsPrestamoListActivity.this);
 	    
 	    latitude = gps.getLatitude();
         longitude = gps.getLongitude();
@@ -126,7 +129,7 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
 	    }
 	
 	    List<Customer> SearchRowItems = db.getSearchCustomers(edittext.getText().toString());
-	    listview.setAdapter(new CustomAdapter(ClientsListActivity.this, text_sort, SearchRowItems));			   
+	    listview.setAdapter(new CustomAdapter(ClientsPrestamoListActivity.this, text_sort, SearchRowItems));			   
 	   }
 	  });
 	}
@@ -134,7 +137,7 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
 	//** Pressed return button **// 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-    		Intent intent = new Intent(ClientsListActivity.this, DashboardActivity.class);
+    		Intent intent = new Intent(ClientsPrestamoListActivity.this, DashboardActivity.class);
 			startActivity(intent);
 			finish();
          }
@@ -144,29 +147,13 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {		
 		// create class object
-        String custom_id = (String) ((TextView) arg1.findViewById(R.id.customer_id)).getText();
+		String custom_id = (String) ((TextView) arg1.findViewById(R.id.customer_id)).getText();
         
-        Log.d("log_tag", "******************** CUSTOM ID----> " + custom_id);
-        
-        
-        /*pDialog = new ProgressDialog(ClientsListActivity.this);
-		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		pDialog.setMessage("Cliente...");
-		pDialog.setCancelable(false);
-		pDialog.setMax(100);
-		
-		ArrayList<String> passing = new ArrayList<String>();
-		passing.add(custom_id);
-		
-		StartNewTransactionDialog updateWork = new StartNewTransactionDialog();
-		updateWork.execute(passing);*/
-        
-      //get Date, Hour Now
+		//get Date, Hour Now
 		Calendar c = Calendar.getInstance();
 		SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		String formattedDate = df.format(c.getTime());        			
-		Log.d("log_tag", "******************** TRANSACTION BACKGROUND 5 ::::");
-		DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(ClientsListActivity.this, "", null, 1);
+		DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(ClientsPrestamoListActivity.this, "", null, 1);
 		
 		// Create New Transaction        			
 		Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", custom_id, "", "pending", transactionTpye, "regular", 
@@ -174,8 +161,7 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
 
 		String codeTransaction = String.valueOf(idNewTransaction);
 		
-		
-		Intent intentNewTransaction = new Intent(ClientsListActivity.this, TransactionActivity.class);            	
+		Intent intentNewTransaction = new Intent(ClientsPrestamoListActivity.this, TransactionActivity.class);            	
 		// get Client Info
 		Bundle bundle = new Bundle();
 		bundle.putString("newTransactionCode", codeTransaction);
@@ -210,7 +196,7 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
         			SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         			String formattedDate = df.format(c.getTime());        			
         			Log.d("log_tag", "******************** TRANSACTION BACKGROUND 5 ::::");
-        			DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(ClientsListActivity.this, "", null, 1);
+        			DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(ClientsPrestamoListActivity.this, "", null, 1);
         			
         			// Create New Transaction        			
         			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", codeCustomer, "", "pending", transactionTpye, "regular", 
@@ -266,7 +252,7 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
     		if (tmp.matches("EPIC_FAIL")){
     			Log.d("log_tag", "********************  EPIC_FAIL");
     			// Dialog Error found client
-    			AlertDialog alertDialog = new AlertDialog.Builder(ClientsListActivity.this).create();
+    			AlertDialog alertDialog = new AlertDialog.Builder(ClientsPrestamoListActivity.this).create();
     			alertDialog.setTitle("Error");
     			alertDialog.setMessage("Cliente no Registrado");
     			alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
@@ -282,7 +268,7 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
     				Log.d("log_tag", "NO_FAIL");
     				if(result.get(2).matches("CODE_OK")){
     					Log.d("log_tag", "POST::::" + result.get(3));
-    					Intent intentNewTransaction = new Intent(ClientsListActivity.this, TransactionActivity.class);            	
+    					Intent intentNewTransaction = new Intent(ClientsPrestamoListActivity.this, TransactionActivity.class);            	
     					// get Client Info
     	    			Bundle bundle = new Bundle();
     	    			bundle.putString("newTransactionCode", result.get(3));
@@ -291,7 +277,7 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
     				}else{
     					Log.d("log_tag", "NO_FAIL else");
     					// Dialog Error found client
-    	    			AlertDialog alertDialog = new AlertDialog.Builder(ClientsListActivity.this).create();
+    	    			AlertDialog alertDialog = new AlertDialog.Builder(ClientsPrestamoListActivity.this).create();
     	    			alertDialog.setTitle("Error");
     	    			alertDialog.setMessage("Se produjo un error al iniciar la transaccion, favor intentelo de nuevo");
     	    			alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
@@ -310,85 +296,80 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
     	
     	@Override
     	protected void onCancelled() {
-    		Toast.makeText(ClientsListActivity.this, "Informacion Actualizada!", Toast.LENGTH_SHORT).show();
+    		Toast.makeText(ClientsPrestamoListActivity.this, "Informacion Actualizada!", Toast.LENGTH_SHORT).show();
     	}
     }
 
     class CustomAdapter extends BaseAdapter {
-
   	  String[] data_text;
   	  Context context;
   	  List<Customer> rowCustomers;
 
-  	  CustomAdapter() {
+  	  CustomAdapter() { }
 
-  	  }
+		CustomAdapter(Context context, String[] text, List<Customer> items) {
+			data_text = text;
+			this.rowCustomers = items;
+		}
 
-  	  CustomAdapter(Context context, String[] text, List<Customer> items) {
-  	   data_text = text;
-  	   this.rowCustomers = items;
-  	  }
-
-  	  CustomAdapter(Context context, ArrayList<String> text, List<Customer> items) {
-  		this.rowCustomers = items;
-  	   data_text = new String[text.size()];
-
-  	   for (int i = 0; i < text.size(); i++) {
-  	    data_text[i] = text.get(i);
-  	   }
-
-  	  }
+		CustomAdapter(Context context, ArrayList<String> text, List<Customer> items) {
+			this.rowCustomers = items;
+			data_text = new String[text.size()];
+			for (int i = 0; i < text.size(); i++) {
+				data_text[i] = text.get(i);
+			}
+		}
   	  
-  	  
-  	  public int getCount() {
-  	   return data_text.length;
-  	  }
+		public int getCount() {
+			return data_text.length;
+		}
+		public String getItem(int position) { return null; }
+		public Object getItemCustom(int position) {
+			return rowCustomers.get(position);
+		}
+		public long getItemId(int position) {
+			return rowCustomers.indexOf(getItem(position));
+		}
 
-  	  public String getItem(int position) {
-  	   return null;
-  	  }
-  	  
-  	  public Object getItemCustom(int position) {
-	    return rowCustomers.get(position);
-  	  }
-
-  	  public long getItemId(int position) {
-  		return rowCustomers.indexOf(getItem(position));
-  	  }
-
-  	  /* private view holder class */
-      private class ViewHolder {
-      	TextView customerId;
-        TextView txtName;
-        TextView txtAddress;
-      }
+  	  	/* private view holder class */
+		private class ViewHolder {
+			TextView customerId;
+			TextView txtName;
+			TextView txtAddress;
+			ImageView img;
+		}
       
-  	  public View getView(int position, View convertView, ViewGroup parent) {
-  		  
-  		ViewHolder holder = null;
-  		if (convertView == null) {
-  			LayoutInflater inflater = getLayoutInflater();
-  			convertView = inflater.inflate(R.layout.row_clients, parent, false);
-  			
-	        holder = new ViewHolder();
-	        holder.customerId = (TextView) convertView.findViewById(R.id.customer_id);
-	        holder.txtName = (TextView) convertView.findViewById(R.id.customerName);
-	        holder.txtAddress = (TextView) convertView.findViewById(R.id.customerAddress);
-	        convertView.setTag(holder);
-	     }
-	     else {
-	         holder = (ViewHolder) convertView.getTag();
-	     }
-  		
-  		Customer rowItem = (Customer) getItemCustom(position);	    
-	     
-  		holder.customerId.setText(String.valueOf(rowItem.getCode()));
-		holder.txtName.setText(data_text[position]);
-  		//holder.txtName.setText(rowItem.getName());
-		holder.txtAddress.setText(rowItem.getAddress());
-		
-		return convertView;
-
+  	  	public View getView(int position, View convertView, ViewGroup parent) {
+  	  		ViewHolder holder = null;
+	  		if (convertView == null) {
+	  			LayoutInflater inflater = getLayoutInflater();
+	  			convertView = inflater.inflate(R.layout.row_clients_prestamo, parent, false);
+	  			
+		        holder = new ViewHolder();
+		        
+		        holder.customerId = (TextView) convertView.findViewById(R.id.customer_id);
+		        holder.txtName = (TextView) convertView.findViewById(R.id.customerName);
+		        holder.txtAddress = (TextView) convertView.findViewById(R.id.customerAddress);
+		        holder.img = (ImageView) convertView.findViewById(R.id.list_image);
+		        convertView.setTag(holder);
+		     }
+		     else {
+		         holder = (ViewHolder) convertView.getTag();
+		     }
+	        
+	  		Customer rowItem = (Customer) getItemCustom(position);
+	  		holder.customerId.setText(String.valueOf(rowItem.getCode()));
+			holder.txtName.setText(data_text[position]);
+			holder.txtAddress.setText(rowItem.getAddress());
+			
+			holder.img.setBackgroundDrawable(null);
+			holder.img.setImageResource(0);
+			if ( rowItem.getRank() < 50) {
+				holder.img.setImageResource(R.drawable.btn_close);
+			} else {
+				holder.img.setImageResource(R.drawable.btn_delete);
+			}
+			return convertView;
   	  }
   	 }
 }

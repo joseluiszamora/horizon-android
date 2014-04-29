@@ -10,13 +10,14 @@ public class Customer {
 	String _phone;
 	String _cellphone;
 	String _status;
+	int _rank;
 	
 	// Empty constructor
 	public Customer(){
 	}
 	
 	// constructor
-	public Customer(int id, String code, String name, String contact, String address, String phone, String cell, String status){
+	public Customer(int id, String code, String name, String contact, String address, String phone, String cell, String status, int rank){
 		this._id = id;
 		this._code = code;
 		this._name = name;
@@ -25,10 +26,11 @@ public class Customer {
 		this._phone = phone;
 		this._cellphone = cell;
 		this._status = status;
+		this._rank = rank;
 	}
 	
 	// constructor
-	public Customer(String code, String name, String contact, String address, String phone, String cell, String status){
+	public Customer(String code, String name, String contact, String address, String phone, String cell, String status, int rank){
 		this._code = code;
 		this._name = name;			
 		this._contactname = contact;
@@ -36,6 +38,7 @@ public class Customer {
 		this._phone = phone;
 		this._cellphone = cell;
 		this._status = status;
+		this._rank = rank;
 	}
 	
 	// getting ID
@@ -116,5 +119,15 @@ public class Customer {
 	// setting estado
 	public void setStatus(String status){
 		this._status = status;
+	}
+	
+	// getting Rango
+	public int getRank(){
+		return this._rank;
+	}
+	
+	// setting Rango
+	public void setRank(int rank){
+		this._rank = rank;
 	}
 }

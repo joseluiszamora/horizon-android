@@ -3,6 +3,7 @@ package com.horizon.database;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.R.integer;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -31,6 +32,7 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 	private static final String KEY_PHONE = "Telefono";
 	private static final String KEY_CELLPHONE = "TelCelular";
 	private static final String KEY_STATUS = "Estado";
+	private static final String KEY_RANK = "Rango";
 
 	public DatabaseHandlerCustomers(Context context, String name, CursorFactory factory, int version) {		
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -40,7 +42,7 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_CUSTOMERS + "("
 			+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_CODE + " TEXT," + KEY_NAME + " TEXT,"
-			+ KEY_CO_NA + " TEXT," + KEY_ADDRESS + " TEXT," + KEY_PHONE + " TEXT," + KEY_CELLPHONE + " TEXT," + KEY_STATUS + " TEXT" + ")";
+			+ KEY_CO_NA + " TEXT," + KEY_ADDRESS + " TEXT," + KEY_PHONE + " TEXT," + KEY_CELLPHONE + " TEXT," + KEY_STATUS + " TEXT," + KEY_RANK + " TEXT" + ")";
 		db.execSQL(CREATE_USERS_TABLE);
 	}
 
@@ -87,6 +89,7 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 		values.put(KEY_PHONE, customer.getPhone()); // Customer phone
 		values.put(KEY_CELLPHONE, customer.getCellPhone()); // Customer cell phone
 		values.put(KEY_STATUS, customer.getStatus()); // Customer status
+		values.put(KEY_RANK, customer.getRank()); // Customer status
 
 		// Inserting Row
 		db.insert(TABLE_CUSTOMERS, null, values);
@@ -98,11 +101,12 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Customer customer = null;
 		Cursor cursor = db.query(TABLE_CUSTOMERS, new String[] { KEY_ID, KEY_CODE,
-				KEY_NAME, KEY_CO_NA, KEY_ADDRESS, KEY_PHONE, KEY_CELLPHONE, KEY_STATUS }, KEY_ID + "=?",
+				KEY_NAME, KEY_CO_NA, KEY_ADDRESS, KEY_PHONE, KEY_CELLPHONE, KEY_STATUS, KEY_RANK }, KEY_ID + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()){
-			customer = new Customer(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), 
-					cursor.getString(4), cursor.getString(5), cursor.getString(6));
+			
+			customer = new Customer( Integer.parseInt(cursor.getString(0)) , cursor.getString(1), cursor.getString(2), cursor.getString(3),
+					cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), Integer.parseInt(cursor.getString(8)) );
 		}
 		cursor.close();
 		db.close();
@@ -113,7 +117,7 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getReadableDatabase();
 		int res = 0;
 		Cursor cursor = db.query(TABLE_CUSTOMERS, new String[] { KEY_ID, KEY_CODE,
-				KEY_NAME, KEY_CO_NA, KEY_ADDRESS, KEY_PHONE, KEY_CELLPHONE, KEY_STATUS }, KEY_CODE + "=?",
+				KEY_NAME, KEY_CO_NA, KEY_ADDRESS, KEY_PHONE, KEY_CELLPHONE, KEY_STATUS, KEY_RANK }, KEY_CODE + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		
 		if (cursor != null){
@@ -127,13 +131,13 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		Cursor cursor = db.query(TABLE_CUSTOMERS, new String[] { KEY_ID, KEY_CODE,
-				KEY_NAME, KEY_CO_NA, KEY_ADDRESS, KEY_PHONE, KEY_CELLPHONE, KEY_STATUS }, KEY_CODE + "=?",
+				KEY_NAME, KEY_CO_NA, KEY_ADDRESS, KEY_PHONE, KEY_CELLPHONE, KEY_STATUS, KEY_RANK }, KEY_CODE + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		
 		Customer customer = null;
 		if (cursor.moveToFirst()) {			
 			customer = new Customer(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4),
-					cursor.getString(5), cursor.getString(6), cursor.getString(7));
+					cursor.getString(5), cursor.getString(6), cursor.getString(7), Integer.parseInt(cursor.getString(8)));
 		}
 		db.close();
 		cursor.close();
@@ -162,6 +166,7 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 				customer.setPhone(cursor.getString(5));
 				customer.setCellPhone(cursor.getString(6));
 				customer.setStatus(cursor.getString(7));
+				customer.setRank(Integer.parseInt(cursor.getString(8)));
 				// Adding contact to list
 				customerList.add(customer);
 			} while (cursor.moveToNext());
@@ -180,24 +185,20 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		//Cursor cursor = db.rawQuery(selectQuery, null);
 		Cursor cursor = db.query(TABLE_CUSTOMERS, new String[] {KEY_ID, KEY_CODE, KEY_NAME, KEY_CO_NA, KEY_ADDRESS
-				, KEY_PHONE, KEY_CELLPHONE, KEY_STATUS}, 
+				, KEY_PHONE, KEY_CELLPHONE, KEY_STATUS, KEY_RANK}, 
 				KEY_NAME + " LIKE '%"+like +"%'", null, null, null, KEY_NAME);
-	
-		//Log.d("log_tag", "Edit text 000>>>  " + like);
-		// looping through all rows and adding to list
 		if (cursor.moveToFirst()) {
 			do {
 				Customer customer = new Customer();
 				customer.setID(Integer.parseInt(cursor.getString(0)));
 				customer.setCode(cursor.getString(1));
-			//	Log.d("log_tag", "Edit text Result>>>  " + cursor.getString(2));
 				customer.setName(cursor.getString(2));
 				customer.setContactName(cursor.getString(3));										
 				customer.setAddress(cursor.getString(4));
 				customer.setPhone(cursor.getString(5));
 				customer.setCellPhone(cursor.getString(6));
 				customer.setStatus(cursor.getString(7));
-				// Adding contact to list
+				customer.setRank(Integer.parseInt(cursor.getString(8)));
 				customerList.add(customer);
 			} while (cursor.moveToNext());
 		}			
@@ -220,8 +221,7 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 		
 		// looping through all rows and adding to list
 		if (cursor.moveToFirst()) {
-			do {				
-				//customerList[i] = cursor.getString(2);
+			do {
 				customerList[i] = new String(cursor.getString(2));
 				i++;
 			} while (cursor.moveToNext());
@@ -243,7 +243,7 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 		values.put(KEY_PHONE, customer.getPhone()); // Customer phone
 		values.put(KEY_CELLPHONE, customer.getCellPhone()); // Customer cell phone
 		values.put(KEY_STATUS, customer.getStatus()); // Customer status
-
+		values.put(KEY_RANK, customer.getRank()); // Customer status
 		// updating row
 		return db.update(TABLE_CUSTOMERS, values, KEY_ID + " = ?",
 				new String[] { String.valueOf(customer.getID()) });

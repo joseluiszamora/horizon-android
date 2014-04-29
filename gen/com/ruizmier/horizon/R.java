@@ -195,19 +195,20 @@ public final class R {
         public static final int menu_login=0x7f030015;
         public static final int product_list=0x7f030016;
         public static final int row_clients=0x7f030017;
-        public static final int row_delivery_detail=0x7f030018;
-        public static final int row_dialog_new_transaction=0x7f030019;
-        public static final int row_history=0x7f03001a;
-        public static final int row_last_transaction=0x7f03001b;
-        public static final int row_transaction_detail=0x7f03001c;
-        public static final int searchlistview=0x7f03001d;
-        public static final int tab_actives=0x7f03001e;
-        public static final int tab_clients=0x7f03001f;
-        public static final int tab_lasttransactions=0x7f030020;
-        public static final int tab_lists=0x7f030021;
-        public static final int tab_products=0x7f030022;
-        public static final int transaction=0x7f030023;
-        public static final int transaction_detail=0x7f030024;
+        public static final int row_clients_prestamo=0x7f030018;
+        public static final int row_delivery_detail=0x7f030019;
+        public static final int row_dialog_new_transaction=0x7f03001a;
+        public static final int row_history=0x7f03001b;
+        public static final int row_last_transaction=0x7f03001c;
+        public static final int row_transaction_detail=0x7f03001d;
+        public static final int searchlistview=0x7f03001e;
+        public static final int tab_actives=0x7f03001f;
+        public static final int tab_clients=0x7f030020;
+        public static final int tab_lasttransactions=0x7f030021;
+        public static final int tab_lists=0x7f030022;
+        public static final int tab_products=0x7f030023;
+        public static final int transaction=0x7f030024;
+        public static final int transaction_detail=0x7f030025;
     }
     public static final class menu {
         public static final int account=0x7f070000;

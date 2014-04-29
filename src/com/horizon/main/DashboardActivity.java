@@ -63,6 +63,7 @@ import com.horizon.database.Transaction;
 import com.horizon.database.TransactionDetail;
 import com.horizon.database.Volume;
 import com.horizon.reports.ClientsListActivity;
+import com.horizon.reports.ClientsPrestamoListActivity;
 import com.horizon.reports.TabsHistoryActivity;
 import com.horizon.reports.TabsReportActivity;
 import com.horizon.webservice.GPSTracker;
@@ -458,13 +459,19 @@ public class DashboardActivity extends Activity{
     	    public void onClick(DialogInterface dialog, int item) {
     	        Log.i("log_tag", "Opción elegida: " + items[item]);    	    	
     	    	if (item == 0){
-    	    		//conciliate.cancel(true);
-    	    		Intent intent = new Intent(DashboardActivity.this, ClientsListActivity.class);
-    	    		Bundle bundle = new Bundle();
-    	    		
-    				bundle.putString("transactionType", transactionTpye);
-    				intent.putExtras(bundle);
-    				startActivity(intent);
+    	    		if(transactionTpye == "prestamo"){
+    	    			Intent intent = new Intent(DashboardActivity.this, ClientsPrestamoListActivity.class);
+    	    			Bundle bundle = new Bundle();
+        				bundle.putString("transactionType", transactionTpye);
+        				intent.putExtras(bundle);
+        				startActivity(intent);
+    	    		}else{
+    	    			Intent intent = new Intent(DashboardActivity.this, ClientsListActivity.class);
+    	    			Bundle bundle = new Bundle();
+        				bundle.putString("transactionType", transactionTpye);
+        				intent.putExtras(bundle);
+        				startActivity(intent);
+    	    		}
     				finish();
     	    	}
 				if (item == 1) {
@@ -754,12 +761,13 @@ public class DashboardActivity extends Activity{
     				 	String Direccion = c.getString("Direccion");
     				 	String Telefono = c.getString("Telefono");
     				 	String TelfCelular = c.getString("TelfCelular");
+    				 	String rank = c.getString("rank");
     				 	
     				 	Log.e("log_tag", codeCustomer + "---" + NombreTienda+ "---" + NombreContacto+ "---" + Direccion
     				 			+ "---" + Telefono+ "---" + TelfCelular+ "---");
     				 	
     				 	
-    				 	dbCustomers.addCustomer(new Customer(codeCustomer, NombreTienda, NombreContacto, Direccion, Telefono, TelfCelular, "activo"));				 	
+    				 	dbCustomers.addCustomer(new Customer(codeCustomer, NombreTienda, NombreContacto, Direccion, Telefono, TelfCelular, "activo", Integer.parseInt(rank) ));				 	
     				}
     			}else{
     				Log.d("Customers: ", "null");
