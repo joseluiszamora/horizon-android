@@ -674,16 +674,16 @@ public class DashboardActivity extends Activity{
     private class UpdateInfoAsyncDialog extends AsyncTask<Void, Integer, Boolean> {
 		// Clients JSONArray
 		JSONArray clients = null;
-		
 		// Products JSONArray
-		 JSONArray products = null;
+		JSONArray products = null;
+		// Daily JSONArray
+		JSONArray daily = null;
 			
 		// Creating JSON Parser object
 		JSONParser jsonParser = new JSONParser();
 		
     	@Override
     	protected Boolean doInBackground(Void... params) {
-    		
     		/** UPDATE DATABASE PRODUCTS  **/
     		final DatabaseHandlerProducts dbProducts = new DatabaseHandlerProducts(DashboardActivity.this, "", null, '1');
     		// delete All Products
@@ -722,23 +722,23 @@ public class DashboardActivity extends Activity{
     		// delete All
     		dbDaily.clearTable();
     		// Building Parameters
+    		List<NameValuePair> paramsDaily = new ArrayList<NameValuePair>();
     		JSONObject objectDaily = new JSONObject();
     		try {
     			objectDaily.put("userMail", userMail);
 			} catch (JSONException e1) {
 				Log.d("log_tag","mail from the user failll :(");
 			}
-    		
-    		List<NameValuePair> paramsDaily = new ArrayList<NameValuePair>();
     		paramsDaily.add(new BasicNameValuePair("codeCustomer", objectDaily.toString()));
+    		
     		// getting JSON string from URL
     		String jsonDaily = jsonParser.makeHttpRequest
-    				("http://www.mariani.bo/horizon-sc/index.php/webservice/get_daily", "GET", paramsDaily);
+    				("http://www.mariani.bo/horizon-sc/index.php/webservice/get_daily", "POST", paramsDaily);
     		
     		Log.d("log_tag", "PRODUCTOS JSON: > " + jsonDaily);
     		
     		try {				
-    			JSONArray daily = new JSONArray(jsonDaily);
+    			daily = new JSONArray(jsonDaily);
     			if (daily != null) {
     				// looping through All
     				for (int i = 0; i < daily.length(); i++) {					
@@ -827,7 +827,6 @@ public class DashboardActivity extends Activity{
     			e.printStackTrace();
     		}    		    		    		
     		
-    		
     		/** UPDATE DATABASE LINES **/
     		DatabaseHandlerLines dbLine = new DatabaseHandlerLines(DashboardActivity.this, "", null, '1');
     		dbLine.clearTable();
@@ -858,7 +857,7 @@ public class DashboardActivity extends Activity{
     		catch (Exception e) {
     	       Toast.makeText(getBaseContext(),"Error al conectar con el servidor. ",Toast.LENGTH_SHORT).show();
     		}
-    		
+
     		/** UPDATE DATABASE VOLUMES **/
     		
     		// Database Volume class
@@ -890,9 +889,8 @@ public class DashboardActivity extends Activity{
     		catch (Exception e) {
     	       Toast.makeText(getBaseContext(),"Error al conectar con el servidor. ",Toast.LENGTH_SHORT).show();
     		}    		    		
-    		
-    		/** UPDATE DATABASE LINEVOLUMES **/
-    		
+
+    		/** UPDATE DATABASE LINEVOLUMES **/   		
     		// Database Line Volume class
     		DatabaseHandlerLineVolumes dbLineVolume = new DatabaseHandlerLineVolumes(DashboardActivity.this, "", null, '1');
     		dbLineVolume.clearTable();
@@ -926,10 +924,8 @@ public class DashboardActivity extends Activity{
     	       Toast.makeText(getBaseContext(),"Error al conectar con el servidor. ",Toast.LENGTH_SHORT).show();
     		}
 
-    		
-    		
     		/** UPDATE DATABASE TRANSACTIONS **/
-    		// Database transaction class
+	   		// Database transaction class
     		DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(DashboardActivity.this, "", null, 1);
     		// Database transaction detail class
     		DatabaseHandlerTransactionDetail dbTransDetail = new DatabaseHandlerTransactionDetail(DashboardActivity.this, "", null, '1');
@@ -940,7 +936,6 @@ public class DashboardActivity extends Activity{
     		//dbTransDetail.clearTable();
     		dbTransactions.deleteAllTransactions("all");
     		dbTransDetail.deleteAllTransactions("all");
-
     		
     		/** UPDATE DATABASE TRANSACTIONS DELIVERY  **/
     		JSONObject objectT = new JSONObject();
@@ -1003,8 +998,6 @@ public class DashboardActivity extends Activity{
     		catch (Exception e) {
     			Log.d("LineVolumes: ", "null");
     		}
-    		
-    		
     		
 			/** UPDATE DATABASE GPS **/
     		DatabaseHandlerGps dbGps = new DatabaseHandlerGps(DashboardActivity.this, "", null, '1');
