@@ -337,6 +337,7 @@ public class ClientsPrestamoListActivity extends Activity implements OnItemClick
 			TextView txtName;
 			TextView txtAddress;
 			ImageView img;
+			ImageView go;
 		}
       
   	  	public View getView(int position, View convertView, ViewGroup parent) {
@@ -346,11 +347,11 @@ public class ClientsPrestamoListActivity extends Activity implements OnItemClick
 	  			convertView = inflater.inflate(R.layout.row_clients_prestamo, parent, false);
 	  			
 		        holder = new ViewHolder();
-		        
 		        holder.customerId = (TextView) convertView.findViewById(R.id.customer_id);
 		        holder.txtName = (TextView) convertView.findViewById(R.id.customerName);
 		        holder.txtAddress = (TextView) convertView.findViewById(R.id.customerAddress);
 		        holder.img = (ImageView) convertView.findViewById(R.id.list_image);
+		        holder.go = (ImageView) convertView.findViewById(R.id.imageView1);
 		        convertView.setTag(holder);
 		     }
 		     else {
@@ -364,10 +365,13 @@ public class ClientsPrestamoListActivity extends Activity implements OnItemClick
 			
 			holder.img.setBackgroundDrawable(null);
 			holder.img.setImageResource(0);
-			if ( rowItem.getRank() < 50) {
-				holder.img.setImageResource(R.drawable.btn_close);
+			holder.go.setImageResource(0);
+			
+			if ( rowItem.getRank() > 50) {
+				holder.img.setImageResource(R.drawable.icook);
+				holder.go.setImageResource(R.drawable.ic_launcher);
 			} else {
-				holder.img.setImageResource(R.drawable.btn_delete);
+				holder.img.setImageResource(R.drawable.icoerror);
 			}
 			return convertView;
   	  }

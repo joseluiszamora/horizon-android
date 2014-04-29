@@ -692,7 +692,7 @@ public class DashboardActivity extends Activity{
     		String jsonProducts = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/get_products", "GET", paramsProducts);
     		
     		Log.d("log_tag", "PRODUCTOS JSON: > " + jsonProducts); // Check your log cat for JSON reponse
-    				
+
     		try {				
     			products = new JSONArray(jsonProducts);
     			if (products != null) {
@@ -716,7 +716,43 @@ public class DashboardActivity extends Activity{
     		catch (Exception e) {
     	       //Toast.makeText(getBaseContext(),"Error al conectar con el servidor. ",Toast.LENGTH_SHORT).show();
     		}
-			
+    		
+    		
+    		/** UPDATE DATABASE DAILY **/
+    		/*final DatabaseHandlerProducts dbProducts = new DatabaseHandlerProducts(DashboardActivity.this, "", null, '1');
+    		// delete All Products
+    		dbProducts.clearTable();
+    		// Building Parameters
+    		List<NameValuePair> paramsProducts = new ArrayList<NameValuePair>();
+    		// getting JSON string from URL
+    		String jsonProducts = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/get_products", "GET", paramsProducts);
+    		
+    		Log.d("log_tag", "PRODUCTOS JSON: > " + jsonProducts); // Check your log cat for JSON reponse
+
+    		try {				
+    			products = new JSONArray(jsonProducts);
+    			if (products != null) {
+    				// looping through All albums
+    				for (int i = 0; i < products.length(); i++) {					
+    					JSONObject c = products.getJSONObject(i);
+    					// Storing each json item values in variable
+    					Long idProduct = c.getLong("idProduct");
+    				 	String Nombre = c.getString("Nombre");
+    				 	String LineVolume = c.getString("idLineVolume");
+    				 	String PrecioUnitario = c.getString("PrecioUnit");
+    				 	String Descripcion = c.getString("Descripcion");
+    				 	
+    				 	Log.e("log_tag", idProduct + "---" + Nombre+ "---" + LineVolume+ "---" +PrecioUnitario+ "---" + Descripcion);
+    				 	dbProducts.addProduct(new Product(idProduct, Integer.parseInt(LineVolume), Nombre, Double.parseDouble(PrecioUnitario), Descripcion, "activo"));				 	
+    				}
+    			}else{
+    				Log.d("Products: ", "null");
+    			}
+    		}
+    		catch (Exception e) {
+    	       //Toast.makeText(getBaseContext(),"Error al conectar con el servidor. ",Toast.LENGTH_SHORT).show();
+    		}
+			*/
 
     		/** UPDATE DATABASE CUSTOMERS **/ 
     		final DatabaseHandlerCustomers dbCustomers = new DatabaseHandlerCustomers(DashboardActivity.this, "", null, '1');
@@ -879,37 +915,20 @@ public class DashboardActivity extends Activity{
     		
     		
     		/** UPDATE DATABASE TRANSACTIONS **/
-    		
     		// Database transaction class
     		DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(DashboardActivity.this, "", null, 1);
-    		
     		// Database transaction detail class
     		DatabaseHandlerTransactionDetail dbTransDetail = new DatabaseHandlerTransactionDetail(DashboardActivity.this, "", null, '1');
     			
-    		/*try {
-    			dbTransactions.deleteTransactionsFor("creado");
-        		dbTransactions.deleteTransactionsFor("pending");
-        		
-        		dbTransDetail.deleteTransactionsFor("conciliado"); // borra las transacciones conciliadas
-        		dbTransDetail.deleteTransactionsFor("por_entregar"); // borra las transacciones por entregar
-        		dbTransDetail.deleteTransactionsFor("cancelado"); // borra las canceladas
-        		dbTransDetail.deleteTransactionsFor("entregado"); // borra las transacciones entregadas
-        		dbTransDetail.deleteTransactionsFor("entregado_conciliado"); // borra las transacciones entregadas y conciliadas
-        		
-			} catch (Exception e) {
-				dbTransactions.clearTable();
-	    		dbTransDetail.clearTable();
-			}*/
-    	
+    		
     		// limpiar las tablas
     		//dbTransactions.clearTable();
     		//dbTransDetail.clearTable();
     		dbTransactions.deleteAllTransactions("all");
     		dbTransDetail.deleteAllTransactions("all");
 
-    		/** UPDATE DATABASE TRANSACTIONS DELIVERY  **/
-    		// Building Parameters    		
     		
+    		/** UPDATE DATABASE TRANSACTIONS DELIVERY  **/
     		JSONObject objectT = new JSONObject();
     		
     		try {
@@ -972,9 +991,8 @@ public class DashboardActivity extends Activity{
     		}
     		
     		
-			/** UPDATE DATABASE GPS **/
     		
-    		// Database Gps class
+			/** UPDATE DATABASE GPS **/
     		DatabaseHandlerGps dbGps = new DatabaseHandlerGps(DashboardActivity.this, "", null, '1');
     		dbGps.clearTable();
     		
