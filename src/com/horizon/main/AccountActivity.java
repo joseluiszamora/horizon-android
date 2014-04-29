@@ -190,11 +190,6 @@ public class AccountActivity extends Activity {
         }
     }  
     
-    
-    
-    
-    
-    
  // AsyncTask Finish Transaction
  	private class DropAllAsyncDialog extends AsyncTask<Void, Integer, Boolean> {
  	    
@@ -240,18 +235,7 @@ public class AccountActivity extends Activity {
      	}
      	
      	@Override
-     	protected void onPreExecute() {
-     		
-     		/*pDialog.setOnCancelListener(new OnCancelListener() {
- 				@Override
- 				public void onCancel(DialogInterface dialog) {
- 					
- 				}
- 			});
-     		
-     		pDialog.setProgress(0);
-     		pDialog.show();*/
-     	}
+     	protected void onPreExecute() { }
      	
      	@Override
      	protected void onPostExecute(Boolean result) {
@@ -270,8 +254,6 @@ public class AccountActivity extends Activity {
      	}
      	
      	@Override
-     	protected void onCancelled() {
-     		//Toast.makeText(TransactionActivity.this, "Informacion Actualizada!", Toast.LENGTH_SHORT).show();
-     	}
+     	protected void onCancelled() { }
      }
 }

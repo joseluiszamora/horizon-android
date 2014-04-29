@@ -46,7 +46,9 @@ import android.widget.Toast;
 
 import com.horizon.account.SessionManager;
 import com.horizon.database.Customer;
+import com.horizon.database.Daily;
 import com.horizon.database.DatabaseHandlerCustomers;
+import com.horizon.database.DatabaseHandlerDaily;
 import com.horizon.database.DatabaseHandlerGps;
 import com.horizon.database.DatabaseHandlerLineVolumes;
 import com.horizon.database.DatabaseHandlerLines;
@@ -713,47 +715,59 @@ public class DashboardActivity extends Activity{
     				Log.d("Products: ", "null");
     			}
     		}
-    		catch (Exception e) {
-    	       //Toast.makeText(getBaseContext(),"Error al conectar con el servidor. ",Toast.LENGTH_SHORT).show();
-    		}
-    		
-    		
-    		/** UPDATE DATABASE DAILY **/
-    		/*final DatabaseHandlerProducts dbProducts = new DatabaseHandlerProducts(DashboardActivity.this, "", null, '1');
-    		// delete All Products
-    		dbProducts.clearTable();
-    		// Building Parameters
-    		List<NameValuePair> paramsProducts = new ArrayList<NameValuePair>();
-    		// getting JSON string from URL
-    		String jsonProducts = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/get_products", "GET", paramsProducts);
-    		
-    		Log.d("log_tag", "PRODUCTOS JSON: > " + jsonProducts); // Check your log cat for JSON reponse
+    		catch (Exception e) {}
 
+    		/** UPDATE DATABASE DAILY **/
+    		final DatabaseHandlerDaily dbDaily = new DatabaseHandlerDaily(DashboardActivity.this, "", null, '1');
+    		// delete All
+    		dbDaily.clearTable();
+    		// Building Parameters
+    		JSONObject objectDaily = new JSONObject();
+    		try {
+    			objectDaily.put("userMail", userMail);
+			} catch (JSONException e1) {
+				Log.d("log_tag","mail from the user failll :(");
+			}
+    		
+    		List<NameValuePair> paramsDaily = new ArrayList<NameValuePair>();
+    		paramsDaily.add(new BasicNameValuePair("codeCustomer", objectDaily.toString()));
+    		// getting JSON string from URL
+    		String jsonDaily = jsonParser.makeHttpRequest
+    				("http://www.mariani.bo/horizon-sc/index.php/webservice/get_daily", "GET", paramsDaily);
+    		
+    		Log.d("log_tag", "PRODUCTOS JSON: > " + jsonDaily);
+    		
     		try {				
-    			products = new JSONArray(jsonProducts);
-    			if (products != null) {
-    				// looping through All albums
-    				for (int i = 0; i < products.length(); i++) {					
-    					JSONObject c = products.getJSONObject(i);
+    			JSONArray daily = new JSONArray(jsonDaily);
+    			if (daily != null) {
+    				// looping through All
+    				for (int i = 0; i < daily.length(); i++) {					
+    					JSONObject c = daily.getJSONObject(i);
     					// Storing each json item values in variable
-    					Long idProduct = c.getLong("idProduct");
-    				 	String Nombre = c.getString("Nombre");
-    				 	String LineVolume = c.getString("idLineVolume");
-    				 	String PrecioUnitario = c.getString("PrecioUnit");
-    				 	String Descripcion = c.getString("Descripcion");
+    					String idweb = c.getString("iddiario");
+    					String idTransaction = c.getString("idTransaction");
+    					String idCustomer = c.getString("idCustomer");
+    					String fechaTransaction = c.getString("FechaTransaction");
+    				 	String voucher = c.getString("NumVoucher");
+    				 	String type = c.getString("Type");
+    				 	String ammount = c.getString("Monto");
+    				 	String code = c.getString("code");
+    				 	String custname = c.getString("custname");
+    				 	String custaddress = c.getString("custaddress");
+    				 	String status = c.getString("Estado");
     				 	
-    				 	Log.e("log_tag", idProduct + "---" + Nombre+ "---" + LineVolume+ "---" +PrecioUnitario+ "---" + Descripcion);
-    				 	dbProducts.addProduct(new Product(idProduct, Integer.parseInt(LineVolume), Nombre, Double.parseDouble(PrecioUnitario), Descripcion, "activo"));				 	
+    				 	Log.d("log_tag", "NEW DAILY: > " + idweb);
+    				 	
+    				 	dbDaily.add(new Daily(Integer.parseInt(idweb), Integer.parseInt(idTransaction), Integer.parseInt(idCustomer), 
+    				 			fechaTransaction, voucher, type, ammount, code, custname, custaddress, status));
     				}
     			}else{
-    				Log.d("Products: ", "null");
+    				Log.d("log_tag", "null");
     			}
     		}
-    		catch (Exception e) {
-    	       //Toast.makeText(getBaseContext(),"Error al conectar con el servidor. ",Toast.LENGTH_SHORT).show();
-    		}
-			*/
-
+    		catch (Exception e) { }
+    		
+    		
     		/** UPDATE DATABASE CUSTOMERS **/ 
     		final DatabaseHandlerCustomers dbCustomers = new DatabaseHandlerCustomers(DashboardActivity.this, "", null, '1');
     		// delete All Clients
