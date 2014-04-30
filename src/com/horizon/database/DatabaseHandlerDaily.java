@@ -139,6 +139,38 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 		db.close();
 		return list;
 	}
+	
+	// Getting All Prestamos 
+		public List<Daily> getAllPrestamos() {
+			List<Daily> list = new ArrayList<Daily>();
+			//Select All Query
+			String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_TYPE + "= 'P'";
+			SQLiteDatabase db = this.getWritableDatabase();
+			Cursor cursor = db.rawQuery(selectQuery, null);
+			// looping through all rows and adding to list
+			if (cursor.moveToFirst()) {
+				do {
+					Daily daily = new Daily();
+					daily.setID(Integer.parseInt(cursor.getString(0)));
+					daily.setIDWeb(Integer.parseInt(cursor.getString(1)));
+					daily.setIDTransaction(Integer.parseInt(cursor.getString(2)));
+					daily.setIDCustomer(Integer.parseInt(cursor.getString(3)));
+					daily.setTransactionDate(cursor.getString(4));
+					daily.setVoucher(cursor.getString(5));
+					daily.setType(cursor.getString(6));
+					daily.setAmmount(cursor.getString(7));
+					daily.setCustomerCode(cursor.getString(8));
+					daily.setCustomerName(cursor.getString(9));
+					daily.setCustomerAddress(cursor.getString(10));
+					daily.setStatus(cursor.getString(11));
+					// Adding to list
+					list.add(daily);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			db.close();
+			return list;
+		}
 
 	// Getting single
 	public Daily get(int id) {	

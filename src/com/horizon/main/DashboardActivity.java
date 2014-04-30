@@ -188,7 +188,6 @@ public class DashboardActivity extends Activity{
 		for (Transaction thisTransaction : allTransactions){
 			Transaction transaction = dbTransactions.getTransaction(thisTransaction.getID());
 			
-	        Log.d("log_tag", "RESCATANDO TODAS LAS TRANSACCIONES");
 			transaction.setStatus("conciliado");
 			dbTransactions.updateTransaction(transaction);
 			dbTransactionDetail.updateAllTransactionDetailsDelivery(transaction.getID(), "conciliado");
@@ -507,7 +506,6 @@ public class DashboardActivity extends Activity{
 					     @SuppressWarnings("unchecked")
 						public void onClick(DialogInterface dialog, int whichButton) {  
 					        String value = input.getText().toString();
-					        Log.d( "log_tag", "Pin Value : " + value);
 					        //verify if is a valid client
 					        DatabaseHandlerCustomers dbCustomers = new DatabaseHandlerCustomers(DashboardActivity.this, "", null, '1');
 					        if (dbCustomers.isRealCustomer(value) > 0){
@@ -599,7 +597,6 @@ public class DashboardActivity extends Activity{
 	    			// Create New Transaction
 	    			Long idNewTransaction = dbTransactions.addTransaction(new Transaction(null, null, null, "pending", 
 	    					transactionTpye, "temporal", formattedDate, "", latitude + " ; "+ longitude, "0.0"));
-	    			Log.d("log_tag", "Transaccion Creada::::" + idNewTransaction);
 	    			
 	    			if(idNewTransaction != null && idNewTransaction != 0){
 	    				// cancel conciliate

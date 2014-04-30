@@ -26,9 +26,9 @@
             android:id="@+id/totalPriceTransactionModify"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/textView1"
+            android:layout_alignBottom="@+id/ammount"
             android:layout_marginLeft="14dp"
-            android:layout_toRightOf="@+id/textView1"
+            android:layout_toRightOf="@+id/ammount"
             android:text="0.00" />
 
         <TextView
@@ -42,7 +42,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/ammount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/txtClientAddress"

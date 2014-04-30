@@ -104,6 +104,7 @@ public final class R {
         public static final int TransDetailInfoCustomName=0x7f08000c;
         public static final int actionBarClientName=0x7f080004;
         public static final int action_settings=0x7f080048;
+        public static final int ammount=0x7f08000d;
         public static final int bs=0x7f080047;
         public static final int btnConciliar=0x7f080017;
         public static final int btnLogin=0x7f080003;
@@ -155,13 +156,12 @@ public final class R {
         public static final int productUnity=0x7f080021;
         public static final int tab1=0x7f080044;
         public static final int tab2=0x7f080045;
-        public static final int tdIProduct=0x7f080037;
-        public static final int tdQuantity=0x7f080038;
+        public static final int tdIProduct=0x7f080038;
+        public static final int tdQuantity=0x7f080037;
         public static final int tdTotalPrice=0x7f080042;
         public static final int td_idproduct=0x7f08003e;
         public static final int tdproduct=0x7f08003f;
         public static final int textSearch=0x7f080006;
-        public static final int textView1=0x7f08000d;
         public static final int textView3=0x7f080024;
         public static final int thumbnail=0x7f080032;
         public static final int totalPriceTransactionModify=0x7f08000e;

@@ -7,13 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -29,12 +25,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.horizon.account.SessionManager;
-import com.horizon.database.Customer;
 import com.horizon.database.Daily;
-import com.horizon.database.DatabaseHandlerCustomers;
 import com.horizon.database.DatabaseHandlerDaily;
 import com.horizon.database.DatabaseHandlerTransactions;
 import com.horizon.database.Transaction;
@@ -91,7 +84,7 @@ String transactionTpye = null;
 			listview = (ListView) findViewById(R.id.contentlistclient);
 			
 			text = db.getAllNames();
-			final List<Daily> rowItems = db.getAll();
+			final List<Daily> rowItems = db.getAllPrestamos();
 			listview.setAdapter(new CustomAdapter(this, text, rowItems));		
 			listview.setOnItemClickListener(this);
 
@@ -330,9 +323,9 @@ String transactionTpye = null;
 			TextView cobroId;
 			TextView txtName;
 			TextView txtAddress;
+			TextView txtVoucher;
 			TextView txtAmmount;
 			TextView txtSaldo;
-			ImageView img;
 			ImageView go;
 		}
       
@@ -341,12 +334,14 @@ String transactionTpye = null;
 	  		if (convertView == null) {
 	  			LayoutInflater inflater = getLayoutInflater();
 	  			convertView = inflater.inflate(R.layout.row_cobros_list, parent, false);
-	  			
+
 		        holder = new ViewHolder();
 		        holder.cobroId = (TextView) convertView.findViewById(R.id.id);
 		        holder.txtName = (TextView) convertView.findViewById(R.id.tdIProduct);
 		        holder.txtAddress = (TextView) convertView.findViewById(R.id.tdQuantity);
-		        holder.img = (ImageView) convertView.findViewById(R.id.list_image);
+		        holder.txtVoucher = (TextView) convertView.findViewById(R.id.transactionCoordinate);
+		        holder.txtAmmount = (TextView) convertView.findViewById(R.id.transactionDateTime);
+		        holder.txtSaldo = (TextView) convertView.findViewById(R.id.ammount);
 		        holder.go = (ImageView) convertView.findViewById(R.id.imageView1);
 		        convertView.setTag(holder);
 		     }
@@ -358,11 +353,10 @@ String transactionTpye = null;
 	  		holder.cobroId.setText(String.valueOf(rowItem.getID()));
 			holder.txtName.setText(String.valueOf(rowItem.getCustomerName()));
 			holder.txtAddress.setText(rowItem.getCustomerAddress());
-			
-			holder.img.setBackgroundDrawable(null);
-			holder.img.setImageResource(0);
+			holder.txtVoucher.setText("Factura: " + rowItem.getVoucher());
+			holder.txtAmmount.setText("Monto Total: " + rowItem.getAmmount());
+			holder.txtSaldo.setText("Saldo: ");
 			holder.go.setImageResource(0);
-			holder.img.setImageResource(R.drawable.icook);
 			holder.go.setImageResource(R.drawable.ic_launcher);
 			return convertView;
   	  	}
