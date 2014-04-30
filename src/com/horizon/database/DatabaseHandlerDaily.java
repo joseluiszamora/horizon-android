@@ -130,7 +130,7 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 				daily.setCustomerCode(cursor.getString(8));
 				daily.setCustomerName(cursor.getString(9));
 				daily.setCustomerAddress(cursor.getString(10));
-				daily.setStatus(cursor.getString(11));			
+				daily.setStatus(cursor.getString(11));
 				// Adding to list
 				list.add(daily);
 			} while (cursor.moveToNext());
@@ -157,6 +157,26 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 			db.close();
 			return null;
 		}			
+	}
+	
+	public String[] getAllNames() {
+		int i = 0;
+		//Select All Query
+		String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + " ORDER BY " + KEY_TRANSACTION_DATE;
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		String [] list;  
+		list = new String[cursor.getCount()];
+		
+		if (cursor.moveToFirst()) {
+			do {
+				list[i] = new String(cursor.getString(2));
+				i++;
+			} while (cursor.moveToNext());
+		}
+		cursor.close();
+		db.close();
+		return list;
 	}
 	
 	// Getting single by idweb
@@ -206,5 +226,40 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 		db.delete(TABLE_TRANSACTION, KEY_ID + " = ?",
 				new String[] { String.valueOf(codetransaction) });
 		db.close();
+	}
+	
+	// Getting All Customers
+	public List<Daily> getSearch(String like) {
+		List<Daily> dailyList = new ArrayList<Daily>();
+		//Select All Query
+		SQLiteDatabase db = this.getWritableDatabase();
+		
+		Cursor cursor = db.query(TABLE_TRANSACTION, new String[] { KEY_ID,
+				KEY_ID_WEB, KEY_ID_TRANSACTION, KEY_ID_CUSTOMER, KEY_TRANSACTION_DATE, KEY_VOUCHER, KEY_TYPE, KEY_AMMOUNT, KEY_CUSTOMER_CODE, 
+				KEY_CUSTOMER_NAME, KEY_CUSTOMER_ADDRESS, KEY_STATUS }, 
+				KEY_CUSTOMER_NAME + " LIKE '%"+like +"%'", null, null, null, KEY_CUSTOMER_NAME);
+		if (cursor.moveToFirst()) {
+			do {
+				Daily daily = new Daily();
+				daily.setID(Integer.parseInt(cursor.getString(0)));
+				daily.setIDWeb(Integer.parseInt(cursor.getString(1)));
+				daily.setIDTransaction(Integer.parseInt(cursor.getString(2)));
+				daily.setIDCustomer(Integer.parseInt(cursor.getString(3)));
+				daily.setTransactionDate(cursor.getString(4));
+				daily.setVoucher(cursor.getString(5));
+				daily.setType(cursor.getString(6));
+				daily.setAmmount(cursor.getString(7));
+				daily.setCustomerCode(cursor.getString(8));
+				daily.setCustomerName(cursor.getString(9));
+				daily.setCustomerAddress(cursor.getString(10));
+				daily.setStatus(cursor.getString(11));			
+				
+				dailyList.add(daily);
+			} while (cursor.moveToNext());
+		}			
+		// return contact list
+		cursor.close();
+		db.close();
+		return dailyList;
 	}
 }

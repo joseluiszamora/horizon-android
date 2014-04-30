@@ -66,6 +66,7 @@ import com.horizon.database.TransactionDetail;
 import com.horizon.database.Volume;
 import com.horizon.reports.ClientsListActivity;
 import com.horizon.reports.ClientsPrestamoListActivity;
+import com.horizon.reports.CobroListActivity;
 import com.horizon.reports.TabsHistoryActivity;
 import com.horizon.reports.TabsReportActivity;
 import com.horizon.webservice.GPSTracker;
@@ -81,12 +82,18 @@ public class DashboardActivity extends Activity{
     // Creating JSON Parser object
  	JSONParser jsonParser = new JSONParser();
     
+ 	// Dialog options to preventa, venta directa
+ 	private static final int DIALOGO_PREVENTA = 1;
+ 	
 	// Dialog options to start transaction
-	private static final int DIALOGO_SELECCION = 3;
+	private static final int DIALOGO_SELECCION = 2;
 	
-	// Dialog options to preventa, venta directa
-	private static final int DIALOGO_PREVENTA = 1;
-	
+	// Dialog options prestamos
+	private static final int DIALOGO_PRESTAMO = 3;
+
+	// Dialog options cobros
+	private static final int DIALOGO_COBRO = 4;
+		
 	// Session Manager Class
 	SessionManager session;	
 	
@@ -245,11 +252,7 @@ public class DashboardActivity extends Activity{
 			public void onClick(View arg0) {
 				// check if GPS enabled
     	        if(gps.canGetLocation()){
-    	        	
     	        	showDialog(DIALOGO_PREVENTA);
-    	        	
-    	        	//showDialog(DIALOGO_SELECCION);
-    	        	
     	        	latitude = gps.getLatitude();
         	        longitude = gps.getLongitude();
         	        
@@ -298,9 +301,8 @@ public class DashboardActivity extends Activity{
 		        }
 	    	}
 		});
-		
-	}
 	
+	}
 	
 	public void callAsynchronousTask() {
 	    final Handler handler = new Handler();
@@ -410,17 +412,27 @@ public class DashboardActivity extends Activity{
 	// Select Dialog Create Interface
 	@Override
     protected Dialog onCreateDialog(int id) {
-		Log.i("log_tag", ":::::>>>> " + transactionTpye);
+		Log.i("log_tag", "onCreateDialog:::::: " + id);
+		Dialog dialogo = null;
 		if (id == 1){
-			Dialog dialogo = transactionTypeSelectionDialog();
-			return dialogo;
-		}else{
-			Dialog dialogo = makeSelectionDialog();
+			dialogo = transactionTypeSelectionDialog();
 			return dialogo;
 		}
+		if (id == 2) {
+			dialogo = makeSelectionDialog();
+			return dialogo;
+		}
+		if (id == 3) {
+			dialogo = prestamoDialog();
+			return dialogo;
+		}
+		if (id == 4) {
+			dialogo = cobroDialog();
+			return dialogo;
+		}
+		return dialogo;
     }
-	
-	
+		
 	private Dialog transactionTypeSelectionDialog(){
     	final String[] items = {"Prestamo", "Cobro", "Preventa", "Venta Directa"};
     	
@@ -429,14 +441,15 @@ public class DashboardActivity extends Activity{
     	builder.setTitle("Nueva Transacción");
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opción elegida: " + items[item]);
+    	        Log.i("log_tag", "Opción elegidaXXXXX: " + items[item]);
     	    	if (item == 0){
     	    		Log.i("log_tag", "PRESTAMO ");
         	    	transactionTpye = "prestamo";
-    				showDialog(DIALOGO_SELECCION);
+    				showDialog(DIALOGO_PRESTAMO);
     	    	}
 				if (item == 1){
 					Log.i("log_tag", "COBROOO " );
+					showDialog(DIALOGO_COBRO);
 				}
 				if (item == 2){
 					transactionTpye = "preventa";
@@ -452,7 +465,6 @@ public class DashboardActivity extends Activity{
     }
 	
     private Dialog makeSelectionDialog(){
-    	Log.i("log_tag", "::::: " + transactionTpye);
     	final String[] items = {"Buscar en la lista", "Introducir Código", "Escanear  Código", "Transacción Temporal"};
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
@@ -570,8 +582,7 @@ public class DashboardActivity extends Activity{
 		    			toast3.show();
 					}
 				}
-				if (item == 3){
-					
+				if (item == 3){					
 					//get Date, Hour Now
 	    			Calendar c = Calendar.getInstance();
 	    			SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
@@ -611,6 +622,180 @@ public class DashboardActivity extends Activity{
     	return builder.create();
     }
     
+    private Dialog prestamoDialog() {
+    	final String[] items = {"Buscar en la lista", "Introducir Código", "Escanear  Código"};
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	
+    	builder.setTitle("Selección de Cliente");
+    	builder.setItems(items, new DialogInterface.OnClickListener() {
+    	    public void onClick(DialogInterface dialog, int item) {
+    	        Log.i("log_tag", "Opción elegida: " + items[item]);    	    	
+    	    	if (item == 0){
+    	    		if(transactionTpye == "prestamo"){
+    	    			Intent intent = new Intent(DashboardActivity.this, ClientsPrestamoListActivity.class);
+    	    			Bundle bundle = new Bundle();
+        				bundle.putString("transactionType", transactionTpye);
+        				intent.putExtras(bundle);
+        				startActivity(intent);
+    	    		}else{
+    	    			Intent intent = new Intent(DashboardActivity.this, ClientsListActivity.class);
+    	    			Bundle bundle = new Bundle();
+        				bundle.putString("transactionType", transactionTpye);
+        				intent.putExtras(bundle);
+        				startActivity(intent);
+    	    		}
+    				finish();
+    	    	}
+				if (item == 1) {
+					 AlertDialog.Builder alert = new AlertDialog.Builder(DashboardActivity.this);
+					 alert.setTitle("Nueva Transacción");  
+					 alert.setMessage("Ingresar Código de Cliente :");                
+
+					  // Set an EditText view to get user input
+					  final EditText input = new EditText(DashboardActivity.this);
+					  alert.setView(input);
+					  
+					  input.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+					  input.setFilters(new InputFilter[] {
+					    new InputFilter.LengthFilter(20), // maximum 20 characteres
+					  });
+
+					     alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {  
+					     @SuppressWarnings("unchecked")
+						public void onClick(DialogInterface dialog, int whichButton) {  
+					        String value = input.getText().toString();
+					        Log.d( "log_tag", "Pin Value : " + value);
+					        //verify if is a valid client
+					        DatabaseHandlerCustomers dbCustomers = new DatabaseHandlerCustomers(DashboardActivity.this, "", null, '1');
+					        if (dbCustomers.isRealCustomer(value) > 0){
+			            		Customer customer = new Customer();
+			            		customer = dbCustomers.getCustomerByCode(value);
+			            		if (customer != null){
+			            			Calendar c = Calendar.getInstance();
+			            			SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+			            			String formattedDate = df.format(c.getTime());        			
+			            			
+			            			final GPSTracker gps = new GPSTracker(DashboardActivity.this);
+			            			gps.getLocation();
+			                	    latitude = gps.getLatitude();
+			                        longitude = gps.getLongitude();
+			            			DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(DashboardActivity.this, "", null, 1);
+			            			
+			            			// Create New Transaction
+			            			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", value, " ", "pending", transactionTpye, "regular", 
+			            					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude));        			
+			            			
+				    				
+				    				Intent intentNewTransaction = new Intent(DashboardActivity.this, TransactionActivity.class);            	
+			    	    			Bundle bundle = new Bundle();
+			    	    			bundle.putString("newTransactionCode", idNewTransaction.toString());
+			    					intentNewTransaction.putExtras(bundle);
+			    	    			startActivity(intentNewTransaction);
+			    	    			finish();
+			            		}else{        			
+			            			Toast toast3 = Toast.makeText(DashboardActivity.this, "Error al iniciar la transaccion, favor intentelo de nuevo", Toast.LENGTH_SHORT);
+					    			toast3.show();
+			            		}
+					        }else{
+					        	Toast toast3 = Toast.makeText(DashboardActivity.this, "Cliente NO registrado", Toast.LENGTH_SHORT);
+				    			toast3.show();
+					        }					       
+					         return;                  
+					        }  
+					      });  
+
+					     alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+
+					         public void onClick(DialogInterface dialog, int which) {
+					             // TODO Auto-generated method stub
+					             return;   
+					         }
+					     });
+					     AlertDialog alertToShow = alert.create();
+					     alertToShow.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+					     alertToShow.show();
+	    	        
+				}
+				if (item == 2){	
+					try {
+						Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+		    			intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+		    			startActivityForResult(intent, 0);
+					} catch (Exception e) {
+						Toast toast3 = Toast.makeText(DashboardActivity.this, "NO tiene instalado un servicio para lectura de QRCode", Toast.LENGTH_SHORT);
+		    			toast3.show();
+					}
+				}
+    	    }
+    	});    	    	
+    	return builder.create();
+    }
+	private Dialog cobroDialog() {
+		final String[] items = {"Buscar en la lista", "Introducir Numero de Factura"};
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	
+    	builder.setTitle("Selección de Cobro");
+    	builder.setItems(items, new DialogInterface.OnClickListener() {
+    	    public void onClick(DialogInterface dialog, int item) {
+    	        Log.i("log_tag", "Opción elegida: " + items[item]);    	    	
+    	    	if (item == 0){
+    	    		Intent intent = new Intent(DashboardActivity.this, CobroListActivity.class);
+	    			Bundle bundle = new Bundle();
+    				bundle.putString("transactionType", transactionTpye);
+    				intent.putExtras(bundle);
+    				startActivity(intent);
+    				finish();
+    	    	}
+				if (item == 1) {
+					AlertDialog.Builder alert = new AlertDialog.Builder(DashboardActivity.this);
+					alert.setTitle("Nuevo Cobro");  
+					alert.setMessage("Ingresar Numero de Factura :");                
+					
+					// Set an EditText view to get user input
+					final EditText input = new EditText(DashboardActivity.this);
+					alert.setView(input);
+					
+					input.setInputType(InputType.TYPE_CLASS_NUMBER);
+					input.setFilters(new InputFilter[] {
+							new InputFilter.LengthFilter(20), // maximum 20 characteres
+					});
+
+					alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {  
+						@SuppressWarnings("unchecked")
+						public void onClick(DialogInterface dialog, int whichButton) {  
+							String value = input.getText().toString();
+							Log.d( "log_tag", "Pin Value : " + value);
+							return;
+						}
+					});
+					
+					alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							return;
+						}
+					});
+					AlertDialog alertToShow = alert.create();
+					alertToShow.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+					alertToShow.show();
+
+	    	        
+				}
+				if (item == 2){	
+					try {
+						Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+		    			intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+		    			startActivityForResult(intent, 0);
+					} catch (Exception e) {
+						Toast toast3 = Toast.makeText(DashboardActivity.this, "NO tiene instalado un servicio para lectura de QRCode", Toast.LENGTH_SHORT);
+		    			toast3.show();
+					}
+				}
+    	    }
+    	});    	    	
+    	return builder.create();
+	}
+	
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
     	if (requestCode == 0) {
     		if (resultCode == RESULT_OK) {
