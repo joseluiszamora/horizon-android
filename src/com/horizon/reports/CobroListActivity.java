@@ -84,9 +84,10 @@ String transactionTpye = null;
 			listview = (ListView) findViewById(R.id.contentlistclient);
 			
 			text = db.getAllNames();
-			final List<Daily> rowItems = db.getAllPrestamos();
-			listview.setAdapter(new CustomAdapter(this, text, rowItems));		
-			listview.setOnItemClickListener(this);
+			final List<Daily> rowItemsX = db.getAllPrestamos();
+			Log.d("log_tag", "SELECT DAILIES:::::::: ITEMS::: " + rowItemsX);
+			listview.setAdapter(new CustomAdapter(this, text, rowItemsX));		
+			//listview.setOnItemClickListener(this);
 
 		} catch (Exception e) { }
 		
@@ -311,6 +312,7 @@ String transactionTpye = null;
 			return data_text.length;
 		}
 		public String getItem(int position) { return null; }
+		
 		public Object getItemCustom(int position) {
 			return rowCustomers.get(position);
 		}
@@ -335,25 +337,27 @@ String transactionTpye = null;
 	  			LayoutInflater inflater = getLayoutInflater();
 	  			convertView = inflater.inflate(R.layout.row_cobros_list, parent, false);
 
-		        holder = new ViewHolder();
-		        holder.cobroId = (TextView) convertView.findViewById(R.id.id);
-		        holder.txtName = (TextView) convertView.findViewById(R.id.tdIProduct);
-		        holder.txtAddress = (TextView) convertView.findViewById(R.id.tdQuantity);
-		        holder.txtVoucher = (TextView) convertView.findViewById(R.id.transactionCoordinate);
-		        holder.txtAmmount = (TextView) convertView.findViewById(R.id.transactionDateTime);
+  				holder = new ViewHolder();
+  				holder.cobroId = (TextView) convertView.findViewById(R.id.id);
+  				holder.txtName = (TextView) convertView.findViewById(R.id.tdIProduct);
+  				holder.txtAddress = (TextView) convertView.findViewById(R.id.tdQuantity);
+  				holder.txtVoucher = (TextView) convertView.findViewById(R.id.transactionCoordinate);
+  				holder.txtAmmount = (TextView) convertView.findViewById(R.id.transactionDateTime);
 		        holder.txtSaldo = (TextView) convertView.findViewById(R.id.ammount);
 		        holder.go = (ImageView) convertView.findViewById(R.id.imageView1);
 		        convertView.setTag(holder);
-		     }
-		     else {
-		         holder = (ViewHolder) convertView.getTag();
-		     }
-	        
+		    }
+	  		else {
+		    	 holder = (ViewHolder) convertView.getTag();
+		    }
 	  		Daily rowItem = (Daily) getItemCustom(position);
+	  		
+	  		Log.d("log_tag", "::::::::>> " + rowItem.getType());
+
 	  		holder.cobroId.setText(String.valueOf(rowItem.getID()));
 			holder.txtName.setText(String.valueOf(rowItem.getCustomerName()));
 			holder.txtAddress.setText(rowItem.getCustomerAddress());
-			holder.txtVoucher.setText("Factura: " + rowItem.getVoucher());
+			holder.txtVoucher.setText("Factura: " + rowItem.getType());
 			holder.txtAmmount.setText("Monto Total: " + rowItem.getAmmount());
 			holder.txtSaldo.setText("Saldo: ");
 			holder.go.setImageResource(0);

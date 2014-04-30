@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 	// Database Version
@@ -27,6 +28,7 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 	private static final String KEY_VOUCHER = "voucher";
 	private static final String KEY_TYPE = "type";
 	private static final String KEY_AMMOUNT = "ammount";
+	private static final String KEY_SALDO = "saldo";
 	private static final String KEY_CUSTOMER_CODE = "customerCode";
 	private static final String KEY_CUSTOMER_NAME = "customerName";
 	private static final String KEY_CUSTOMER_ADDRESS = "customerAddress";
@@ -40,7 +42,7 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_TRANSACTION_TABLE = "CREATE TABLE " + TABLE_TRANSACTION + "("
 				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_ID_WEB + " TEXT," + KEY_ID_TRANSACTION + " TEXT," + KEY_ID_CUSTOMER + " TEXT,"
-				+ KEY_TRANSACTION_DATE + " TEXT," + KEY_VOUCHER + " TEXT," + KEY_TYPE + " TEXT," + KEY_AMMOUNT + " TEXT," 
+				+ KEY_TRANSACTION_DATE + " TEXT," + KEY_VOUCHER + " TEXT," + KEY_TYPE + " TEXT," + KEY_AMMOUNT + " TEXT," + KEY_SALDO + " TEXT," 
 				+ KEY_CUSTOMER_CODE + " TEXT," + KEY_CUSTOMER_NAME + " TEXT," + KEY_CUSTOMER_ADDRESS + " TEXT," + KEY_STATUS + " TEXT" + ")";
 		db.execSQL(CREATE_TRANSACTION_TABLE);
 	}
@@ -51,7 +53,7 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 		SQLiteDatabase db = this.getWritableDatabase();
 		String CREATE_TRANSACTION_TABLE = "CREATE TABLE " + TABLE_TRANSACTION + "("
 				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_ID_WEB + " TEXT," + KEY_ID_TRANSACTION + " TEXT," + KEY_ID_CUSTOMER + " TEXT,"
-				+ KEY_TRANSACTION_DATE + " TEXT," + KEY_VOUCHER + " TEXT," + KEY_TYPE + " TEXT," + KEY_AMMOUNT + " TEXT," 
+				+ KEY_TRANSACTION_DATE + " TEXT," + KEY_VOUCHER + " TEXT," + KEY_TYPE + " TEXT," + KEY_AMMOUNT + " TEXT," + KEY_SALDO + " TEXT," 
 				+ KEY_CUSTOMER_CODE + " TEXT," + KEY_CUSTOMER_NAME + " TEXT," + KEY_CUSTOMER_ADDRESS + " TEXT," + KEY_STATUS + " TEXT" + ")";
 		db.execSQL(CREATE_TRANSACTION_TABLE);
 	}
@@ -99,6 +101,7 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 		values.put(KEY_VOUCHER, daily.getVoucher());
 		values.put(KEY_TYPE, daily.getType());
 		values.put(KEY_AMMOUNT, daily.getAmmount());
+		values.put(KEY_SALDO, daily.getSaldo());
 		values.put(KEY_CUSTOMER_CODE, daily.getCustomerCode());
 		values.put(KEY_CUSTOMER_NAME, daily.getCustomerName());
 		values.put(KEY_CUSTOMER_ADDRESS, daily.getCustomerAddress());
@@ -127,10 +130,11 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 				daily.setVoucher(cursor.getString(5));
 				daily.setType(cursor.getString(6));
 				daily.setAmmount(cursor.getString(7));
-				daily.setCustomerCode(cursor.getString(8));
-				daily.setCustomerName(cursor.getString(9));
-				daily.setCustomerAddress(cursor.getString(10));
-				daily.setStatus(cursor.getString(11));
+				daily.setSaldo(cursor.getString(8));
+				daily.setCustomerCode(cursor.getString(9));
+				daily.setCustomerName(cursor.getString(10));
+				daily.setCustomerAddress(cursor.getString(11));
+				daily.setStatus(cursor.getString(12));
 				// Adding to list
 				list.add(daily);
 			} while (cursor.moveToNext());
@@ -139,50 +143,54 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 		db.close();
 		return list;
 	}
-	
-	// Getting All Prestamos 
-		public List<Daily> getAllPrestamos() {
-			List<Daily> list = new ArrayList<Daily>();
-			//Select All Query
-			String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_TYPE + "= 'P'";
-			SQLiteDatabase db = this.getWritableDatabase();
-			Cursor cursor = db.rawQuery(selectQuery, null);
-			// looping through all rows and adding to list
-			if (cursor.moveToFirst()) {
-				do {
-					Daily daily = new Daily();
-					daily.setID(Integer.parseInt(cursor.getString(0)));
-					daily.setIDWeb(Integer.parseInt(cursor.getString(1)));
-					daily.setIDTransaction(Integer.parseInt(cursor.getString(2)));
-					daily.setIDCustomer(Integer.parseInt(cursor.getString(3)));
-					daily.setTransactionDate(cursor.getString(4));
-					daily.setVoucher(cursor.getString(5));
-					daily.setType(cursor.getString(6));
-					daily.setAmmount(cursor.getString(7));
-					daily.setCustomerCode(cursor.getString(8));
-					daily.setCustomerName(cursor.getString(9));
-					daily.setCustomerAddress(cursor.getString(10));
-					daily.setStatus(cursor.getString(11));
-					// Adding to list
-					list.add(daily);
-				} while (cursor.moveToNext());
-			}
-			cursor.close();
-			db.close();
-			return list;
+
+	// Getting All Prestamos
+	public List<Daily> getAllPrestamos() {
+		List<Daily> list = new ArrayList<Daily>();
+		String val = "P";
+		//String selectQuery = "SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_TYPE + " = 'P'";
+		//String selectQuery = "SELECT * FROM " + TABLE_TRANSACTION + " ORDER BY " + KEY_VOUCHER + "";
+		String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + "";
+		Log.d("log_tag", "SELECT DAILIES:::::::: " + selectQuery);
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		if (cursor.moveToFirst()) {
+			do {
+				Daily daily = new Daily();
+				daily.setID(Integer.parseInt(cursor.getString(0)));
+				daily.setIDWeb(Integer.parseInt(cursor.getString(1)));
+				daily.setIDTransaction(Integer.parseInt(cursor.getString(2)));
+				daily.setIDCustomer(Integer.parseInt(cursor.getString(3)));
+				daily.setTransactionDate(cursor.getString(4));
+				daily.setVoucher(cursor.getString(5));
+				daily.setType(cursor.getString(6));
+				daily.setAmmount(cursor.getString(7));
+				daily.setSaldo(cursor.getString(8));
+				daily.setCustomerCode(cursor.getString(9));
+				daily.setCustomerName(cursor.getString(10));
+				daily.setCustomerAddress(cursor.getString(11));
+				daily.setStatus(cursor.getString(12));
+				// Adding to list
+				Log.d("log_tag", "SELECT DAILIES:::::::: " + cursor.getString(6));
+				list.add(daily);
+			} while (cursor.moveToNext());
 		}
+		cursor.close();
+		db.close();
+		return list;
+	}
 
 	// Getting single
 	public Daily get(int id) {	
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_TRANSACTION, new String[] { KEY_ID,
-				KEY_ID_WEB, KEY_ID_TRANSACTION, KEY_ID_CUSTOMER, KEY_TRANSACTION_DATE, KEY_VOUCHER, KEY_TYPE, KEY_AMMOUNT, KEY_CUSTOMER_CODE, 
+				KEY_ID_WEB, KEY_ID_TRANSACTION, KEY_ID_CUSTOMER, KEY_TRANSACTION_DATE, KEY_VOUCHER, KEY_TYPE, KEY_AMMOUNT, KEY_SALDO, KEY_CUSTOMER_CODE, 
 				KEY_CUSTOMER_NAME, KEY_CUSTOMER_ADDRESS, KEY_STATUS }, KEY_ID + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()){
 			Daily daily = new Daily(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), Integer.parseInt(cursor.getString(2)), 
 					Integer.parseInt(cursor.getString(3)), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), 
-					cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11));			
+					cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11), cursor.getString(12));
 			return daily;
 		}else{
 			cursor.close();
@@ -199,7 +207,6 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 		Cursor cursor = db.rawQuery(selectQuery, null);
 		String [] list;  
 		list = new String[cursor.getCount()];
-		
 		if (cursor.moveToFirst()) {
 			do {
 				list[i] = new String(cursor.getString(2));
@@ -215,13 +222,13 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 	public Daily getByIdweb(int id) {		
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_TRANSACTION, new String[] { KEY_ID,
-				KEY_ID_WEB, KEY_ID_TRANSACTION, KEY_ID_CUSTOMER, KEY_TRANSACTION_DATE, KEY_VOUCHER, KEY_TYPE, KEY_AMMOUNT, KEY_CUSTOMER_CODE, 
+				KEY_ID_WEB, KEY_ID_TRANSACTION, KEY_ID_CUSTOMER, KEY_TRANSACTION_DATE, KEY_VOUCHER, KEY_TYPE, KEY_AMMOUNT, KEY_SALDO, KEY_CUSTOMER_CODE, 
 				KEY_CUSTOMER_NAME, KEY_CUSTOMER_ADDRESS, KEY_STATUS }, KEY_ID_WEB + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()){			
 			Daily daily = new Daily(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), Integer.parseInt(cursor.getString(2)), 
 					Integer.parseInt(cursor.getString(3)), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), 
-					cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11));
+					cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11), cursor.getString(12));
 			cursor.close();
 			db.close();
 			return daily;
@@ -242,6 +249,7 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 		values.put(KEY_VOUCHER, daily.getVoucher());
 		values.put(KEY_TYPE, daily.getType());
 		values.put(KEY_AMMOUNT, daily.getAmmount());
+		values.put(KEY_SALDO, daily.getSaldo());
 		values.put(KEY_CUSTOMER_CODE, daily.getCustomerCode());
 		values.put(KEY_CUSTOMER_NAME, daily.getCustomerName());
 		values.put(KEY_CUSTOMER_ADDRESS, daily.getCustomerAddress());
@@ -267,7 +275,7 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 		SQLiteDatabase db = this.getWritableDatabase();
 		
 		Cursor cursor = db.query(TABLE_TRANSACTION, new String[] { KEY_ID,
-				KEY_ID_WEB, KEY_ID_TRANSACTION, KEY_ID_CUSTOMER, KEY_TRANSACTION_DATE, KEY_VOUCHER, KEY_TYPE, KEY_AMMOUNT, KEY_CUSTOMER_CODE, 
+				KEY_ID_WEB, KEY_ID_TRANSACTION, KEY_ID_CUSTOMER, KEY_TRANSACTION_DATE, KEY_VOUCHER, KEY_TYPE, KEY_AMMOUNT, KEY_SALDO, KEY_CUSTOMER_CODE, 
 				KEY_CUSTOMER_NAME, KEY_CUSTOMER_ADDRESS, KEY_STATUS }, 
 				KEY_CUSTOMER_NAME + " LIKE '%"+like +"%'", null, null, null, KEY_CUSTOMER_NAME);
 		if (cursor.moveToFirst()) {
@@ -281,10 +289,11 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 				daily.setVoucher(cursor.getString(5));
 				daily.setType(cursor.getString(6));
 				daily.setAmmount(cursor.getString(7));
-				daily.setCustomerCode(cursor.getString(8));
-				daily.setCustomerName(cursor.getString(9));
-				daily.setCustomerAddress(cursor.getString(10));
-				daily.setStatus(cursor.getString(11));			
+				daily.setSaldo(cursor.getString(8));
+				daily.setCustomerCode(cursor.getString(9));
+				daily.setCustomerName(cursor.getString(10));
+				daily.setCustomerAddress(cursor.getString(11));
+				daily.setStatus(cursor.getString(12));
 				
 				dailyList.add(daily);
 			} while (cursor.moveToNext());

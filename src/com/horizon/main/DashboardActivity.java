@@ -933,6 +933,7 @@ public class DashboardActivity extends Activity{
     				 	String voucher = c.getString("NumVoucher");
     				 	String type = c.getString("Type");
     				 	String ammount = c.getString("Monto");
+    				 	String pagado = c.getString("pagado");
     				 	String code = c.getString("code");
     				 	String custname = c.getString("custname");
     				 	String custaddress = c.getString("custaddress");
@@ -941,7 +942,7 @@ public class DashboardActivity extends Activity{
     				 	Log.d("log_tag", "NEW DAILY: > " + idweb);
     				 	
     				 	dbDaily.add(new Daily(Integer.parseInt(idweb), Integer.parseInt(idTransaction), Integer.parseInt(idCustomer), 
-    				 			fechaTransaction, voucher, type, ammount, code, custname, custaddress, status));
+    				 			fechaTransaction, voucher, type, ammount, pagado, code, custname, custaddress, status));
     				}
     			}else{
     				Log.d("log_tag", "null");

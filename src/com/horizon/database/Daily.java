@@ -10,6 +10,7 @@ public class Daily {
 	String _voucher;
 	String _type;
 	String _ammount;
+	String _saldo;
 	String _customer_code;
 	String _customer_name;
 	String _customer_address;
@@ -20,7 +21,7 @@ public class Daily {
 	
 	// constructor
 	public Daily(int id, int idweb, int idtransaction, int idcustomer, String transactiondate, String voucher, 
-			String type, String ammount, String customercode, String customername, String customeraddress, String status ){
+			String type, String ammount, String saldo, String customercode, String customername, String customeraddress, String status ){
 		this._id = id;
 		this._id_web= idweb;
 		this._id_transaction= idtransaction;
@@ -29,6 +30,7 @@ public class Daily {
 		this._voucher= voucher;
 		this._type= type;
 		this._ammount= ammount;
+		this._saldo= saldo;
 		this._customer_code= customercode;
 		this._customer_name= customername;
 		this._customer_address= customeraddress;
@@ -36,7 +38,7 @@ public class Daily {
 	}
 	// constructor
 	public Daily( int idweb, int idtransaction, int idcustomer, String transactiondate, String voucher, 
-			String type, String ammount, String customercode, String customername, String customeraddress, String status ){
+			String type, String ammount, String saldo, String customercode, String customername, String customeraddress, String status ){
 		this._id_web= idweb;
 		this._id_transaction= idtransaction;
 		this._id_customer= idcustomer;
@@ -44,6 +46,7 @@ public class Daily {
 		this._voucher= voucher;
 		this._type= type;
 		this._ammount= ammount;
+		this._saldo= saldo;
 		this._customer_code= customercode;
 		this._customer_name= customername;
 		this._customer_address= customeraddress;
@@ -112,6 +115,14 @@ public class Daily {
 	// setting ammount
 	public void setAmmount(String ammount){
 		this._ammount = ammount;
+	}
+	// getting saldo
+	public String getSaldo(){
+		return this._saldo;
+	}
+	// setting saldo
+	public void setSaldo(String saldo){
+		this._saldo = saldo;
 	}
 	// getting customer code
 	public String getCustomerCode(){
