@@ -84,9 +84,9 @@ String transactionTpye = null;
 			listview = (ListView) findViewById(R.id.contentlistclient);
 			
 			text = db.getAllNames();
-			final List<Daily> rowItemsX = db.getAllPrestamos();
-			Log.d("log_tag", "SELECT DAILIES:::::::: ITEMS::: " + rowItemsX);
-			listview.setAdapter(new CustomAdapter(this, text, rowItemsX));		
+			final List<Daily> rowItems = db.getAll();
+			Log.d("log_tag", "SELECT DAILIES:::::::: ITEMS::: " + rowItems);
+			listview.setAdapter(new CustomAdapter(this, text, rowItems));		
 			//listview.setOnItemClickListener(this);
 
 		} catch (Exception e) { }
@@ -357,9 +357,18 @@ String transactionTpye = null;
 	  		holder.cobroId.setText(String.valueOf(rowItem.getID()));
 			holder.txtName.setText(String.valueOf(rowItem.getCustomerName()));
 			holder.txtAddress.setText(rowItem.getCustomerAddress());
-			holder.txtVoucher.setText("Factura: " + rowItem.getType());
+			holder.txtVoucher.setText("Factura: " + rowItem.getVoucher());
 			holder.txtAmmount.setText("Monto Total: " + rowItem.getAmmount());
-			holder.txtSaldo.setText("Saldo: ");
+			
+			//
+			//holder.txtSaldo.setText("Saldo: " + String.format("%.2f", rowItem.getAmmount()));
+			if (!rowItem.getSaldo().equals("null")) {
+				Double saldo = Double.parseDouble(rowItem.getAmmount()) - Double.parseDouble(rowItem.getSaldo());
+				holder.txtSaldo.setText("Saldo: " + String.format("%.2f", saldo));
+			}else{
+				holder.txtSaldo.setText("Saldo: " + rowItem.getAmmount());
+			}
+			
 			holder.go.setImageResource(0);
 			holder.go.setImageResource(R.drawable.ic_launcher);
 			return convertView;
