@@ -239,14 +239,14 @@ public class TransactionActivity extends Activity implements OnItemClickListener
         longitude = gps.getLongitude();
 		
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Atención");
-		builder.setMessage("La Transacción será finalizada.").
+		builder.setTitle("Atenciï¿½n");
+		builder.setMessage("La Transacciï¿½n serï¿½ finalizada.").
 		setPositiveButton("Aceptar ", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				if(getPrice() <= 0.0){
 					AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
-					builder.setTitle("Atención");
-					builder.setMessage("Esta transacción será almacenada como Transacción 0.").
+					builder.setTitle("Atenciï¿½n");
+					builder.setMessage("Esta transacciï¿½n serï¿½ almacenada como Transacciï¿½n 0.").
 					setPositiveButton("Aceptar ", new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							transactionObject.setType("transaccion_0");
@@ -328,14 +328,14 @@ public class TransactionActivity extends Activity implements OnItemClickListener
     }
 	// set Transaction 0 message
 	private Dialog transactionTypeSelectionDialog(){
-    	final String[] items = {"Ningún pedido", "Negocio cerrado"};
+    	final String[] items = {"Ningï¿½n pedido", "Negocio cerrado"};
     	
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
-    	builder.setTitle("¿Porque no se agregó productos? ");
+    	builder.setTitle("ï¿½Porque no se agregï¿½ productos? ");
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opción elegida: " + items[item]);
+    	        Log.i("log_tag", "Opciï¿½n elegida: " + items[item]);
     	        transactionObject.setType("transaccion_0");
     	    	if (item == 0)
     	    		transactionObject.setObs("Ningun Pedido");
@@ -441,7 +441,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	     });
     }
 	
-	public void showdialogQuantity() {	
+	public void showdialogQuantity() {
 		
 		final AlertDialog.Builder alert = new AlertDialog.Builder(TransactionActivity.this);
 		alert.setTitle("Cantidad: ");  
@@ -500,8 +500,8 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 			
 			if(getTransDetail != null){ // this product already exist in the list
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle("Atención");
-				builder.setMessage("El producto ya existe en la lista, ¿desea incrementar la cantidad?").
+				builder.setTitle("Atenciï¿½n");
+				builder.setMessage("El producto ya existe en la lista, ï¿½desea incrementar la cantidad?").
 				setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						 Double totalPrice = (double) ((unitPrice * transaction.getQuantity()) + getTransDetail.getPriceTotal());
@@ -546,7 +546,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		final String total_price_trans_details = (String) ((TextView) arg1.findViewById(R.id.totalPriceTransactionModify)).getText();
 		
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("¿Está seguro de eliminar el producto: "+product_name_trans_details+"?")
+        builder.setMessage("ï¿½Estï¿½ seguro de eliminar el producto: "+product_name_trans_details+"?")
 	           .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
 	        	   dbTransDetail.deleteTransactionDetail(Integer.parseInt(custom_id_trans_details));
@@ -562,7 +562,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
            });
  
         AlertDialog alert = builder.create();
-        alert.setTitle("Atención");
+        alert.setTitle("Atenciï¿½n");
         alert.show();
     }
 	

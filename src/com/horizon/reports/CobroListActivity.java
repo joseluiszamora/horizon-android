@@ -7,17 +7,23 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
+import android.app.AlertDialog;
+import android.app.SearchManager.OnCancelListener;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -25,6 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.horizon.account.SessionManager;
 import com.horizon.database.Daily;
@@ -37,17 +44,12 @@ import com.horizon.webservice.GPSTracker;
 import com.ruizmier.horizon.R;
 
 public class CobroListActivity extends Activity implements OnItemClickListener {
-	// Progress Dialog
-    private ProgressDialog pDialog;
     // GPS latitude longitude
  	double latitude = 0.0;
     double longitude = 0.0;
     
     DatabaseHandlerDaily db = new DatabaseHandlerDaily(this, "", null, '1');
 	List<Daily> rowItems;
-	
-// Check new transaction type
-String transactionTpye = null;
 	
 	// search functionality
 	EditText edittext;
@@ -57,8 +59,6 @@ String transactionTpye = null;
 	int textlength = 0;
 
 	ArrayList<String> text_sort = new ArrayList<String>();
-	ArrayList<Integer> image_sort = new ArrayList<Integer>();
-	
 	Daily daily = new Daily();
 	
 	@Override
@@ -74,10 +74,6 @@ String transactionTpye = null;
 	    String name = user.get(SessionManager.KEY_NAME);
 	    TextView actionBarClient = (TextView)findViewById(R.id.actionBarClientName);
 	    actionBarClient.setText(name);
-	    // get bundle transaction type info
-	    Bundle bundle = getIntent().getExtras();
-		// Get Bundle Transaction Code
-	    transactionTpye = bundle.getString("transactionType");
 	    
 	    try {
 	    	edittext = (EditText) findViewById(R.id.textSearch);
@@ -97,29 +93,26 @@ String transactionTpye = null;
 	    latitude = gps.getLatitude();
         longitude = gps.getLongitude();
 
-	  edittext.addTextChangedListener(new TextWatcher() {
-	
-	   public void afterTextChanged(Editable s) { }
-	
-	   public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-	
-	   public void onTextChanged(CharSequence s, int start, int before, int count) {
-	
-	    textlength = edittext.getText().length();
-	    text_sort.clear();
-	    image_sort.clear();
-	
-	    for (int i = 0; i < text.length; i++) {
-			if(text[i].toLowerCase().contains(edittext.getText().toString())){
-				text_sort.add(text[i]);
-				Log.d("log_tag", "Edit text " + text[i].toLowerCase() + "----------" +edittext.getText().toString());
+		edittext.addTextChangedListener(new TextWatcher() {
+			public void afterTextChanged(Editable s) { }
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				textlength = edittext.getText().length();
+				text_sort.clear();
+				
+				for (int i = 0; i < text.length; i++) {
+					if(text[i].toLowerCase().contains(edittext.getText().toString())){
+						text_sort.add(text[i]);
+						Log.d("log_tag", "Edit text " + text[i].toLowerCase() + "----------" +edittext.getText().toString());
+					}
+				}
+				
+				List<Daily> SearchRowItems = db.getSearch(edittext.getText().toString());
+				listview.setAdapter(new CustomAdapter(CobroListActivity.this, text_sort, SearchRowItems));			   
 			}
-	    }
-	
-	    List<Daily> SearchRowItems = db.getSearch(edittext.getText().toString());
-	    listview.setAdapter(new CustomAdapter(CobroListActivity.this, text_sort, SearchRowItems));			   
-	   }
-	  });
+		});
+	  
+	  
 	}
 	
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -130,33 +123,57 @@ String transactionTpye = null;
          }
         return super.onKeyDown(keyCode, event);
     }
-		
-	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {		
-		// create class object
-		String custom_id = (String) ((TextView) arg1.findViewById(R.id.customer_id)).getText();
-        
-		//get Date, Hour Now
-		Calendar c = Calendar.getInstance();
-		SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-		String formattedDate = df.format(c.getTime());        			
-		DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(CobroListActivity.this, "", null, 1);
-		
-		// Create New Transaction        			
-		Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", custom_id, "", "pending", transactionTpye, "regular", 
-				formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude));
 
-		String codeTransaction = String.valueOf(idNewTransaction);
+	
+	public void showdialogQuantity() {
+		final AlertDialog.Builder alert = new AlertDialog.Builder(CobroListActivity.this);
+		alert.setTitle("Cantidad: ");  
 		
-		Intent intentNewTransaction = new Intent(CobroListActivity.this, TransactionActivity.class);            	
-		// get Client Info
-		Bundle bundle = new Bundle();
-		bundle.putString("newTransactionCode", codeTransaction);
-		intentNewTransaction.putExtras(bundle);
-		startActivity(intentNewTransaction);
-		finish();
-	}
-	/*	 
+		// Set an EditText view to get user input   
+		final EditText input = new EditText(CobroListActivity.this);
+		alert.setView(input);
+		
+		input.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+		input.setFilters(new InputFilter[] {
+			// Maximum 5 characters.
+			new InputFilter.LengthFilter(5),
+		});
+
+		alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {  
+	     public void onClick(DialogInterface dialog, int whichButton) {  
+	    	 if(!input.getText().toString().trim().equals("") && !input.getText().toString().trim().equals(null)){
+	    		 Integer value = Integer.parseInt(input.getText().toString());
+		         
+		         if(value != 0){
+		        	 //transaction.setQuantity(value);
+	    			 //createNewTransactionDetail(transaction);
+	    		 }else{
+					// insert error here
+	    			Toast.makeText(CobroListActivity.this, "Debe introducir una cantidad valida", Toast.LENGTH_SHORT).show();
+	    		 }
+	    	 }else{
+	    		Toast.makeText(CobroListActivity.this, "Debe introducir una cantidad valida", Toast.LENGTH_SHORT).show();
+	    	 }
+	    	 
+	    	 return;                  
+	        }  
+	      });  
+	
+	     alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+	         public void onClick(DialogInterface dialog, int which) {
+	             // TODO Auto-generated method stub
+	             return;   
+	         }
+	     });				
+		
+	    AlertDialog alertToShow = alert.create();
+		alertToShow.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		alertToShow.show();	
+    }
+	
+	
+ 
     private class StartNewTransactionDialog extends AsyncTask<ArrayList<String>, Void, ArrayList<String>> {
 		
     	protected ArrayList<String> doInBackground(ArrayList<String>... passing) {
@@ -287,7 +304,11 @@ String transactionTpye = null;
     		Toast.makeText(ClientsPrestamoListActivity.this, "Informacion Actualizada!", Toast.LENGTH_SHORT).show();
     	}
     }
-*/
+
+    
+    
+    
+	
     class CustomAdapter extends BaseAdapter {
   	  String[] data_text;
   	  Context context;
@@ -360,8 +381,6 @@ String transactionTpye = null;
 			holder.txtVoucher.setText("Factura: " + rowItem.getVoucher());
 			holder.txtAmmount.setText("Monto Total: " + rowItem.getAmmount());
 			
-			//
-			//holder.txtSaldo.setText("Saldo: " + String.format("%.2f", rowItem.getAmmount()));
 			if (!rowItem.getSaldo().equals("null")) {
 				Double saldo = Double.parseDouble(rowItem.getAmmount()) - Double.parseDouble(rowItem.getSaldo());
 				holder.txtSaldo.setText("Saldo: " + String.format("%.2f", saldo));
@@ -373,5 +392,26 @@ String transactionTpye = null;
 			holder.go.setImageResource(R.drawable.ic_launcher);
 			return convertView;
   	  	}
-  	 }
+	}
+
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {		
+		// create class object
+		//String id = (String) ((TextView) arg1.findViewById(R.id.id)).getText();
+		Log.d("log_tag", "CLICKCKCKC ...._> ");
+		showdialogQuantity();
+		
+		//get Date, Hour Now
+		/*Calendar c = Calendar.getInstance();
+		SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		String formattedDate = df.format(c.getTime());        			
+		DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(CobroListActivity.this, "", null, 1);
+		*/
+		
+		/*Intent intentNewTransaction = new Intent(CobroListActivity.this, PayActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putString("idDaily", id);
+		intentNewTransaction.putExtras(bundle);
+		startActivity(intentNewTransaction);
+		finish();*/
+	}
 }
