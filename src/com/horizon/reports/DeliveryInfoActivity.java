@@ -199,13 +199,13 @@ public class DeliveryInfoActivity extends Activity implements OnItemClickListene
 	private void closeTransaction(){
 				
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Atención");
-		builder.setMessage("La Distribución será finalizada.").
+		builder.setTitle("AtenciÃ³n");
+		builder.setMessage("La DistribuciÃ³n serÃ¡ finalizada.").
 		setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				pDialog = new ProgressDialog(DeliveryInfoActivity.this);
 				pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-				pDialog.setMessage("Finalizando Transaccion...");
+				pDialog.setMessage("Finalizando TransacciÃ³n...");
 				pDialog.setCancelable(false);
 				pDialog.setMax(100);
 				
@@ -245,10 +245,10 @@ public class DeliveryInfoActivity extends Activity implements OnItemClickListene
     	
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-    	builder.setTitle("Seleccione la acción");
+    	builder.setTitle("Seleccione la acciï¿½n");
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opción elegida: " + items[item]);    	    	
+    	        Log.i("log_tag", "Opciï¿½n elegida: " + items[item]);    	    	
     	    	if (item == 0){
     	    		selectedTransactionDetail.setStatus("entregado");
     	    		dbTransDetail.updateTransactionDetail(selectedTransactionDetail);
