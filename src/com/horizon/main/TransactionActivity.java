@@ -239,14 +239,14 @@ public class TransactionActivity extends Activity implements OnItemClickListener
         longitude = gps.getLongitude();
 		
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Atenci�n");
-		builder.setMessage("La Transacci�n ser� finalizada.").
+		builder.setTitle("Atención");
+		builder.setMessage("La Transacción será finalizada.").
 		setPositiveButton("Aceptar ", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				if(getPrice() <= 0.0){
 					AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
-					builder.setTitle("Atenci�n");
-					builder.setMessage("Esta transacci�n ser� almacenada como Transacci�n 0.").
+					builder.setTitle("Atención");
+					builder.setMessage("Esta transacción será almacenada como Transacción 0.").
 					setPositiveButton("Aceptar ", new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							transactionObject.setType("transaccion_0");
@@ -273,30 +273,6 @@ public class TransactionActivity extends Activity implements OnItemClickListener
         AlertDialog alert = builder.create();            
         alert.show();
         
-		/*AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Atencion");
-		builder.setMessage("La Transaccion sera finalizada.").
-		setPositiveButton("Ok ", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
-				pDialog = new ProgressDialog(TransactionActivity.this);
-				pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-				pDialog.setMessage("Finalizando Transaccion...");
-				pDialog.setCancelable(false);
-				pDialog.setMax(100);
-				//Toast.makeText(TransactionActivity.this, "GPS ON", Toast.LENGTH_SHORT).show();
-				
-				UpdateInfoAsyncDialog updateWork = new UpdateInfoAsyncDialog();
-				updateWork.execute();
-			}
-		});
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-               public void onClick(DialogInterface dialog, int id) {
-                 dialog.dismiss();
-                 //Toast.makeText(TransactionActivity.this, "I'm Still Here", Toast.LENGTH_SHORT).show();
-               }
-           }); 
-        AlertDialog alert = builder.create();            
-        alert.show();*/
 	}
 
 	private void saveTransactionStatus(){
@@ -328,14 +304,14 @@ public class TransactionActivity extends Activity implements OnItemClickListener
     }
 	// set Transaction 0 message
 	private Dialog transactionTypeSelectionDialog(){
-    	final String[] items = {"Ning�n pedido", "Negocio cerrado"};
+    	final String[] items = {"Ningún pedido", "Negocio cerrado"};
     	
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
-    	builder.setTitle("�Porque no se agreg� productos? ");
+    	builder.setTitle("¿Porque no se agregó productos? ");
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opci�n elegida: " + items[item]);
+    	        Log.i("log_tag", "Opción elegida: " + items[item]);
     	        transactionObject.setType("transaccion_0");
     	    	if (item == 0)
     	    		transactionObject.setObs("Ningun Pedido");

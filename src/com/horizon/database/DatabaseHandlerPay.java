@@ -131,6 +131,23 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 		}			
 	}
 	
+	// Getting single by daily
+	public Pay get_by_daily(int id) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.query(TABLE_NAME, new String[] { KEY_ID,
+				KEY_ID_DAILY, KEY_AMMOUNT, KEY_DATE, KEY_STATUS }, KEY_ID_DAILY + "=?",
+				new String[] { String.valueOf(id) }, null, null, null, null);
+		if (cursor != null && cursor.moveToFirst()){
+			Pay pay = new Pay(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), 
+					cursor.getString(2), cursor.getString(3), cursor.getString(4));
+			return pay;
+		}else{
+			cursor.close();
+			db.close();
+			return null;
+		}			
+	}
+	
 	public String[] getAllNames() {
 		int i = 0;
 		//Select All Query

@@ -1,18 +1,16 @@
 package com.horizon.reports;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.SearchManager.OnCancelListener;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -36,8 +34,9 @@ import android.widget.Toast;
 import com.horizon.account.SessionManager;
 import com.horizon.database.Daily;
 import com.horizon.database.DatabaseHandlerDaily;
-import com.horizon.database.DatabaseHandlerTransactions;
-import com.horizon.database.Transaction;
+import com.horizon.database.DatabaseHandlerPay;
+import com.horizon.database.Pay;
+import com.horizon.lists.listview.TransactionListAdapter;
 import com.horizon.main.DashboardActivity;
 import com.horizon.main.TransactionActivity;
 import com.horizon.webservice.GPSTracker;
@@ -47,19 +46,28 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
     // GPS latitude longitude
  	double latitude = 0.0;
     double longitude = 0.0;
+    // Progress Dialog
+    private ProgressDialog pDialog;
     
+    // Dialog options to preventa, venta directa
+  	private static final int DIALOGO_ADDPAY = 1;
+  	private static final int DIALOGO_DELETEPAY = 2;
+  	
     DatabaseHandlerDaily db = new DatabaseHandlerDaily(this, "", null, '1');
-	List<Daily> rowItems;
-	
+    DatabaseHandlerPay dbpay = new DatabaseHandlerPay(this, "", null, '1');
+    Daily daily = new Daily();
+    
 	// search functionality
 	EditText edittext;
-	ListView listview;
-
 	String[] text = null;
 	int textlength = 0;
-
 	ArrayList<String> text_sort = new ArrayList<String>();
-	Daily daily = new Daily();
+	
+	List<Daily> rowItems;
+	ListView listview;
+	
+	// pay
+	int idDaily;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -80,16 +88,15 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 			listview = (ListView) findViewById(R.id.contentlistclient);
 			
 			text = db.getAllNames();
-			final List<Daily> rowItems = db.getAll();
+			rowItems = db.getAll();
 			Log.d("log_tag", "SELECT DAILIES:::::::: ITEMS::: " + rowItems);
 			listview.setAdapter(new CustomAdapter(this, text, rowItems));		
-			//listview.setOnItemClickListener(this);
+			listview.setOnItemClickListener(this);
 
 		} catch (Exception e) { }
 		
 	    // GPS TRACKER
 		GPSTracker gps = new GPSTracker(CobroListActivity.this);
-	    
 	    latitude = gps.getLatitude();
         longitude = gps.getLongitude();
 
@@ -111,8 +118,7 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 				listview.setAdapter(new CustomAdapter(CobroListActivity.this, text_sort, SearchRowItems));			   
 			}
 		});
-	  
-	  
+
 	}
 	
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -124,8 +130,8 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
         return super.onKeyDown(keyCode, event);
     }
 
-	
-	public void showdialogQuantity() {
+	public void showdialogQuantity(final int idTransactionx) {
+		Log.d("log_tag", "%%%%%%%%%%%%%%%%%%%%%%%%%");
 		final AlertDialog.Builder alert = new AlertDialog.Builder(CobroListActivity.this);
 		alert.setTitle("Cantidad: ");  
 		
@@ -146,8 +152,9 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 	    		 Integer value = Integer.parseInt(input.getText().toString());
 		         
 		         if(value != 0){
-		        	 //transaction.setQuantity(value);
-	    			 //createNewTransactionDetail(transaction);
+		        	 Pay pago = new Pay(idTransactionx, String.valueOf(value), "1", "1");
+		        	 dbpay.add(pago);
+		        	 update();
 	    		 }else{
 					// insert error here
 	    			Toast.makeText(CobroListActivity.this, "Debe introducir una cantidad valida", Toast.LENGTH_SHORT).show();
@@ -172,7 +179,7 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 		alertToShow.show();	
     }
 	
-	
+	/*
  
     private class StartNewTransactionDialog extends AsyncTask<ArrayList<String>, Void, ArrayList<String>> {
 		
@@ -307,7 +314,7 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 
     
     
-    
+    */
 	
     class CustomAdapter extends BaseAdapter {
   	  String[] data_text;
@@ -378,7 +385,16 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 	  		holder.cobroId.setText(String.valueOf(rowItem.getID()));
 			holder.txtName.setText(String.valueOf(rowItem.getCustomerName()));
 			holder.txtAddress.setText(rowItem.getCustomerAddress());
-			holder.txtVoucher.setText("Factura: " + rowItem.getVoucher());
+			
+			Pay pay = dbpay.getByIdDaily(rowItem.getID());
+			if (pay != null) {
+				holder.txtVoucher.setText("Factura----: " + pay.getAmmount());
+			}else{
+				holder.txtVoucher.setText("Factura: " + rowItem.getVoucher());
+			}
+
+			
+			
 			holder.txtAmmount.setText("Monto Total: " + rowItem.getAmmount());
 			
 			if (!rowItem.getSaldo().equals("null")) {
@@ -396,9 +412,12 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {		
 		// create class object
-		//String id = (String) ((TextView) arg1.findViewById(R.id.id)).getText();
-		Log.d("log_tag", "CLICKCKCKC ...._> ");
-		showdialogQuantity();
+		String id = (String) ((TextView) arg1.findViewById(R.id.id)).getText();
+		idDaily = Integer.valueOf(id);
+		
+		Log.d("log_tag", "CLICKCKCKC ...._> " + idDaily);
+		//showdialogQuantity(id);
+		showDialog(DIALOGO_ADDPAY);
 		
 		//get Date, Hour Now
 		/*Calendar c = Calendar.getInstance();
@@ -414,4 +433,57 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 		startActivity(intentNewTransaction);
 		finish();*/
 	}
+	
+	private void update() { // refresh listview
+	    rowItems = db.getAll();
+		text = db.getAllNames();
+		Log.d("log_tag", "SELECT DAILIES:::::::: ITEMS::: " + rowItems);
+		listview.setAdapter(new CustomAdapter(this, text, rowItems));		
+		listview.setOnItemClickListener(this);
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		Log.i("log_tag", "onCreateDialog:::::: " + id);
+		Dialog dialogo = null;
+		if (id == 1){
+			dialogo = addPayDialog();
+			return dialogo;
+		}
+		if (id == 2) {
+			dialogo = deletePayDialog();
+			return dialogo;
+		}
+		return dialogo;
+    }
+	
+	private Dialog addPayDialog(){
+    	final String[] items = {"Adicionar Pago"};
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	
+    	builder.setTitle("Pagos");
+    	builder.setItems(items, new DialogInterface.OnClickListener() {
+    	    public void onClick(DialogInterface dialog, int item) {
+    	    	if (item == 0){
+    	    		showdialogQuantity(idDaily);
+    	    	}
+    	    }
+    	});    	    	
+    	return builder.create();
+    }
+	
+	private Dialog deletePayDialog(){
+    	final String[] items = {"Eliminar Pago"};
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	
+    	builder.setTitle("Pagos");
+    	builder.setItems(items, new DialogInterface.OnClickListener() {
+    	    public void onClick(DialogInterface dialog, int item) {
+    	    	if (item == 0){
+    	    		//showDialog(DIALOGO_ACTION);
+    	    	}
+    	    }
+    	});    	    	
+    	return builder.create();
+    }
 }

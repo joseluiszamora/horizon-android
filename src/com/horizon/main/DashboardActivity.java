@@ -52,6 +52,7 @@ import com.horizon.database.DatabaseHandlerDaily;
 import com.horizon.database.DatabaseHandlerGps;
 import com.horizon.database.DatabaseHandlerLineVolumes;
 import com.horizon.database.DatabaseHandlerLines;
+import com.horizon.database.DatabaseHandlerPay;
 import com.horizon.database.DatabaseHandlerProducts;
 import com.horizon.database.DatabaseHandlerTransactionDetail;
 import com.horizon.database.DatabaseHandlerTransactions;
@@ -170,7 +171,7 @@ public class DashboardActivity extends Activity{
         // Conciliar las pendientes cada 10 minutos
         if (!internet.isConnectingToInternet()) {
         	// message
-			Toast toast = Toast.makeText(DashboardActivity.this, "No hay conexión a Internet", Toast.LENGTH_SHORT);
+			Toast toast = Toast.makeText(DashboardActivity.this, "No hay conexiï¿½n a Internet", Toast.LENGTH_SHORT);
 			toast.show();		         
         }else{
         	try {
@@ -199,8 +200,8 @@ public class DashboardActivity extends Activity{
 			@Override
 			public void onClick(View arg0) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
-	            builder.setTitle("Atención");
-	            builder.setMessage("¿Está seguro de salir de Horizon?")
+	            builder.setTitle("Atenciï¿½n");
+	            builder.setMessage("ï¿½Estï¿½ seguro de salir de Horizon?")
 	                       .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
 	                       public void onClick(DialogInterface dialog, int id) {
 							session.logoutUser();
@@ -271,12 +272,12 @@ public class DashboardActivity extends Activity{
 				// Check for internet connection
 		        if (!internet.isConnectingToInternet()) {
 		        	// message
-					Toast toast = Toast.makeText(DashboardActivity.this, "No hay conexión a Internet", Toast.LENGTH_SHORT);
+					Toast toast = Toast.makeText(DashboardActivity.this, "No hay conexiï¿½n a Internet", Toast.LENGTH_SHORT);
 	    			toast.show();		         
 		        }else{
 		        	AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
-		            builder.setTitle("Atención");
-		            builder.setMessage("Esta operación borrara cierta información, ¿está seguro?")
+		            builder.setTitle("Atenciï¿½n");
+		            builder.setMessage("Esta operaciï¿½n borrara cierta informaciï¿½n, ï¿½estï¿½ seguro?")
 		                       .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
 		                       public void onClick(DialogInterface dialog, int id) {
 		                    	   	pDialog = new ProgressDialog(DashboardActivity.this);
@@ -348,7 +349,7 @@ public class DashboardActivity extends Activity{
         	 // Check for internet connection
 	        if (!internet.isConnectingToInternet()) {
 	        	// message
-				Toast toast = Toast.makeText(DashboardActivity.this, "No hay conexión a Internet", Toast.LENGTH_SHORT);
+				Toast toast = Toast.makeText(DashboardActivity.this, "No hay conexiï¿½n a Internet", Toast.LENGTH_SHORT);
     			toast.show();		         
 	        }else{
 	        	pDialog = new ProgressDialog(DashboardActivity.this);
@@ -364,7 +365,7 @@ public class DashboardActivity extends Activity{
  
         case R.id.menu_logout:
         	AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
-            builder.setTitle("Atención ");
+            builder.setTitle("Atenciï¿½n ");
             builder.setMessage("Esta seguro de Salir de Horizon")
                        .setPositiveButton("Aceptar ", new DialogInterface.OnClickListener() {
                        public void onClick(DialogInterface dialog, int id) {
@@ -389,7 +390,7 @@ public class DashboardActivity extends Activity{
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
         	AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
-            builder.setTitle("Atención ");
+            builder.setTitle("Atenciï¿½n ");
             builder.setMessage("Esta seguro de Salir de Horizon")
                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                        public void onClick(DialogInterface dialog, int id) {
@@ -437,10 +438,10 @@ public class DashboardActivity extends Activity{
     	
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
-    	builder.setTitle("Nueva Transacción");
+    	builder.setTitle("Nueva Transacciï¿½n");
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opción elegidaXXXXX: " + items[item]);
+    	        Log.i("log_tag", "Opciï¿½n elegidaXXXXX: " + items[item]);
     	    	if (item == 0){
     	    		Log.i("log_tag", "PRESTAMO ");
         	    	transactionTpye = "prestamo";
@@ -464,13 +465,13 @@ public class DashboardActivity extends Activity{
     }
 	
     private Dialog makeSelectionDialog(){
-    	final String[] items = {"Buscar en la lista", "Introducir Código", "Escanear  Código", "Transacción Temporal"};
+    	final String[] items = {"Buscar en la lista", "Introducir Cï¿½digo", "Escanear  Cï¿½digo", "Transacciï¿½n Temporal"};
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
-    	builder.setTitle("Selección de Cliente");
+    	builder.setTitle("Selecciï¿½n de Cliente");
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opción elegida: " + items[item]);    	    	
+    	        Log.i("log_tag", "Opciï¿½n elegida: " + items[item]);    	    	
     	    	if (item == 0){
     	    		if(transactionTpye == "prestamo"){
     	    			Intent intent = new Intent(DashboardActivity.this, ClientsPrestamoListActivity.class);
@@ -489,8 +490,8 @@ public class DashboardActivity extends Activity{
     	    	}
 				if (item == 1) {
 					 AlertDialog.Builder alert = new AlertDialog.Builder(DashboardActivity.this);
-					 alert.setTitle("Nueva Transacción");  
-					 alert.setMessage("Ingresar Código de Cliente :");                
+					 alert.setTitle("Nueva Transacciï¿½n");  
+					 alert.setMessage("Ingresar Cï¿½digo de Cliente :");                
 
 					  // Set an EditText view to get user input
 					  final EditText input = new EditText(DashboardActivity.this);
@@ -620,13 +621,13 @@ public class DashboardActivity extends Activity{
     }
     
     private Dialog prestamoDialog() {
-    	final String[] items = {"Buscar en la lista", "Introducir Código", "Escanear  Código"};
+    	final String[] items = {"Buscar en la lista", "Introducir Cï¿½digo", "Escanear  Cï¿½digo"};
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
-    	builder.setTitle("Selección de Cliente");
+    	builder.setTitle("Selecciï¿½n de Cliente");
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opción elegida: " + items[item]);    	    	
+    	        Log.i("log_tag", "Opciï¿½n elegida: " + items[item]);    	    	
     	    	if (item == 0){
     	    		if(transactionTpye == "prestamo"){
     	    			Intent intent = new Intent(DashboardActivity.this, ClientsPrestamoListActivity.class);
@@ -645,8 +646,8 @@ public class DashboardActivity extends Activity{
     	    	}
 				if (item == 1) {
 					 AlertDialog.Builder alert = new AlertDialog.Builder(DashboardActivity.this);
-					 alert.setTitle("Nueva Transacción");  
-					 alert.setMessage("Ingresar Código de Cliente :");                
+					 alert.setTitle("Nueva Transacciï¿½n");  
+					 alert.setMessage("Ingresar Cï¿½digo de Cliente :");                
 
 					  // Set an EditText view to get user input
 					  final EditText input = new EditText(DashboardActivity.this);
@@ -732,10 +733,10 @@ public class DashboardActivity extends Activity{
 		final String[] items = {"Buscar en la lista", "Introducir Numero de Factura"};
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
-    	builder.setTitle("Selección de Cobro");
+    	builder.setTitle("Selecciï¿½n de Cobro");
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opción elegida: " + items[item]);    	    	
+    	        Log.i("log_tag", "Opciï¿½n elegida: " + items[item]);    	    	
     	    	if (item == 0){
     	    		Intent intent = new Intent(DashboardActivity.this, CobroListActivity.class);
 	    			Bundle bundle = new Bundle();
@@ -798,7 +799,7 @@ public class DashboardActivity extends Activity{
     		if (resultCode == RESULT_OK) {
 	            String codeScan = intent.getStringExtra("SCAN_RESULT").toString();
 	            
-	            Log.i("log_tag", "Opción elegida: " + codeScan);   
+	            Log.i("log_tag", "Opciï¿½n elegida: " + codeScan);   
  
 	            //verify if is a valid client
 		        DatabaseHandlerCustomers dbCustomers = new DatabaseHandlerCustomers(DashboardActivity.this, "", null, '1');
@@ -847,7 +848,7 @@ public class DashboardActivity extends Activity{
 		        }		
 	            
     		} else if (resultCode == RESULT_CANCELED) {
-    			Toast toast3 = Toast.makeText(this, "No se puede reconocer el Código", Toast.LENGTH_SHORT);
+    			Toast toast3 = Toast.makeText(this, "No se puede reconocer el Cï¿½digo", Toast.LENGTH_SHORT);
     			toast3.show();
     		}
     	}
@@ -950,6 +951,10 @@ public class DashboardActivity extends Activity{
     		}
     		catch (Exception e) { }
     		
+    		/** UPDATE DATABASE PAY **/
+    		final DatabaseHandlerPay dbPay = new DatabaseHandlerPay(DashboardActivity.this, "", null, '1');
+    		// delete All
+    		dbPay.clearTable();
     		
     		/** UPDATE DATABASE CUSTOMERS **/ 
     		final DatabaseHandlerCustomers dbCustomers = new DatabaseHandlerCustomers(DashboardActivity.this, "", null, '1');
@@ -1715,7 +1720,7 @@ public class DashboardActivity extends Activity{
 			NotificationManager notManager = 
 				(NotificationManager) getSystemService(ns);
 			
-			//Configuramos la notificación
+			//Configuramos la notificaciï¿½n
 			int icono = android.R.drawable.stat_notify_sync;
 			CharSequence textoEstado = "Conciliando";
 			long hora = System.currentTimeMillis();
@@ -1725,7 +1730,7 @@ public class DashboardActivity extends Activity{
 			//Configuramos el Intent
 			Context contexto = getApplicationContext();
 			CharSequence titulo = "Horizon";
-			CharSequence descripcion = "Autoconciliación en proceso.";
+			CharSequence descripcion = "Autoconciliaciï¿½n en proceso.";
 			
 			Intent notIntent = new Intent(contexto, 
 					DashboardActivity.class);
@@ -1735,10 +1740,10 @@ public class DashboardActivity extends Activity{
 
 			notif.setLatestEventInfo(contexto, titulo, descripcion, contIntent);
 			
-			//AutoCancel: cuando se pulsa la notificaión ésta desaparece
+			//AutoCancel: cuando se pulsa la notificaiï¿½n ï¿½sta desaparece
 			notif.flags |= Notification.FLAG_AUTO_CANCEL;
 			
-			//Enviar notificación
+			//Enviar notificaciï¿½n
 			notManager.notify(NOTIF_ALERTA_ID, notif);
 			
 			}
