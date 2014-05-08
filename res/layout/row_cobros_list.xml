@@ -15,14 +15,6 @@
         android:visibility="gone" />
 
     <!-- ListRow Left side Thumbnail image -->
-    
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/ic_launcher" />
 
     <TextView
         android:id="@+id/tdQuantity"
@@ -76,5 +68,13 @@
         android:text="TextView"
         android:textColor="#990000"
         android:textSize="15dp" />
+
+    <ImageView
+        android:id="@+id/imageViewCobroLIst"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ammount"
+        android:layout_alignRight="@+id/transactionCoordinate"
+        android:src="@drawable/ic_launcher" />
 
 </RelativeLayout>

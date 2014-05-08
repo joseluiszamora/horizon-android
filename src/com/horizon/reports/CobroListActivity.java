@@ -11,11 +11,15 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -178,6 +182,30 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 		alertToShow.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 		alertToShow.show();	
     }
+	
+	
+
+	public void showDialogDelete(final int idTransactionx) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(CobroListActivity.this);
+        builder.setTitle("Atención");
+        builder.setMessage("¿Está seguro de eliminar este pago?")
+                   .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                	   dbpay.delete(idTransactionx);
+                	   update();
+                   }
+               });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+               public void onClick(DialogInterface dialog, int id) {
+                 dialog.dismiss();	                     
+               }
+           }); 
+        AlertDialog alert = builder.create();            
+        alert.show();
+    }
+	
+	
+	
 	
 	/*
  
@@ -372,40 +400,53 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
   				holder.txtVoucher = (TextView) convertView.findViewById(R.id.transactionCoordinate);
   				holder.txtAmmount = (TextView) convertView.findViewById(R.id.transactionDateTime);
 		        holder.txtSaldo = (TextView) convertView.findViewById(R.id.ammount);
-		        holder.go = (ImageView) convertView.findViewById(R.id.imageView1);
+		        //holder.go = (ImageView) convertView.findViewById(R.id.imageView1);
+		        holder.go = (ImageView) convertView.findViewById(R.id.imageViewCobroLIst);
+		        
 		        convertView.setTag(holder);
 		    }
 	  		else {
 		    	 holder = (ViewHolder) convertView.getTag();
 		    }
 	  		Daily rowItem = (Daily) getItemCustom(position);
-	  		
-	  		Log.d("log_tag", "::::::::>> " + rowItem.getType());
 
 	  		holder.cobroId.setText(String.valueOf(rowItem.getID()));
 			holder.txtName.setText(String.valueOf(rowItem.getCustomerName()));
 			holder.txtAddress.setText(rowItem.getCustomerAddress());
+			holder.txtVoucher.setText("Factura: " + rowItem.getVoucher());
+			holder.txtAmmount.setText("Monto Total: " + rowItem.getAmmount() + " Bs.");
 			
-			Pay pay = dbpay.getByIdDaily(rowItem.getID());
-			if (pay != null) {
-				holder.txtVoucher.setText("Factura----: " + pay.getAmmount());
-			}else{
-				holder.txtVoucher.setText("Factura: " + rowItem.getVoucher());
-			}
-
-			
-			
-			holder.txtAmmount.setText("Monto Total: " + rowItem.getAmmount());
-			
-			if (!rowItem.getSaldo().equals("null")) {
-				Double saldo = Double.parseDouble(rowItem.getAmmount()) - Double.parseDouble(rowItem.getSaldo());
-				holder.txtSaldo.setText("Saldo: " + String.format("%.2f", saldo));
-			}else{
-				holder.txtSaldo.setText("Saldo: " + rowItem.getAmmount());
-			}
-			
+			Pay payed = dbpay.get_by_daily(rowItem.getID());
+			Double paymont;
+			Double saldo = 0.0;
 			holder.go.setImageResource(0);
-			holder.go.setImageResource(R.drawable.ic_launcher);
+			
+			try {
+				paymont = Double.parseDouble(payed.getAmmount());
+			} catch (Exception e) {
+				paymont = Double.parseDouble("0.0");
+			}
+			
+			if (rowItem.getSaldo().toString().equals("null")){
+				if (paymont.equals(0.0)) {
+					saldo = Double.parseDouble(rowItem.getAmmount());
+					holder.go.setImageResource(R.drawable.ic_launcher);
+				}else{
+					saldo = Double.parseDouble(rowItem.getAmmount()) - paymont;
+					holder.go.setImageResource(R.drawable.icook);
+				}
+			}else{ 
+				Double submonto = Double.parseDouble(rowItem.getAmmount()) - Double.parseDouble(rowItem.getSaldo());
+				if (paymont.equals(0.0)) {
+					saldo = submonto;
+					holder.go.setImageResource(R.drawable.ic_launcher);
+				}else{
+					saldo = submonto - paymont;
+					holder.go.setImageResource(R.drawable.icook);
+				}
+			}
+			holder.txtSaldo.setText("Saldo: " + String.format("%.2f", saldo) + " Bs.");
+			
 			return convertView;
   	  	}
 	}
@@ -417,7 +458,32 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 		
 		Log.d("log_tag", "CLICKCKCKC ...._> " + idDaily);
 		//showdialogQuantity(id);
-		showDialog(DIALOGO_ADDPAY);
+		//showDialog(DIALOGO_ADDPAY);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		Pay payed = dbpay.get_by_daily(idDaily);
+		Double paymont;
+		
+		try {
+			paymont = Double.parseDouble(payed.getAmmount());
+		} catch (Exception e) {
+			paymont = Double.parseDouble("0.0");
+		}
+		
+
+		if (paymont.equals(0.0)) {
+			showDialog(DIALOGO_ADDPAY);
+		}else{
+			showDialog(DIALOGO_DELETEPAY);
+		}
+		
 		
 		//get Date, Hour Now
 		/*Calendar c = Calendar.getInstance();
@@ -480,7 +546,7 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
     	    	if (item == 0){
-    	    		//showDialog(DIALOGO_ACTION);
+    	    		showDialogDelete(idDaily);
     	    	}
     	    }
     	});    	    	

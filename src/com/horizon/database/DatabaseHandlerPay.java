@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DatabaseHandlerPay extends SQLiteOpenHelper{
 	// Database Version
@@ -168,7 +169,8 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 	}
 	
 	// Getting by id Daily
-	public Pay getByIdDaily(int id) {		
+	public Pay getByIdDaily(int id) {	
+		Log.d("log_tag", "GET BY ID DAILY >> " + id);
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_NAME, new String[] { KEY_ID,
 				KEY_ID_DAILY, KEY_AMMOUNT, KEY_STATUS }, KEY_ID_DAILY + "=?",
@@ -201,7 +203,7 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 	// Deleting single
 	public void delete(int id) {
 		SQLiteDatabase db = this.getWritableDatabase();	
-		db.delete(TABLE_NAME, KEY_ID + " = ?",
+		db.delete(TABLE_NAME, KEY_ID_DAILY + " = ?",
 				new String[] { String.valueOf(id) });
 		db.close();
 	}
