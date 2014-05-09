@@ -465,13 +465,13 @@ public class DashboardActivity extends Activity{
     }
 	
     private Dialog makeSelectionDialog(){
-    	final String[] items = {"Buscar en la lista", "Introducir C�digo", "Escanear  C�digo", "Transacci�n Temporal"};
+    	final String[] items = {"Buscar en la lista", "Introducir Código", "Escanear  Código", "Transacción Temporal"};
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
-    	builder.setTitle("Selecci�n de Cliente");
+    	builder.setTitle("Selección de Cliente");
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opci�n elegida: " + items[item]);    	    	
+    	        Log.i("log_tag", "Opción elegida: " + items[item]);    	    	
     	    	if (item == 0){
     	    		if(transactionTpye == "prestamo"){
     	    			Intent intent = new Intent(DashboardActivity.this, ClientsPrestamoListActivity.class);
@@ -490,8 +490,8 @@ public class DashboardActivity extends Activity{
     	    	}
 				if (item == 1) {
 					 AlertDialog.Builder alert = new AlertDialog.Builder(DashboardActivity.this);
-					 alert.setTitle("Nueva Transacci�n");  
-					 alert.setMessage("Ingresar C�digo de Cliente :");                
+					 alert.setTitle("Nueva Transacción");  
+					 alert.setMessage("Ingresar Código de Cliente :");                
 
 					  // Set an EditText view to get user input
 					  final EditText input = new EditText(DashboardActivity.this);
@@ -621,13 +621,13 @@ public class DashboardActivity extends Activity{
     }
     
     private Dialog prestamoDialog() {
-    	final String[] items = {"Buscar en la lista", "Introducir C�digo", "Escanear  C�digo"};
+    	final String[] items = {"Buscar en la lista", "Introducir Código", "Escanear  Código"};
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
-    	builder.setTitle("Selecci�n de Cliente");
+    	builder.setTitle("Selección de Cliente");
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opci�n elegida: " + items[item]);    	    	
+    	        Log.i("log_tag", "Opción elegida: " + items[item]);    	    	
     	    	if (item == 0){
     	    		if(transactionTpye == "prestamo"){
     	    			Intent intent = new Intent(DashboardActivity.this, ClientsPrestamoListActivity.class);
@@ -646,8 +646,8 @@ public class DashboardActivity extends Activity{
     	    	}
 				if (item == 1) {
 					 AlertDialog.Builder alert = new AlertDialog.Builder(DashboardActivity.this);
-					 alert.setTitle("Nueva Transacci�n");  
-					 alert.setMessage("Ingresar C�digo de Cliente :");                
+					 alert.setTitle("Nueva Transacción");  
+					 alert.setMessage("Ingresar Código de Cliente :");                
 
 					  // Set an EditText view to get user input
 					  final EditText input = new EditText(DashboardActivity.this);
@@ -733,10 +733,10 @@ public class DashboardActivity extends Activity{
 		final String[] items = {"Buscar en la lista", "Introducir Numero de Factura"};
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
-    	builder.setTitle("Selecci�n de Cobro");
+    	builder.setTitle("Selección de Cobro");
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opci�n elegida: " + items[item]);    	    	
+    	        Log.i("log_tag", "Opción elegida: " + items[item]);    	    	
     	    	if (item == 0){
     	    		Intent intent = new Intent(DashboardActivity.this, CobroListActivity.class);
 	    			Bundle bundle = new Bundle();

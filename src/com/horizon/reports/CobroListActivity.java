@@ -72,6 +72,8 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 	
 	// pay
 	int idDaily;
+	Double ammountrow;
+	Double saldorow;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -152,11 +154,25 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 	     public void onClick(DialogInterface dialog, int whichButton) {  
 	    	 if(!input.getText().toString().trim().equals("") && !input.getText().toString().trim().equals(null)){
 	    		 Integer value = Integer.parseInt(input.getText().toString());
-		         
+		        
+	    		 
 		         if(value != 0){
-		        	 Pay pago = new Pay(idTransactionx, String.valueOf(value), "1", "1");
-		        	 dbpay.add(pago);
-		        	 update();
+		        	Pay payed = dbpay.get_by_daily(idDaily);
+		     		Double paymont;
+		     		
+		     		try {
+		     			paymont = Double.parseDouble(payed.getAmmount());
+		     		} catch (Exception e) {
+		     			paymont = Double.parseDouble("0.0");
+		     		}
+		     		
+		     		if (paymont > value) {
+						Toast.makeText(CobroListActivity.this, "El valor introducido excede el monto del prestamo", Toast.LENGTH_SHORT).show();
+					}else{
+						Pay pago = new Pay(idTransactionx, String.valueOf(value), "1", "1");
+						dbpay.add(pago);
+						update();
+					}
 	    		 }else{
 					// insert error here
 	    			Toast.makeText(CobroListActivity.this, "Debe introducir una cantidad valida", Toast.LENGTH_SHORT).show();
@@ -412,7 +428,7 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 			holder.txtName.setText(String.valueOf(rowItem.getCustomerName()));
 			holder.txtAddress.setText(rowItem.getCustomerAddress());
 			holder.txtVoucher.setText("Factura: " + rowItem.getVoucher());
-			holder.txtAmmount.setText("Monto Total: " + rowItem.getAmmount() + " Bs.");
+			holder.txtAmmount.setText("Monto Total (Bs.): " + rowItem.getAmmount());
 			
 			Pay payed = dbpay.get_by_daily(rowItem.getID());
 			Double paymont;
@@ -443,29 +459,23 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 					holder.go.setImageResource(R.drawable.icook);
 				}
 			}
-			holder.txtSaldo.setText("Saldo: " + String.format("%.2f", saldo) + " Bs.");
-			
+			holder.txtSaldo.setText("Saldo (Bs.): " + String.format("%.2f", saldo));
 			return convertView;
   	  	}
 	}
 
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {		
-		// create class object
-		String id = (String) ((TextView) arg1.findViewById(R.id.id)).getText();
-		idDaily = Integer.valueOf(id);
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		idDaily = Integer.valueOf((String) ((TextView) arg1.findViewById(R.id.id)).getText());
+		String ammount = (String) ((TextView) arg1.findViewById(R.id.transactionDateTime)).getText();
+		//ammountrow = Double.parseDouble((String) ((TextView) arg1.findViewById(R.id.transactionDateTime)).getText());
+		//saldorow = Double.parseDouble((String) ((TextView) arg1.findViewById(R.id.ammount)).getText());
+		String saldo = (String) ((TextView) arg1.findViewById(R.id.ammount)).getText();
 		
-		Log.d("log_tag", "CLICKCKCKC ...._> " + idDaily);
-		//showdialogQuantity(id);
-		//showDialog(DIALOGO_ADDPAY);
+		Log.d("log_tag", "DAILY ::::: " + idDaily);
+		Log.d("log_tag", "AMMOUNT ::::: " + ammount.substring(19));
+		Log.d("log_tag", "SALDO ::::: " + saldo.substring(13));
 		
-		
-		
-		
-		
-		
-		
-		
-		
+		/*
 		Pay payed = dbpay.get_by_daily(idDaily);
 		Double paymont;
 		
@@ -481,7 +491,7 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 		}else{
 			showDialog(DIALOGO_DELETEPAY);
 		}
-		
+		*/
 		
 		//get Date, Hour Now
 		/*Calendar c = Calendar.getInstance();
