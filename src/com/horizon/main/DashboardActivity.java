@@ -200,8 +200,8 @@ public class DashboardActivity extends Activity{
 			@Override
 			public void onClick(View arg0) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
-	            builder.setTitle("Atenci�n");
-	            builder.setMessage("�Est� seguro de salir de Horizon?")
+	            builder.setTitle("Atención");
+	            builder.setMessage("¿Está seguro de salir de Horizon?")
 	                       .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
 	                       public void onClick(DialogInterface dialog, int id) {
 							session.logoutUser();

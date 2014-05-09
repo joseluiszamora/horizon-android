@@ -135,7 +135,6 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
     }
 
 	public void showdialogQuantity(final int idTransactionx) {
-		Log.d("log_tag", "%%%%%%%%%%%%%%%%%%%%%%%%%");
 		final AlertDialog.Builder alert = new AlertDialog.Builder(CobroListActivity.this);
 		alert.setTitle("Cantidad: ");  
 		
@@ -144,10 +143,9 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 		alert.setView(input);
 		
 		input.setInputType(InputType.TYPE_CLASS_NUMBER);
-
 		input.setFilters(new InputFilter[] {
 			// Maximum 5 characters.
-			new InputFilter.LengthFilter(5),
+			new InputFilter.LengthFilter(7),
 		});
 
 		alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {  
