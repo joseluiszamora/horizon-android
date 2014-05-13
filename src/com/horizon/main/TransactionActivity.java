@@ -45,7 +45,9 @@ import android.widget.Toast;
 
 import com.horizon.account.SessionManager;
 import com.horizon.database.Customer;
+import com.horizon.database.Daily;
 import com.horizon.database.DatabaseHandlerCustomers;
+import com.horizon.database.DatabaseHandlerDaily;
 import com.horizon.database.DatabaseHandlerLineVolumes;
 import com.horizon.database.DatabaseHandlerLines;
 import com.horizon.database.DatabaseHandlerProducts;
@@ -99,6 +101,8 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	// Database Product class
 	DatabaseHandlerCustomers dbCustomers = new DatabaseHandlerCustomers(this, "", null, '1');
 	
+	// Database Daily class
+	DatabaseHandlerDaily dbDaily = new DatabaseHandlerDaily(this, "", null, '1');
 	
 	// Creating JSON Parser object
 	JSONParser jsonParser = new JSONParser();
@@ -150,9 +154,17 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		
 		// Create Transaction Object
 		transactionObject = dbTransactions.getTransaction(codeTransaction);
+		Customer custom = dbCustomers.getCustomerByCode(transactionObject.getCodeCustomer());
+		
 		Log.d("log_tag", "Codigo de Cliente ----------------->> " + transactionObject.getCodeCustomer());
 		Log.d("log_tag", "Estado de la transaccion  ----------------->> " + transactionObject.getStatus());
-				
+		
+		// check if have pendings dailies 
+		Daily daily = dbDaily.getByCustomer(String.valueOf(custom.getID()));
+		
+		if (daily != null) {
+			//alertCustomerDailyPending();
+		}
 		// Define TextViews
 		TextView txtClientName = (TextView)findViewById(R.id.TransDetailInfoCustomName);
 		TextView txtClientAddress = (TextView)findViewById(R.id.txtClientAddress);
@@ -198,6 +210,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 			}		
 		});
 	}	
+	
 	
 	//** Total Price Management **//
 	public static double round(double unrounded, int precision, int roundingMode) {

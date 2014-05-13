@@ -293,6 +293,26 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 		}							
 	}
 	
+	// Getting single by idcustomer
+	public Daily getByCustomer(String customer) {		
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.query(TABLE_TRANSACTION, new String[] { KEY_ID,
+				KEY_ID_WEB, KEY_ID_TRANSACTION, KEY_ID_CUSTOMER, KEY_TRANSACTION_DATE, KEY_VOUCHER, KEY_TYPE, KEY_AMMOUNT, KEY_SALDO, KEY_CUSTOMER_CODE, 
+				KEY_CUSTOMER_NAME, KEY_CUSTOMER_ADDRESS, KEY_STATUS }, KEY_ID_CUSTOMER + "=?",
+				new String[] { customer }, null, null, null, null);
+		if (cursor != null && cursor.moveToFirst()){			
+			Daily daily = new Daily(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), Integer.parseInt(cursor.getString(2)), 
+					Integer.parseInt(cursor.getString(3)), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), 
+					cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11), cursor.getString(12));
+			cursor.close();
+			db.close();
+			return daily;
+		}else{
+			db.close();		
+			return null;
+		}							
+	}
+	
 	// Updating single
 	public int update(Daily daily) {
 		SQLiteDatabase db = this.getWritableDatabase();

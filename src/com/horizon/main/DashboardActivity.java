@@ -1034,7 +1034,6 @@ public class DashboardActivity extends Activity{
     		catch (Exception e) {}
 
     		/** UPDATE DATABASE DAILY **/
-    		final DatabaseHandlerDaily dbDaily = new DatabaseHandlerDaily(DashboardActivity.this, "", null, '1');
     		// delete All
     		dbDaily.clearTable();
     		// Building Parameters
