@@ -144,6 +144,41 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 		return list;
 	}
 
+	
+	// Getting All 
+	public List<Daily> getActives() {
+		List<Daily> list = new ArrayList<Daily>();
+		//Select All Query
+		//String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + "";
+		String selectQuery = "SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_STATUS + " != 'pagado'";
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		// looping through all rows and adding to list
+		if (cursor.moveToFirst()) {
+			do {
+				Daily daily = new Daily();
+				daily.setID(Integer.parseInt(cursor.getString(0)));
+				daily.setIDWeb(Integer.parseInt(cursor.getString(1)));
+				daily.setIDTransaction(Integer.parseInt(cursor.getString(2)));
+				daily.setIDCustomer(Integer.parseInt(cursor.getString(3)));
+				daily.setTransactionDate(cursor.getString(4));
+				daily.setVoucher(cursor.getString(5));
+				daily.setType(cursor.getString(6));
+				daily.setAmmount(cursor.getString(7));
+				daily.setSaldo(cursor.getString(8));
+				daily.setCustomerCode(cursor.getString(9));
+				daily.setCustomerName(cursor.getString(10));
+				daily.setCustomerAddress(cursor.getString(11));
+				daily.setStatus(cursor.getString(12));
+				// Adding to list
+				list.add(daily);
+			} while (cursor.moveToNext());
+		}
+		cursor.close();
+		db.close();
+		return list;
+	}
+	
 	// Getting All Prestamos
 	public List<Daily> getAllPrestamos() {
 		List<Daily> list = new ArrayList<Daily>();
@@ -238,6 +273,26 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 		}							
 	}
 	
+	// Getting single by voucher
+	public Daily getByVoucher(String voucher) {		
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.query(TABLE_TRANSACTION, new String[] { KEY_ID,
+				KEY_ID_WEB, KEY_ID_TRANSACTION, KEY_ID_CUSTOMER, KEY_TRANSACTION_DATE, KEY_VOUCHER, KEY_TYPE, KEY_AMMOUNT, KEY_SALDO, KEY_CUSTOMER_CODE, 
+				KEY_CUSTOMER_NAME, KEY_CUSTOMER_ADDRESS, KEY_STATUS }, KEY_VOUCHER + "=?",
+				new String[] { voucher }, null, null, null, null);
+		if (cursor != null && cursor.moveToFirst()){			
+			Daily daily = new Daily(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), Integer.parseInt(cursor.getString(2)), 
+					Integer.parseInt(cursor.getString(3)), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), 
+					cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11), cursor.getString(12));
+			cursor.close();
+			db.close();
+			return daily;
+		}else{
+			db.close();		
+			return null;
+		}							
+	}
+	
 	// Updating single
 	public int update(Daily daily) {
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -261,7 +316,7 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 	}
 
 	// Deleting single
-	public void deleteTransaction(int codetransaction) {
+	public void delete(int codetransaction) {
 		SQLiteDatabase db = this.getWritableDatabase();	
 		db.delete(TABLE_TRANSACTION, KEY_ID + " = ?",
 				new String[] { String.valueOf(codetransaction) });

@@ -17,6 +17,12 @@
     <!-- ListRow Left side Thumbnail image -->
 
     <TextView
+        android:id="@+id/saldo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <TextView
         android:id="@+id/tdQuantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

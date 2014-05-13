@@ -61,6 +61,7 @@ import com.horizon.database.DatabaseHandlerVolumes;
 import com.horizon.database.Gps;
 import com.horizon.database.Line;
 import com.horizon.database.LineVolume;
+import com.horizon.database.Pay;
 import com.horizon.database.Product;
 import com.horizon.database.Transaction;
 import com.horizon.database.TransactionDetail;
@@ -123,6 +124,9 @@ public class DashboardActivity extends Activity{
  	DatabaseHandlerTransactions dbTransactions;			
 	// Database transaction detail class
 	DatabaseHandlerTransactionDetail dbTransactionDetail;
+	// Database daily
+	DatabaseHandlerDaily dbDaily;
+	DatabaseHandlerPay dbPay;
 	
 	DatabaseHandlerGps GpsObj;
 	
@@ -164,6 +168,8 @@ public class DashboardActivity extends Activity{
         
         dbTransactions = new DatabaseHandlerTransactions(getApplicationContext(), "", null, 1);
     	dbTransactionDetail = new DatabaseHandlerTransactionDetail(getApplicationContext(), "", null, '1');
+    	dbDaily = new DatabaseHandlerDaily(getApplicationContext(), "", null, '1');
+    	dbPay = new DatabaseHandlerPay(getApplicationContext(), "", null, '1');
     	GpsObj = new DatabaseHandlerGps(getApplicationContext(), "", null, 1);
     	uuid = Secure.getString(DashboardActivity.this.getContentResolver(),Secure.ANDROID_ID);
     	
@@ -171,14 +177,14 @@ public class DashboardActivity extends Activity{
         // Conciliar las pendientes cada 10 minutos
         if (!internet.isConnectingToInternet()) {
         	// message
-			Toast toast = Toast.makeText(DashboardActivity.this, "No hay conexi�n a Internet", Toast.LENGTH_SHORT);
+			Toast toast = Toast.makeText(DashboardActivity.this, "No hay conexión a Internet", Toast.LENGTH_SHORT);
 			toast.show();		         
         }else{
         	try {
         		conciliate.execute();
 			} catch (Exception e) {
 				// message
-				Toast toast = Toast.makeText(DashboardActivity.this, "No se puede realizar la conciliacion", Toast.LENGTH_SHORT);
+				Toast toast = Toast.makeText(DashboardActivity.this, "No se puede realizar la conciliación", Toast.LENGTH_SHORT);
 				toast.show();
 			}
         }
@@ -272,12 +278,12 @@ public class DashboardActivity extends Activity{
 				// Check for internet connection
 		        if (!internet.isConnectingToInternet()) {
 		        	// message
-					Toast toast = Toast.makeText(DashboardActivity.this, "No hay conexi�n a Internet", Toast.LENGTH_SHORT);
+					Toast toast = Toast.makeText(DashboardActivity.this, "No hay conexión a Internet", Toast.LENGTH_SHORT);
 	    			toast.show();		         
 		        }else{
 		        	AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
-		            builder.setTitle("Atenci�n");
-		            builder.setMessage("Esta operaci�n borrara cierta informaci�n, �est� seguro?")
+		            builder.setTitle("Atención");
+		            builder.setMessage("Esta operación borrara cierta información, ¿está seguro?")
 		                       .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
 		                       public void onClick(DialogInterface dialog, int id) {
 		                    	   	pDialog = new ProgressDialog(DashboardActivity.this);
@@ -349,7 +355,7 @@ public class DashboardActivity extends Activity{
         	 // Check for internet connection
 	        if (!internet.isConnectingToInternet()) {
 	        	// message
-				Toast toast = Toast.makeText(DashboardActivity.this, "No hay conexi�n a Internet", Toast.LENGTH_SHORT);
+				Toast toast = Toast.makeText(DashboardActivity.this, "No hay conexión a Internet", Toast.LENGTH_SHORT);
     			toast.show();		         
 	        }else{
 	        	pDialog = new ProgressDialog(DashboardActivity.this);
@@ -365,7 +371,7 @@ public class DashboardActivity extends Activity{
  
         case R.id.menu_logout:
         	AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
-            builder.setTitle("Atenci�n ");
+            builder.setTitle("Atención");
             builder.setMessage("Esta seguro de Salir de Horizon")
                        .setPositiveButton("Aceptar ", new DialogInterface.OnClickListener() {
                        public void onClick(DialogInterface dialog, int id) {
@@ -390,7 +396,7 @@ public class DashboardActivity extends Activity{
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
         	AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
-            builder.setTitle("Atenci�n ");
+            builder.setTitle("Atención ");
             builder.setMessage("Esta seguro de Salir de Horizon")
                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                        public void onClick(DialogInterface dialog, int id) {
@@ -438,10 +444,10 @@ public class DashboardActivity extends Activity{
     	
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
-    	builder.setTitle("Nueva Transacci�n");
+    	builder.setTitle("Nueva Transacción");
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opci�n elegidaXXXXX: " + items[item]);
+    	        Log.i("log_tag", "Opción elegidaXXXXX: " + items[item]);
     	    	if (item == 0){
     	    		Log.i("log_tag", "PRESTAMO ");
         	    	transactionTpye = "prestamo";
@@ -763,8 +769,41 @@ public class DashboardActivity extends Activity{
 						@SuppressWarnings("unchecked")
 						public void onClick(DialogInterface dialog, int whichButton) {  
 							String value = input.getText().toString();
-							Log.d( "log_tag", "Pin Value : " + value);
-							return;
+							Log.d( "log_tag", "FACTURAAAAA : " + value);
+							showdialogVoucher(Integer.valueOf(value));
+							//return;
+							
+							/*AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
+					        builder.setTitle("Atención");
+					        builder.setMessage("Esta seguro de adicionar un pago de " + value + " Bs. para el cliente " + name + "(" + Address + ") con " + factura)
+					        	.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+					            public void onClick(DialogInterface dialog, int id) {
+									dbpay.add(new Pay(idDaily, String.valueOf(ammount), "today", "activo"));
+									db.delete(idDaily);
+									update();
+					               }
+					           });
+					        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+					               public void onClick(DialogInterface dialog, int id) {
+					                 dialog.dismiss();	                     
+					               }
+					           }); 
+					        AlertDialog alert = builder.create();            
+					        alert.show();
+							
+							
+							*/
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
 						}
 					});
 					
@@ -794,12 +833,106 @@ public class DashboardActivity extends Activity{
     	return builder.create();
 	}
 	
+	
+	//Cobros verificar numero de factura 
+	public void showdialogVoucher(final int factura) {
+		Daily dail = dbDaily.getByVoucher(String.valueOf(factura));
+		 if(!(dail == null)){
+			 showdialogQuantity(dail);
+ 		 }else{
+ 			Toast.makeText(DashboardActivity.this, "Numero de factura invalido", Toast.LENGTH_SHORT).show();
+ 		 }
+    }
+	
+	// adicionar pago
+	public void showdialogQuantity(final Daily daily) {
+		final AlertDialog.Builder alert = new AlertDialog.Builder(DashboardActivity.this);
+		final Double valsaldo = Double.valueOf(daily.getAmmount()) - Double.valueOf(daily.getSaldo());
+		if (daily.getSaldo() != null){
+			alert.setTitle("Cantidad (maximo "+ valsaldo +" Bs):");
+		}else{
+			alert.setTitle("Cantidad (maximo "+  daily.getAmmount() +" Bs):");
+		}
+		
+		// Set an EditText view to get user input   
+		final EditText input = new EditText(DashboardActivity.this);
+		alert.setView(input);
+		
+		input.setInputType(InputType.TYPE_CLASS_NUMBER);
+		input.setFilters(new InputFilter[] {
+			// Maximum 5 characters.
+			new InputFilter.LengthFilter(7),
+		});
+
+		alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {  
+	     public void onClick(DialogInterface dialog, int whichButton) {  
+	    	 if(!input.getText().toString().trim().equals("") && !input.getText().toString().trim().equals(null)){
+	    		Double value = Double.valueOf(input.getText().toString());
+	    		
+		         if(value != 0){
+		     		if (value > valsaldo) {
+						Toast.makeText(DashboardActivity.this, "El valor introducido excede el monto del prestamo", Toast.LENGTH_SHORT).show();
+					}else{
+						showdialogConfirmPay(daily, value);
+						
+					}
+	    		 }else{
+					// insert error here
+	    			Toast.makeText(DashboardActivity.this, "Debe introducir una cantidad valida", Toast.LENGTH_SHORT).show();
+	    		 }
+	    	 }else{
+	    		Toast.makeText(DashboardActivity.this, "Debe introducir una cantidad valida", Toast.LENGTH_SHORT).show();
+	    	 }
+	    	 
+	    	 return;                  
+	        }  
+	      });  
+	
+	     alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+	         public void onClick(DialogInterface dialog, int which) {
+	             // TODO Auto-generated method stub
+	             return;   
+	         }
+	     });				
+		
+	    AlertDialog alertToShow = alert.create();
+		alertToShow.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		alertToShow.show();	
+    }
+	
+
+	public void showdialogConfirmPay(final Daily daily, final double ammount) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
+        builder.setTitle("Atención");
+        builder.setMessage("Esta seguro de adicionar un pago de " + ammount + " Bs. para el cliente " + daily.getCustomerName() 
+        		+ "(" + daily.getCustomerAddress() + ") con factura N. " + daily.getVoucher())
+        	.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            	dbPay.add(new Pay(daily.getID(), String.valueOf(ammount), "today", "activo"));
+            	dbDaily.delete(daily.getID());
+            	dialog.dismiss();
+               }
+           });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+               public void onClick(DialogInterface dialog, int id) {
+                 dialog.dismiss();
+               }
+           }); 
+        AlertDialog alert = builder.create();            
+        alert.show();
+    }
+	
+
+	
+	
+	
+	
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
     	if (requestCode == 0) {
     		if (resultCode == RESULT_OK) {
 	            String codeScan = intent.getStringExtra("SCAN_RESULT").toString();
 	            
-	            Log.i("log_tag", "Opci�n elegida: " + codeScan);   
+	            Log.i("log_tag", "Opción elegida: " + codeScan);   
  
 	            //verify if is a valid client
 		        DatabaseHandlerCustomers dbCustomers = new DatabaseHandlerCustomers(DashboardActivity.this, "", null, '1');
@@ -848,7 +981,7 @@ public class DashboardActivity extends Activity{
 		        }		
 	            
     		} else if (resultCode == RESULT_CANCELED) {
-    			Toast toast3 = Toast.makeText(this, "No se puede reconocer el C�digo", Toast.LENGTH_SHORT);
+    			Toast toast3 = Toast.makeText(this, "No se puede reconocer el Código", Toast.LENGTH_SHORT);
     			toast3.show();
     		}
     	}
@@ -938,7 +1071,7 @@ public class DashboardActivity extends Activity{
     				 	String code = c.getString("code");
     				 	String custname = c.getString("custname");
     				 	String custaddress = c.getString("custaddress");
-    				 	String status = c.getString("Estado");
+    				 	String status = "activo";
     				 	
     				 	Log.d("log_tag", "NEW DAILY: > " + idweb);
     				 	
@@ -1720,7 +1853,7 @@ public class DashboardActivity extends Activity{
 			NotificationManager notManager = 
 				(NotificationManager) getSystemService(ns);
 			
-			//Configuramos la notificaci�n
+			//Configuramos la notificacion
 			int icono = android.R.drawable.stat_notify_sync;
 			CharSequence textoEstado = "Conciliando";
 			long hora = System.currentTimeMillis();
@@ -1730,7 +1863,7 @@ public class DashboardActivity extends Activity{
 			//Configuramos el Intent
 			Context contexto = getApplicationContext();
 			CharSequence titulo = "Horizon";
-			CharSequence descripcion = "Autoconciliaci�n en proceso.";
+			CharSequence descripcion = "Autoconciliación en proceso.";
 			
 			Intent notIntent = new Intent(contexto, 
 					DashboardActivity.class);
@@ -1740,10 +1873,10 @@ public class DashboardActivity extends Activity{
 
 			notif.setLatestEventInfo(contexto, titulo, descripcion, contIntent);
 			
-			//AutoCancel: cuando se pulsa la notificai�n �sta desaparece
+			//AutoCancel: cuando se pulsa la notificaion esta desaparece
 			notif.flags |= Notification.FLAG_AUTO_CANCEL;
 			
-			//Enviar notificaci�n
+			//Enviar notificación
 			notManager.notify(NOTIF_ALERTA_ID, notif);
 			
 			}

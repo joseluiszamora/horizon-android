@@ -1,6 +1,8 @@
 package com.horizon.reports;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,15 +13,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -39,10 +37,9 @@ import com.horizon.account.SessionManager;
 import com.horizon.database.Daily;
 import com.horizon.database.DatabaseHandlerDaily;
 import com.horizon.database.DatabaseHandlerPay;
+import com.horizon.database.DatabaseHandlerTransactions;
 import com.horizon.database.Pay;
-import com.horizon.lists.listview.TransactionListAdapter;
 import com.horizon.main.DashboardActivity;
-import com.horizon.main.TransactionActivity;
 import com.horizon.webservice.GPSTracker;
 import com.ruizmier.horizon.R;
 
@@ -74,6 +71,9 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 	int idDaily;
 	Double ammountrow;
 	Double saldorow;
+	String name;
+	String Address;
+	String factura;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -138,7 +138,7 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 
 	public void showdialogQuantity(final int idTransactionx) {
 		final AlertDialog.Builder alert = new AlertDialog.Builder(CobroListActivity.this);
-		alert.setTitle("Cantidad: ");  
+		alert.setTitle("Cantidad (maximo "+ saldorow +" Bs):");  
 		
 		// Set an EditText view to get user input   
 		final EditText input = new EditText(CobroListActivity.this);
@@ -153,25 +153,15 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 		alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {  
 	     public void onClick(DialogInterface dialog, int whichButton) {  
 	    	 if(!input.getText().toString().trim().equals("") && !input.getText().toString().trim().equals(null)){
-	    		 Integer value = Integer.parseInt(input.getText().toString());
+	    		 Double value = Double.valueOf(input.getText().toString());
 		        
 	    		 
 		         if(value != 0){
-		        	Pay payed = dbpay.get_by_daily(idDaily);
-		     		Double paymont;
-		     		
-		     		try {
-		     			paymont = Double.parseDouble(payed.getAmmount());
-		     		} catch (Exception e) {
-		     			paymont = Double.parseDouble("0.0");
-		     		}
-		     		
-		     		if (paymont > value) {
+		     		if (value > saldorow) {
 						Toast.makeText(CobroListActivity.this, "El valor introducido excede el monto del prestamo", Toast.LENGTH_SHORT).show();
 					}else{
-						Pay pago = new Pay(idTransactionx, String.valueOf(value), "1", "1");
-						dbpay.add(pago);
-						update();
+						showdialogConfirmPay(value);
+						
 					}
 	    		 }else{
 					// insert error here
@@ -197,7 +187,28 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 		alertToShow.show();	
     }
 	
+
+	public void showdialogConfirmPay(final double ammount) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(CobroListActivity.this);
+        builder.setTitle("Atención");
+        builder.setMessage("Esta seguro de adicionar un pago de " + ammount + " Bs. para el cliente " + name + "(" + Address + ") con " + factura)
+        	.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+				dbpay.add(new Pay(idDaily, String.valueOf(ammount), "today", "activo"));
+				db.delete(idDaily);
+				update();
+               }
+           });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+               public void onClick(DialogInterface dialog, int id) {
+                 dialog.dismiss();	                     
+               }
+           }); 
+        AlertDialog alert = builder.create();            
+        alert.show();
+    }
 	
+
 
 	public void showDialogDelete(final int idTransactionx) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(CobroListActivity.this);
@@ -398,6 +409,7 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 			TextView txtVoucher;
 			TextView txtAmmount;
 			TextView txtSaldo;
+			TextView txtSaldoReal;
 			ImageView go;
 		}
       
@@ -414,6 +426,7 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
   				holder.txtVoucher = (TextView) convertView.findViewById(R.id.transactionCoordinate);
   				holder.txtAmmount = (TextView) convertView.findViewById(R.id.transactionDateTime);
 		        holder.txtSaldo = (TextView) convertView.findViewById(R.id.ammount);
+		        holder.txtSaldoReal = (TextView) convertView.findViewById(R.id.saldo);
 		        //holder.go = (ImageView) convertView.findViewById(R.id.imageView1);
 		        holder.go = (ImageView) convertView.findViewById(R.id.imageViewCobroLIst);
 		        
@@ -460,6 +473,7 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 				}
 			}
 			holder.txtSaldo.setText("Saldo (Bs.): " + String.format("%.2f", saldo));
+			holder.txtSaldoReal.setText(String.valueOf(saldo));
 			return convertView;
   	  	}
 	}
@@ -470,13 +484,23 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 		//ammountrow = Double.parseDouble((String) ((TextView) arg1.findViewById(R.id.transactionDateTime)).getText());
 		//saldorow = Double.parseDouble((String) ((TextView) arg1.findViewById(R.id.ammount)).getText());
 		String saldo = (String) ((TextView) arg1.findViewById(R.id.ammount)).getText();
+		String saldoreal = (String) ((TextView) arg1.findViewById(R.id.saldo)).getText();
 		
+		
+		
+		name = (String) ((TextView) arg1.findViewById(R.id.tdIProduct)).getText();
+		Address = (String) ((TextView) arg1.findViewById(R.id.tdQuantity)).getText();
+		factura = (String) ((TextView) arg1.findViewById(R.id.transactionCoordinate)).getText();
+
 		Log.d("log_tag", "DAILY ::::: " + idDaily);
-		Log.d("log_tag", "AMMOUNT ::::: " + ammount.substring(19));
-		Log.d("log_tag", "SALDO ::::: " + saldo.substring(13));
 		
-		/*
-		Pay payed = dbpay.get_by_daily(idDaily);
+		saldorow = Double.parseDouble(saldoreal);
+		Log.d("log_tag", "AMMOUNT ::::: " + ammount.substring(19));
+		Log.d("log_tag", "SALDO ::::: " + saldorow);
+		
+		showdialogQuantity(idDaily);
+		
+		/*Pay payed = dbpay.get_by_daily(idDaily);
 		Double paymont;
 		
 		try {
@@ -491,15 +515,13 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 		}else{
 			showDialog(DIALOGO_DELETEPAY);
 		}
-		*/
 		
 		//get Date, Hour Now
-		/*Calendar c = Calendar.getInstance();
+		Calendar c = Calendar.getInstance();
 		SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		String formattedDate = df.format(c.getTime());        			
 		DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(CobroListActivity.this, "", null, 1);
 		*/
-		
 		/*Intent intentNewTransaction = new Intent(CobroListActivity.this, PayActivity.class);
 		Bundle bundle = new Bundle();
 		bundle.putString("idDaily", id);
@@ -511,14 +533,12 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 	private void update() { // refresh listview
 	    rowItems = db.getAll();
 		text = db.getAllNames();
-		Log.d("log_tag", "SELECT DAILIES:::::::: ITEMS::: " + rowItems);
 		listview.setAdapter(new CustomAdapter(this, text, rowItems));		
 		listview.setOnItemClickListener(this);
 	}
 	
 	@Override
-	protected Dialog onCreateDialog(int id) {
-		Log.i("log_tag", "onCreateDialog:::::: " + id);
+	protected Dialog onCreateDialog(int id) {		
 		Dialog dialogo = null;
 		if (id == 1){
 			dialogo = addPayDialog();
