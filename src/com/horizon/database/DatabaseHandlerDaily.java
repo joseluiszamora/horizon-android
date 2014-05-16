@@ -294,7 +294,8 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 	}
 	
 	// Getting single by idcustomer
-	public Daily getByCustomer(String customer) {		
+	public Daily getByCustomer(String customer) {
+		Log.d("log_tag", "------------********* " + customer);
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_TRANSACTION, new String[] { KEY_ID,
 				KEY_ID_WEB, KEY_ID_TRANSACTION, KEY_ID_CUSTOMER, KEY_TRANSACTION_DATE, KEY_VOUCHER, KEY_TYPE, KEY_AMMOUNT, KEY_SALDO, KEY_CUSTOMER_CODE, 
@@ -308,7 +309,7 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 			db.close();
 			return daily;
 		}else{
-			db.close();		
+			db.close();
 			return null;
 		}							
 	}

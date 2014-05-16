@@ -56,6 +56,7 @@ import com.horizon.database.DatabaseHandlerTransactions;
 import com.horizon.database.DatabaseHandlerVolumes;
 import com.horizon.database.Line;
 import com.horizon.database.MakeTransaction;
+import com.horizon.database.Pay;
 import com.horizon.database.Product;
 import com.horizon.database.Transaction;
 import com.horizon.database.TransactionDetail;
@@ -64,6 +65,7 @@ import com.horizon.lists.listview.DialogLineAdapter;
 import com.horizon.lists.listview.DialogProductAdapter;
 import com.horizon.lists.listview.DialogVolumeAdapter;
 import com.horizon.lists.listview.TransactionListAdapter;
+import com.horizon.reports.CobroListActivity;
 import com.horizon.webservice.GPSTracker;
 import com.horizon.webservice.InternetDetector;
 import com.horizon.webservice.JSONParser;
@@ -116,6 +118,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	TransactionListAdapter adapter;
 	Customer customer;
 	Transaction transactionObject;
+	Daily daily;
 	Bundle bundle;
 	Integer codeTransaction;
 	Double totalPrice = 0.0;
@@ -150,21 +153,9 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		bundle = getIntent().getExtras();
 		// Get Bundle Transaction Code
 		codeTransaction = Integer.parseInt(bundle.getString("newTransactionCode"));
-		Log.d("log_tag", "Codigo detransaccion ----------------->> " + codeTransaction);
-		
 		// Create Transaction Object
 		transactionObject = dbTransactions.getTransaction(codeTransaction);
-		Customer custom = dbCustomers.getCustomerByCode(transactionObject.getCodeCustomer());
-		
-		Log.d("log_tag", "Codigo de Cliente ----------------->> " + transactionObject.getCodeCustomer());
-		Log.d("log_tag", "Estado de la transaccion  ----------------->> " + transactionObject.getStatus());
-		
-		// check if have pendings dailies 
-		Daily daily = dbDaily.getByCustomer(String.valueOf(custom.getID()));
-		
-		if (daily != null) {
-			//alertCustomerDailyPending();
-		}
+
 		// Define TextViews
 		TextView txtClientName = (TextView)findViewById(R.id.TransDetailInfoCustomName);
 		TextView txtClientAddress = (TextView)findViewById(R.id.txtClientAddress);
@@ -177,6 +168,16 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 			customer = dbCustomers.getCustomerByCode(transactionObject.getCodeCustomer());
 			txtClientName.setText( "(" + customer.getCode() + ") "+ customer.getName());
 		    txtClientAddress.setText(customer.getAddress());
+		    
+		    // check if have pendings dailies 
+		    daily = dbDaily.getByCustomer(String.valueOf(customer.getIdWeb()));
+			
+			if (daily != null) {
+				alertCustomerDailyPending();
+				Log.d("log_tag", "******>>" + daily.getCustomerName());
+			}else{
+				Log.d("log_tag", "++++++>>");
+			}
 		}
 		
 		// make listransaction transaction
@@ -209,8 +210,25 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 				closeTransaction();
 			}		
 		});
-	}	
-	
+	}
+
+	public void alertCustomerDailyPending() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
+        builder.setTitle("Atención");
+        builder.setMessage("Este usuario ya tiene prestamos pendientes, si continua la transaccion sera almacenada como venta directa")
+        	.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            	dialog.dismiss();
+           }
+       });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+               public void onClick(DialogInterface dialog, int id) {
+            	   closeTransaction();
+               }
+           }); 
+        AlertDialog alert = builder.create();            
+        alert.show();
+    }
 	
 	//** Total Price Management **//
 	public static double round(double unrounded, int precision, int roundingMode) {
@@ -736,4 +754,6 @@ public class TransactionActivity extends Activity implements OnItemClickListener
     		Toast.makeText(TransactionActivity.this, "Transaccion ", Toast.LENGTH_SHORT).show();
     	}
     }
+
+
 }

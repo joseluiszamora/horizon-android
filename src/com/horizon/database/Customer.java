@@ -3,6 +3,7 @@ package com.horizon.database;
 public class Customer {
 	//private variables
 	int _id;
+	int _idWeb;
 	String _code;
 	String _name;
 	String _contactname;
@@ -17,8 +18,9 @@ public class Customer {
 	}
 	
 	// constructor
-	public Customer(int id, String code, String name, String contact, String address, String phone, String cell, String status, int rank){
+	public Customer(int id, int idWeb, String code, String name, String contact, String address, String phone, String cell, String status, int rank){
 		this._id = id;
+		this._idWeb = idWeb;
 		this._code = code;
 		this._name = name;
 		this._contactname = contact;
@@ -30,7 +32,8 @@ public class Customer {
 	}
 	
 	// constructor
-	public Customer(String code, String name, String contact, String address, String phone, String cell, String status, int rank){
+	public Customer(int idWeb, String code, String name, String contact, String address, String phone, String cell, String status, int rank){
+		this._idWeb = idWeb;
 		this._code = code;
 		this._name = name;			
 		this._contactname = contact;
@@ -49,6 +52,16 @@ public class Customer {
 	// setting ID
 	public void setID(int id){
 		this._id = id;
+	}
+	
+	// getting ID Web
+	public int getIdWeb(){
+		return this._idWeb;
+	}
+	
+	// setting ID Web
+	public void setIdWeb(int idweb){
+		this._idWeb = idweb;
 	}
 	
 	// getting code

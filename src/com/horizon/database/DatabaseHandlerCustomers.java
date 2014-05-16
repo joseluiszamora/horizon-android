@@ -25,6 +25,7 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 	
 	// Contacts Table Columns names
 	private static final String KEY_ID = "idCustomer";
+	private static final String KEY_ID_WEB = "idWeb";
 	private static final String KEY_CODE = "CodeCustomer";
 	private static final String KEY_NAME = "NombreTienda";
 	private static final String KEY_CO_NA = "NombreContacto";
@@ -41,7 +42,7 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_CUSTOMERS + "("
-			+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_CODE + " TEXT," + KEY_NAME + " TEXT,"
+			+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_ID_WEB + " INTEGER," + KEY_CODE + " TEXT," + KEY_NAME + " TEXT,"
 			+ KEY_CO_NA + " TEXT," + KEY_ADDRESS + " TEXT," + KEY_PHONE + " TEXT," + KEY_CELLPHONE + " TEXT," + KEY_STATUS + " TEXT," + KEY_RANK + " TEXT" + ")";
 		db.execSQL(CREATE_USERS_TABLE);
 	}
@@ -82,6 +83,7 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();		
 		//values.put(KEY_ID, customer.getID()); // Customer code
+		values.put(KEY_ID_WEB, customer.getIdWeb()); // Customer id web
 		values.put(KEY_CODE, customer.getCode()); // Customer code
 		values.put(KEY_NAME, customer.getName()); // Customer name
 		values.put(KEY_CO_NA, customer.getContactName()); // Customer contact name
@@ -100,13 +102,13 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 	Customer getCustomer(int id) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Customer customer = null;
-		Cursor cursor = db.query(TABLE_CUSTOMERS, new String[] { KEY_ID, KEY_CODE,
+		Cursor cursor = db.query(TABLE_CUSTOMERS, new String[] { KEY_ID, KEY_ID_WEB, KEY_CODE,
 				KEY_NAME, KEY_CO_NA, KEY_ADDRESS, KEY_PHONE, KEY_CELLPHONE, KEY_STATUS, KEY_RANK }, KEY_ID + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()){
-			
-			customer = new Customer( Integer.parseInt(cursor.getString(0)) , cursor.getString(1), cursor.getString(2), cursor.getString(3),
-					cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), Integer.parseInt(cursor.getString(8)) );
+			customer = new Customer( Integer.parseInt(cursor.getString(0)) , Integer.parseInt(cursor.getString(1)) , 
+					cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), 
+					cursor.getString(7), cursor.getString(8), Integer.parseInt(cursor.getString(9)) );
 		}
 		cursor.close();
 		db.close();
@@ -116,7 +118,7 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 	public int isRealCustomer(String id){
 		SQLiteDatabase db = this.getReadableDatabase();
 		int res = 0;
-		Cursor cursor = db.query(TABLE_CUSTOMERS, new String[] { KEY_ID, KEY_CODE,
+		Cursor cursor = db.query(TABLE_CUSTOMERS, new String[] { KEY_ID, KEY_ID_WEB, KEY_CODE,
 				KEY_NAME, KEY_CO_NA, KEY_ADDRESS, KEY_PHONE, KEY_CELLPHONE, KEY_STATUS, KEY_RANK }, KEY_CODE + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		
@@ -127,21 +129,29 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 		db.close();
 		return res;
 	}
-	public Customer getCustomerByCode(String id) {		
+	
+	public Customer getCustomerByCode(String code) {
+		Log.d("log_tag", "ID --------------- " + code);
 		SQLiteDatabase db = this.getReadableDatabase();
 
-		Cursor cursor = db.query(TABLE_CUSTOMERS, new String[] { KEY_ID, KEY_CODE,
+		Cursor cursor = db.query(TABLE_CUSTOMERS, new String[] { KEY_ID, KEY_ID_WEB, KEY_CODE,
 				KEY_NAME, KEY_CO_NA, KEY_ADDRESS, KEY_PHONE, KEY_CELLPHONE, KEY_STATUS, KEY_RANK }, KEY_CODE + "=?",
-				new String[] { String.valueOf(id) }, null, null, null, null);
+				new String[] { code }, null, null, null, null);
+	
 		
-		Customer customer = null;
-		if (cursor.moveToFirst()) {			
-			customer = new Customer(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4),
-					cursor.getString(5), cursor.getString(6), cursor.getString(7), Integer.parseInt(cursor.getString(8)));
+		if (cursor != null && cursor.moveToFirst()){
+			Customer customer = new Customer( Integer.parseInt(cursor.getString(0)) , Integer.parseInt(cursor.getString(1)) , 
+					cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), 
+					cursor.getString(7), cursor.getString(8), Integer.parseInt(cursor.getString(9)) );
+			
+			cursor.close();
+			db.close();
+			return customer;
+		}else{
+			cursor.close();
+			db.close();	
+			return null;
 		}
-		db.close();
-		cursor.close();
-		return customer;
 	}
 		
 	// Getting All Customers
@@ -159,14 +169,15 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 			do {
 				Customer customer = new Customer();
 				customer.setID(Integer.parseInt(cursor.getString(0)));
-				customer.setCode(cursor.getString(1));
-				customer.setName(cursor.getString(2));
-				customer.setContactName(cursor.getString(3));										
-				customer.setAddress(cursor.getString(4));
-				customer.setPhone(cursor.getString(5));
-				customer.setCellPhone(cursor.getString(6));
-				customer.setStatus(cursor.getString(7));
-				customer.setRank(Integer.parseInt(cursor.getString(8)));
+				customer.setIdWeb(Integer.parseInt(cursor.getString(1)));
+				customer.setCode(cursor.getString(2));
+				customer.setName(cursor.getString(3));
+				customer.setContactName(cursor.getString(4));										
+				customer.setAddress(cursor.getString(5));
+				customer.setPhone(cursor.getString(6));
+				customer.setCellPhone(cursor.getString(7));
+				customer.setStatus(cursor.getString(8));
+				customer.setRank(Integer.parseInt(cursor.getString(9)));
 				// Adding contact to list
 				customerList.add(customer);
 			} while (cursor.moveToNext());
@@ -184,21 +195,22 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 		//Select All Query
 		SQLiteDatabase db = this.getWritableDatabase();
 		//Cursor cursor = db.rawQuery(selectQuery, null);
-		Cursor cursor = db.query(TABLE_CUSTOMERS, new String[] {KEY_ID, KEY_CODE, KEY_NAME, KEY_CO_NA, KEY_ADDRESS
+		Cursor cursor = db.query(TABLE_CUSTOMERS, new String[] {KEY_ID, KEY_ID_WEB, KEY_CODE, KEY_NAME, KEY_CO_NA, KEY_ADDRESS
 				, KEY_PHONE, KEY_CELLPHONE, KEY_STATUS, KEY_RANK}, 
 				KEY_NAME + " LIKE '%"+like +"%'", null, null, null, KEY_NAME);
 		if (cursor.moveToFirst()) {
 			do {
 				Customer customer = new Customer();
 				customer.setID(Integer.parseInt(cursor.getString(0)));
-				customer.setCode(cursor.getString(1));
-				customer.setName(cursor.getString(2));
-				customer.setContactName(cursor.getString(3));										
-				customer.setAddress(cursor.getString(4));
-				customer.setPhone(cursor.getString(5));
-				customer.setCellPhone(cursor.getString(6));
-				customer.setStatus(cursor.getString(7));
-				customer.setRank(Integer.parseInt(cursor.getString(8)));
+				customer.setIdWeb(Integer.parseInt(cursor.getString(1)));
+				customer.setCode(cursor.getString(2));
+				customer.setName(cursor.getString(3));
+				customer.setContactName(cursor.getString(4));										
+				customer.setAddress(cursor.getString(5));
+				customer.setPhone(cursor.getString(6));
+				customer.setCellPhone(cursor.getString(7));
+				customer.setStatus(cursor.getString(8));
+				customer.setRank(Integer.parseInt(cursor.getString(9)));
 				customerList.add(customer);
 			} while (cursor.moveToNext());
 		}			
@@ -222,7 +234,7 @@ public class DatabaseHandlerCustomers extends SQLiteOpenHelper {
 		// looping through all rows and adding to list
 		if (cursor.moveToFirst()) {
 			do {
-				customerList[i] = new String(cursor.getString(2));
+				customerList[i] = new String(cursor.getString(3));
 				i++;
 			} while (cursor.moveToNext());
 		}

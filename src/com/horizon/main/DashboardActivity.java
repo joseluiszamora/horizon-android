@@ -440,7 +440,7 @@ public class DashboardActivity extends Activity{
     }
 		
 	private Dialog transactionTypeSelectionDialog(){
-    	final String[] items = {"Prestamo", "Cobro", "Preventa", "Venta Directa"};
+    	final String[] items = {"Cobro", "Preventa", "Venta Directa"};
     	
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
@@ -448,16 +448,11 @@ public class DashboardActivity extends Activity{
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
     	        Log.i("log_tag", "Opción elegidaXXXXX: " + items[item]);
-    	    	if (item == 0){
-    	    		Log.i("log_tag", "PRESTAMO ");
-        	    	transactionTpye = "prestamo";
-    				showDialog(DIALOGO_PRESTAMO);
-    	    	}
-				if (item == 1){
+				if (item == 0){
 					Log.i("log_tag", "COBROOO " );
 					showDialog(DIALOGO_COBRO);
 				}
-				if (item == 2){
+				if (item == 1){
 					transactionTpye = "preventa";
 					showDialog(DIALOGO_SELECCION);
 				}
@@ -1125,6 +1120,7 @@ public class DashboardActivity extends Activity{
     					JSONObject c = clients.getJSONObject(i);
 
     					// Storing each json item values in variable
+    					String idCustomer = c.getString("idCustomer");
     					String codeCustomer = c.getString("CodeCustomer");
     				 	String NombreTienda = c.getString("NombreTienda");
     				 	String NombreContacto = c.getString("NombreContacto");
@@ -1133,11 +1129,11 @@ public class DashboardActivity extends Activity{
     				 	String TelfCelular = c.getString("TelfCelular");
     				 	String rank = c.getString("rank");
     				 	
-    				 	Log.e("log_tag", codeCustomer + "---" + NombreTienda+ "---" + NombreContacto+ "---" + Direccion
+    				 	Log.e("log_tag", idCustomer + "---" + codeCustomer + "---" + NombreTienda+ "---" + NombreContacto+ "---" + Direccion
     				 			+ "---" + Telefono+ "---" + TelfCelular+ "---");
     				 	
-    				 	
-    				 	dbCustomers.addCustomer(new Customer(codeCustomer, NombreTienda, NombreContacto, Direccion, Telefono, TelfCelular, "activo", Integer.parseInt(rank) ));				 	
+    				 	dbCustomers.addCustomer(new Customer(Integer.parseInt(idCustomer), codeCustomer, NombreTienda, NombreContacto, Direccion, 
+    				 			Telefono, TelfCelular, "activo", Integer.parseInt(rank)));
     				}
     			}else{
     				Log.d("Customers: ", "null");
@@ -1274,7 +1270,6 @@ public class DashboardActivity extends Activity{
     		// getting JSON string from URL
     		String jsonTrans = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/get_transactions_for_this_user", "POST", paramsTrans);
     		
-    		
     		Log.d("log_tag", "TRANSACCIONES PENDIENTES:  > " + jsonTrans); // Check your log cat for JSON reponse
     		try {				
     			JSONArray transactions = new JSONArray(jsonTrans);
@@ -1289,7 +1284,8 @@ public class DashboardActivity extends Activity{
     					String customer = c.getString("customer");
 
     				 	JSONArray transactionList = c.getJSONArray("transactionsList");
-    				 	int id_trans = (int) (long) dbTransactions.addTransaction(new Transaction(idWeb, customer, " ", "por_entregar", "preventa", "regular", "", "", "0.0", "0.0"));
+    				 	int id_trans = (int) (long) dbTransactions.addTransaction(
+    				 			new Transaction(idWeb, customer, " ", "por_entregar", "preventa", "regular", "", "", "0.0", "0.0"));
     				 	
     				 	for (int j = 0; j < transactionList.length(); j++) {	
         					Log.d("log_tag", "Transaccion YEAAA::::");
@@ -1523,7 +1519,7 @@ public class DashboardActivity extends Activity{
 								objectTransactionGPS.put("date", thisGps.getDate());
 								objectTransactionGPS.put("hour", thisGps.getHour());
 								objectTransactionGPS.put("idphone", uuid);
-							} catch (JSONException e) {					
+							} catch (JSONException e) {
 								e.printStackTrace();
 							}
 				

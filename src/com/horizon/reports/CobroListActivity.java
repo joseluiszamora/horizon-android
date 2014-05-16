@@ -1,10 +1,13 @@
 package com.horizon.reports;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -12,7 +15,9 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -37,10 +42,10 @@ import com.horizon.account.SessionManager;
 import com.horizon.database.Daily;
 import com.horizon.database.DatabaseHandlerDaily;
 import com.horizon.database.DatabaseHandlerPay;
-import com.horizon.database.DatabaseHandlerTransactions;
 import com.horizon.database.Pay;
 import com.horizon.main.DashboardActivity;
 import com.horizon.webservice.GPSTracker;
+import com.horizon.webservice.JSONParser;
 import com.ruizmier.horizon.R;
 
 public class CobroListActivity extends Activity implements OnItemClickListener {
@@ -195,8 +200,17 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
         	.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
 				dbpay.add(new Pay(idDaily, String.valueOf(ammount), "today", "activo"));
-				db.delete(idDaily);
-				update();
+				//update();
+				
+				
+					pDialog = new ProgressDialog(CobroListActivity.this);
+					pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+					pDialog.setMessage("Actualizando...");
+					pDialog.setCancelable(false);
+					pDialog.setMax(100);
+					
+					SaveCobroDialog updateWork = new SaveCobroDialog();
+					updateWork.execute();
                }
            });
         builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -580,4 +594,111 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
     	});    	    	
     	return builder.create();
     }
+
+
+
+
+	private class SaveCobroDialog extends AsyncTask<Void, Integer, Boolean>  {
+
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			// Creating JSON Parser object
+    		JSONParser jsonParser = new JSONParser();
+    		// Session Manager
+    		SessionManager session = new SessionManager(getApplicationContext());
+    	    // get user name data from session
+            HashMap<String, String> user = session.getUserDetails();
+            
+            Log.d("log_tag", "CONCILIANDO COBROS ===========> ");
+            
+    		/** Conciliate all cobros **/
+			List<Pay> allPagos = null;
+			try {
+				allPagos = dbpay.getAll();
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			    			
+			if(!allPagos.isEmpty() && allPagos != null){
+				for (Pay thisPay : allPagos) {
+					 Log.d("log_tag", "CONCILIANDO UNNNN COBROS ===========> ");
+					JSONObject objectTransactionPagos = new JSONObject();
+					try {
+						Daily newdaily = db.get(thisPay.getIdDaily());
+
+						objectTransactionPagos.put("FechaRegistro", thisPay.getDate());
+						objectTransactionPagos.put("FechaTransaction", thisPay.getDate());
+						objectTransactionPagos.put("idUser", user.get(SessionManager.KEY_EMAIL));
+						objectTransactionPagos.put("idUserSupervisor", user.get(SessionManager.KEY_EMAIL));
+						objectTransactionPagos.put("idTransaction", newdaily.getIDTransaction());
+						objectTransactionPagos.put("NumVoucher", newdaily.getVoucher());
+						objectTransactionPagos.put("idCustomer", newdaily.getCustomerCode());
+						objectTransactionPagos.put("Type", "C");
+						objectTransactionPagos.put("Monto", thisPay.getAmmount());
+						objectTransactionPagos.put("Estado", "1");
+						objectTransactionPagos.put("Detalle", "Android");
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+		
+		    		// Building Parameters
+		    		List<NameValuePair> paramsTransactionPagos = new ArrayList<NameValuePair>();
+		    		paramsTransactionPagos.add(new BasicNameValuePair("codeCustomer", objectTransactionPagos.toString()));
+		    			    		
+		    		// getting JSON string from URL
+		    		String returnJsonGPS = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/saveCobro", "POST", paramsTransactionPagos);				    		
+		    		Log.d("log_tag", "COBROOO CONCILIADO -----> " + returnJsonGPS);
+		    		if (returnJsonGPS.trim().equals("ok")){
+		    			// delete pay
+		    			db.delete(thisPay.getID());
+		    			
+		    			Log.d("log_tag", "COBROOO CONCILIADO");
+	    			}else{
+	    				Log.d("log_tag", "FALLO AL CONCILIAR COBROOO");
+	    			}
+		    		//update();
+		        }
+			}
+			return true;
+		}
+		
+		@Override
+    	protected void onProgressUpdate(Integer... values) {
+    		int progreso = values[0].intValue();
+    		
+    		pDialog.setProgress(progreso);
+    	}
+    	
+    	@Override
+    	protected void onPreExecute() {
+    		pDialog.setOnCancelListener(new OnCancelListener() {
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					SaveCobroDialog.this.cancel(true);
+				}
+			});
+    		
+    		pDialog.setProgress(0);
+    		pDialog.show();
+    	}
+    	
+    	@Override
+    	protected void onPostExecute(Boolean result) {
+    		if(result) {
+    			Intent i = new Intent(getApplicationContext(), DashboardActivity.class);
+    			startActivity(i);
+    			pDialog.dismiss();
+    			finish();
+    		}
+    	}
+    	
+    	@Override
+    	protected void onCancelled() {
+    		Toast.makeText(CobroListActivity.this, "Transaccion ", Toast.LENGTH_SHORT).show();
+    	}
+	}
+
+
+
+
 }
