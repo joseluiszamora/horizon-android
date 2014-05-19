@@ -1,6 +1,8 @@
 package com.horizon.reports;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -198,11 +200,15 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
         builder.setTitle("Atención");
         builder.setMessage("Esta seguro de adicionar un pago de " + ammount + " Bs. para el cliente " + name + "(" + Address + ") con " + factura)
         	.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-				dbpay.add(new Pay(idDaily, String.valueOf(ammount), "today", "activo"));
-				//update();
-				
-				
+        		public void onClick(DialogInterface dialog, int id) {
+            	
+					Calendar c = Calendar.getInstance();
+					SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+					String formattedDate = df.format(c.getTime());
+					
+					dbpay.add(new Pay(idDaily, String.valueOf(ammount), formattedDate, "activo"));
+					//update();
+					
 					pDialog = new ProgressDialog(CobroListActivity.this);
 					pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 					pDialog.setMessage("Actualizando...");
@@ -211,7 +217,7 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 					
 					SaveCobroDialog updateWork = new SaveCobroDialog();
 					updateWork.execute();
-               }
+        		}
            });
         builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int id) {
@@ -626,13 +632,12 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 					try {
 						Daily newdaily = db.get(thisPay.getIdDaily());
 
-						objectTransactionPagos.put("FechaRegistro", thisPay.getDate());
 						objectTransactionPagos.put("FechaTransaction", thisPay.getDate());
 						objectTransactionPagos.put("idUser", user.get(SessionManager.KEY_EMAIL));
 						objectTransactionPagos.put("idUserSupervisor", user.get(SessionManager.KEY_EMAIL));
 						objectTransactionPagos.put("idTransaction", newdaily.getIDTransaction());
 						objectTransactionPagos.put("NumVoucher", newdaily.getVoucher());
-						objectTransactionPagos.put("idCustomer", newdaily.getCustomerCode());
+						objectTransactionPagos.put("idCustomer", newdaily.getIDCustomer());
 						objectTransactionPagos.put("Type", "C");
 						objectTransactionPagos.put("Monto", thisPay.getAmmount());
 						objectTransactionPagos.put("Estado", "1");

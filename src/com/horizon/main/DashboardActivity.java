@@ -163,8 +163,7 @@ public class DashboardActivity extends Activity{
         
         internet = new InternetDetector(getApplicationContext());
         gps = new GPSTracker(DashboardActivity.this);
-        
-        
+               
         
         dbTransactions = new DatabaseHandlerTransactions(getApplicationContext(), "", null, 1);
     	dbTransactionDetail = new DatabaseHandlerTransactionDetail(getApplicationContext(), "", null, '1');
