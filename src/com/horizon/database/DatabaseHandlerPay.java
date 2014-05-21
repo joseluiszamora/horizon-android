@@ -21,6 +21,9 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 	
 	private static final String KEY_ID = "id";
 	private static final String KEY_ID_DAILY = "idDaily";
+	private static final String KEY_ID_TRANSACTION = "idTransaction";
+	private static final String KEY_ID_CUSTOMER = "idCustomer";
+	private static final String KEY_VOUCHER = "voucher";
 	private static final String KEY_AMMOUNT = "ammount";
 	private static final String KEY_DATE = "date";
 	private static final String KEY_STATUS = "status";
@@ -32,7 +35,7 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_TRANSACTION_TABLE = "CREATE TABLE " + TABLE_NAME + "("
-				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_ID_DAILY + " TEXT," + KEY_AMMOUNT + " TEXT," + KEY_DATE + " TEXT," + KEY_STATUS + " TEXT" + ")";
+				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_ID_DAILY + " TEXT," + KEY_ID_TRANSACTION + " TEXT," + KEY_ID_CUSTOMER + " TEXT," + KEY_VOUCHER + " TEXT," + KEY_AMMOUNT + " TEXT," + KEY_DATE + " TEXT," + KEY_STATUS + " TEXT" + ")";
 		db.execSQL(CREATE_TRANSACTION_TABLE);
 	}
 
@@ -41,7 +44,7 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 	public void CreateTable() {
 		SQLiteDatabase db = this.getWritableDatabase();
 		String CREATE_TRANSACTION_TABLE = "CREATE TABLE " + TABLE_NAME + "("
-				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_ID_DAILY + " TEXT," + KEY_AMMOUNT + " TEXT," + KEY_DATE + " TEXT," + KEY_STATUS + " TEXT" + ")";
+				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_ID_DAILY + " TEXT," + KEY_ID_TRANSACTION + " TEXT," + KEY_ID_CUSTOMER + " TEXT," + KEY_VOUCHER + " TEXT," + KEY_AMMOUNT + " TEXT," + KEY_DATE + " TEXT," + KEY_STATUS + " TEXT" + ")";
 		db.execSQL(CREATE_TRANSACTION_TABLE);
 	}
 	
@@ -78,14 +81,17 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 	*/
 	
 	// Adding new	
-	public Long add(Pay pay) {
+	public int add(Pay pay) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put(KEY_ID_DAILY, pay.getIdDaily());
+		values.put(KEY_ID_TRANSACTION, pay.getIdTransaction());
+		values.put(KEY_ID_CUSTOMER, pay.getIdCustomer());
+		values.put(KEY_VOUCHER, pay.getVoucher());
 		values.put(KEY_AMMOUNT, pay.getAmmount());
 		values.put(KEY_DATE, pay.getDate());
 		values.put(KEY_STATUS, pay.getStatus());
-		long id = db.insert(TABLE_NAME, null, values);
+		int id = Integer.parseInt(String.valueOf(db.insert(TABLE_NAME, null, values)));
 		db.close();
 		
 		return id;
@@ -103,9 +109,12 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 				Pay pay = new Pay();
 				pay.setID(Integer.parseInt(cursor.getString(0)));
 				pay.setIdDaily(Integer.parseInt(cursor.getString(1)));
-				pay.setAmmount(cursor.getString(2));
-				pay.setDate(cursor.getString(3));
-				pay.setStatus(cursor.getString(4));
+				pay.setIdTransaction(Integer.parseInt(cursor.getString(2)));
+				pay.setIdCustomer(Integer.parseInt(cursor.getString(3)));
+				pay.setVoucher(cursor.getString(4));
+				pay.setAmmount(cursor.getString(5));
+				pay.setDate(cursor.getString(6));
+				pay.setStatus(cursor.getString(7));
 				// Adding to list
 				list.add(pay);
 			} while (cursor.moveToNext());
@@ -119,11 +128,12 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 	public Pay get(int id) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_NAME, new String[] { KEY_ID,
-				KEY_ID_DAILY, KEY_AMMOUNT, KEY_DATE, KEY_STATUS }, KEY_ID + "=?",
+				KEY_ID_DAILY, KEY_ID_TRANSACTION, KEY_ID_CUSTOMER, KEY_VOUCHER, KEY_AMMOUNT, KEY_DATE, KEY_STATUS }, KEY_ID + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()){
 			Pay pay = new Pay(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), 
-					cursor.getString(2), cursor.getString(3), cursor.getString(4));
+					Integer.parseInt(cursor.getString(2)), Integer.parseInt(cursor.getString(3)), cursor.getString(4), 
+					cursor.getString(5), cursor.getString(6), cursor.getString(7));
 			return pay;
 		}else{
 			cursor.close();
@@ -136,11 +146,12 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 	public Pay get_by_daily(int id) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_NAME, new String[] { KEY_ID,
-				KEY_ID_DAILY, KEY_AMMOUNT, KEY_DATE, KEY_STATUS }, KEY_ID_DAILY + "=?",
+				KEY_ID_DAILY, KEY_ID_TRANSACTION, KEY_ID_CUSTOMER, KEY_VOUCHER, KEY_AMMOUNT, KEY_DATE, KEY_STATUS }, KEY_ID_DAILY + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()){
 			Pay pay = new Pay(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), 
-					cursor.getString(2), cursor.getString(3), cursor.getString(4));
+					Integer.parseInt(cursor.getString(2)), Integer.parseInt(cursor.getString(3)), cursor.getString(4), 
+					cursor.getString(5), cursor.getString(6), cursor.getString(7));
 			return pay;
 		}else{
 			cursor.close();
@@ -173,11 +184,12 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 		Log.d("log_tag", "GET BY ID DAILY >> " + id);
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_NAME, new String[] { KEY_ID,
-				KEY_ID_DAILY, KEY_AMMOUNT, KEY_STATUS }, KEY_ID_DAILY + "=?",
+				KEY_ID_DAILY, KEY_ID_TRANSACTION, KEY_ID_CUSTOMER, KEY_VOUCHER, KEY_AMMOUNT, KEY_DATE, KEY_STATUS }, KEY_ID_DAILY + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()){			
-			Pay pay = new Pay(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)),
-					cursor.getString(2), cursor.getString(3), cursor.getString(4));
+			Pay pay = new Pay(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), 
+					Integer.parseInt(cursor.getString(2)), Integer.parseInt(cursor.getString(3)), cursor.getString(4), 
+					cursor.getString(5), cursor.getString(6), cursor.getString(7));
 			cursor.close();
 			db.close();
 			return pay;
@@ -193,9 +205,13 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put(KEY_ID_DAILY, pay.getIdDaily());
+		values.put(KEY_ID_TRANSACTION, pay.getIdTransaction());
+		values.put(KEY_ID_CUSTOMER, pay.getIdCustomer());
+		values.put(KEY_VOUCHER, pay.getVoucher());
 		values.put(KEY_AMMOUNT, pay.getAmmount());
 		values.put(KEY_DATE, pay.getDate());
 		values.put(KEY_STATUS, pay.getStatus());
+		
 		// updating row
 		return db.update(TABLE_NAME, values, KEY_ID + " = ?",
 		new String[] { String.valueOf(pay.getID()) });

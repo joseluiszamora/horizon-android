@@ -74,6 +74,7 @@ import com.horizon.reports.TabsReportActivity;
 import com.horizon.webservice.GPSTracker;
 import com.horizon.webservice.InternetDetector;
 import com.horizon.webservice.JSONParser;
+import com.horizon.webservice.Utils;
 import com.ruizmier.horizon.R;
 
 public class DashboardActivity extends Activity{
@@ -135,6 +136,9 @@ public class DashboardActivity extends Activity{
 	
 	// Gps Object
 	GPSTracker gps;
+	
+	// Utils
+	Utils utils;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -149,18 +153,14 @@ public class DashboardActivity extends Activity{
 		final Button delivery = (Button)findViewById(R.id.btn_delivery);
 		final Button history = (Button)findViewById(R.id.btn_history);
 				
-		// Session Manager
-	    session = new SessionManager(getApplicationContext());
-	    // get user name data from session
-        HashMap<String, String> user = session.getUserDetails();
-        // Set user name into action bar layout 
-        String name = user.get(SessionManager.KEY_NAME);
+		 utils = new Utils(getApplicationContext());
+		 TextView actionBarClient = (TextView)findViewById(R.id.actionBarClientName);
+		 actionBarClient.setText(utils.getSessionName());
+		 
+        String name = utils.getSessionName();
         // set usermail
-        userMail = user.get(SessionManager.KEY_EMAIL);
-                
-        TextView actionBarClient = (TextView)findViewById(R.id.actionBarClientName);
-        actionBarClient.setText(name);
-        
+        userMail = utils.getSessionMail();
+//
         internet = new InternetDetector(getApplicationContext());
         gps = new GPSTracker(DashboardActivity.this);
                
@@ -902,7 +902,7 @@ public class DashboardActivity extends Activity{
         		+ "(" + daily.getCustomerAddress() + ") con factura N. " + daily.getVoucher())
         	.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-            	dbPay.add(new Pay(daily.getID(), String.valueOf(ammount), "today", "activo"));
+            	//dbPay.add(new Pay(daily.getID(), String.valueOf(ammount), "today", "activo"));
             	dbDaily.delete(daily.getID());
             	dialog.dismiss();
                }
@@ -1497,7 +1497,7 @@ public class DashboardActivity extends Activity{
     		Log.d("log_tag", "---------------  Iniciando Conciliacion automatica  doInBackground GPS -----------------");
     		// Verificar si el usuario ahun esta activo
     		Boolean checkifvalide = true;    		
-    		if (internet.isConnectingToInternet()) {
+    		if (utils.checkInternet()) {
     			try {
     				/** Conciliate all the GPS Position **/
     				List<Gps> allGps = null;
@@ -1544,6 +1544,12 @@ public class DashboardActivity extends Activity{
     			
     			
     			Boolean sw = true;
+    			
+    			
+    			
+    			
+    			
+    			
     			Log.d("log_tag", "---------------  Iniciando Conciliacion automatica  doInBackground Transactions -----------------");
 				/** Conciliate all the transactions **/
 				List<Transaction> allTransactions = null;
@@ -1640,6 +1646,163 @@ public class DashboardActivity extends Activity{
 				}else{
 					Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NO HAY TRANSACCIONES");
 				}
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				Log.d("log_tag", "---------------  Iniciando Conciliacion automatica  PAYS -----------------");
+				/** Conciliate all the PAYS **/
+				List<Pay> allPays = null;
+				try {
+					allPays = dbPay.getAll();
+				} catch (Exception e) {
+					allPays = null;
+				}
+				
+				if(allPays != null){
+					Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SI EXISTEN PAGOS");
+					
+					for (Pay thisPayed : allPays) {
+						JSONObject objectTransactionPagos = new JSONObject();
+						
+						Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>> PAYED: " + thisPayed);
+						Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>> PAYED: " + thisPayed.getID());
+						Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>> PAYED: " + thisPayed.getIdDaily());
+						Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>> PAYED: " + thisPayed.getAmmount());
+						
+						Daily newdaily = dbDaily.get(thisPayed.getIdDaily());
+						Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>> DAILY" + newdaily);
+						
+						/*
+						try {
+							objectTransactionPagos.put("FechaTransaction", thisPayed.getDate());
+							objectTransactionPagos.put("idUser", utils.getSessionMail());
+							objectTransactionPagos.put("idUserSupervisor", utils.getSessionMail());
+							objectTransactionPagos.put("idTransaction", newdaily.getIDTransaction());
+							objectTransactionPagos.put("NumVoucher", newdaily.getVoucher());
+							objectTransactionPagos.put("idCustomer", newdaily.getIDCustomer());
+							objectTransactionPagos.put("Type", "C");
+							objectTransactionPagos.put("Monto", thisPayed.getAmmount());
+							objectTransactionPagos.put("Estado", "1");
+							objectTransactionPagos.put("Detalle", "Android");
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						
+						// Building Parameters
+			    		List<NameValuePair> paramsTransactionPagos = new ArrayList<NameValuePair>();
+			    		paramsTransactionPagos.add(new BasicNameValuePair("codeCustomer", objectTransactionPagos.toString()));
+			    			    		
+			    		// getting JSON string from URL
+			    		String returnJsonGPS = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/saveCobro", "POST", paramsTransactionPagos);				    		
+			    		Log.d("log_tag", "COBROOO CONCILIADO -----> " + returnJsonGPS);
+			    		if (returnJsonGPS.trim().equals("ok")){
+			    			// delete pay
+			    			dbPay.delete(thisPayed.getID());
+			    			
+			    			Log.d("log_tag", "COBROOO CONCILIADO");
+						}else{
+							Log.d("log_tag", "FALLO AL CONCILIAR COBROOO");
+						}*/
+			        }
+					
+				}else{
+					Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NO EXISTEN PAGOS");
+				}
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
 				
 				Log.d("log_tag", "---------------  Iniciando Conciliacion automatica  doInBackground Deliveries -----------------");
 				/** Conciliate all the deliveries **/
@@ -1785,63 +1948,6 @@ public class DashboardActivity extends Activity{
     	@Override
     	protected void onPreExecute() {
     		Log.d("log_tag", "PREEXECUTE ::::::");
-    		/*if (internet.isConnectingToInternet()){
-    			
-    	        HashMap<String, String> user = session.getUserDetails();
-    		    String userMail;
-    		    session = new SessionManager(getApplicationContext());
-    	        userMail = user.get(SessionManager.KEY_EMAIL);
-    			
-    			
-    			
-    			// Check if the user is valid 
-    			JSONObject objectCheckUser = new JSONObject();
-    			try {
-    				objectCheckUser.put("userMail", userMail);
-    			} catch (JSONException e) {					
-    				e.printStackTrace();
-    			}
-
-        		// Building Parameters
-        		List<NameValuePair> paramsCheckUser = new ArrayList<NameValuePair>();
-        		paramsCheckUser.add(new BasicNameValuePair("codeCustomer", objectCheckUser.toString()));
-        			    		
-        		// getting JSON string from URL
-        		String returnJsonCheckUser = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/check_if_is_valid_user", "POST", paramsCheckUser);
-        			    	
-        		Log.d("log_tag", ";( > " + returnJsonCheckUser.trim());
-        		
-        		try {
-        			Log.d("PRODUCTOS JSON CHECK USER   : ", "> " + returnJsonCheckUser.trim());
-        			if (returnJsonCheckUser.trim().equals("FALSE")){	    			
-        				session.logoutUser();
-        				dbTransactions.clearTable();
-        		    	dbTransactionDetail.clearTable();
-        	    		
-        	    		DatabaseHandlerUsers dbuser = new DatabaseHandlerUsers(DashboardActivity.this, "", null, 1);
-        	    		dbuser.clearTable();
-        	    		
-        	    		DatabaseHandlerProducts dbProducts = new DatabaseHandlerProducts(DashboardActivity.this, "", null, '1');
-        	       		dbProducts.clearTable();
-        	       		
-        	       		final DatabaseHandlerCustomers dbCustomers = new DatabaseHandlerCustomers(DashboardActivity.this, "", null, '1');
-        	    		dbCustomers.clearTable();	
-        	    		
-        	    		DatabaseHandlerLines dbLine = new DatabaseHandlerLines(DashboardActivity.this, "", null, '1');
-        	    		dbLine.clearTable();
-        	    		
-        	    		DatabaseHandlerVolumes dbVolume = new DatabaseHandlerVolumes(DashboardActivity.this, "", null, '1');
-        	    		dbVolume.clearTable();
-        	    		    		
-        	    		DatabaseHandlerLineVolumes dbLineVolume = new DatabaseHandlerLineVolumes(DashboardActivity.this, "", null, '1');
-        	    		dbLineVolume.clearTable();
-        	    		
-        				finish();
-        			}
-        		}
-        		catch (Exception e) {}
-    		}
-    		*/
     		//Obtenemos una referencia al servicio de notificaciones
 			String ns = Context.NOTIFICATION_SERVICE;
 			NotificationManager notManager = 
@@ -1872,8 +1978,7 @@ public class DashboardActivity extends Activity{
 			
 			//Enviar notificación
 			notManager.notify(NOTIF_ALERTA_ID, notif);
-			
-			}
+		}
     	
     	@Override
     	protected void onPostExecute(Boolean result) {

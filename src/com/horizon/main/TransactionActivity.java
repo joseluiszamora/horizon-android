@@ -247,7 +247,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
             	   transactionObject.setType("prestamo");
                }
            }); 
-        AlertDialog alert = builder.create();            
+        AlertDialog alert = builder.create();
         alert.show();
     }
 	
@@ -327,7 +327,6 @@ public class TransactionActivity extends Activity implements OnItemClickListener
            }); 
         AlertDialog alert = builder.create();            
         alert.show();
-        
 	}
 
 	private void saveTransactionStatus(){

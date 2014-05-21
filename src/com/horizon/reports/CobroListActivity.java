@@ -1,9 +1,6 @@
 package com.horizon.reports;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -41,23 +38,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.horizon.account.SessionManager;
 import com.horizon.database.Daily;
 import com.horizon.database.DatabaseHandlerDaily;
 import com.horizon.database.DatabaseHandlerPay;
 import com.horizon.database.Pay;
-import com.horizon.main.AccountActivity;
 import com.horizon.main.DashboardActivity;
-import com.horizon.main.MainActivity;
 import com.horizon.webservice.GPSTracker;
+import com.horizon.webservice.InternetDetector;
 import com.horizon.webservice.JSONParser;
+import com.horizon.webservice.Utils;
 import com.ruizmier.horizon.R;
 
 public class CobroListActivity extends Activity implements OnItemClickListener {
-    // GPS latitude longitude
- 	double latitude = 0.0;
-    double longitude = 0.0;
-    
     // Dialog options to preventa, venta directa
   	private static final int DIALOGO_ADDPAY = 1;
   	private static final int DIALOGO_DELETEPAY = 2;
@@ -86,27 +78,33 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 	String Address;
 	String factura;
 	
+	// values
+	int idTransaccion;
+	int idCustomer;
+	String numVoucher;
+	
+	
 	
 	ProgressBar pbarProgreso;
-	MiTareaAsincrona tarea2;
+	
+	// Creating JSON Parser object
+	JSONParser jsonParser = new JSONParser();
 	
 	// Progress Dialog
     private ProgressDialog pDialog;
 	
-	
+    // Utils
+    Utils utils;
+    
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.client_list);
 	    
-	    // Session Manager
-	    SessionManager session = new SessionManager(getApplicationContext());
-	    // get user name data from session
-	    HashMap<String, String> user = session.getUserDetails();
-	    // Set user name into action bar layout 
-	    String name = user.get(SessionManager.KEY_NAME);
+	    // Utils
+	    utils = new Utils(getApplicationContext());
 	    TextView actionBarClient = (TextView)findViewById(R.id.actionBarClientName);
-	    actionBarClient.setText(name);
+	    actionBarClient.setText(utils.getSessionName());
 	    
 	    try {
 	    	edittext = (EditText) findViewById(R.id.textSearch);
@@ -119,11 +117,6 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 			listview.setOnItemClickListener(this);
 
 		} catch (Exception e) { }
-		
-	    // GPS TRACKER
-		GPSTracker gps = new GPSTracker(CobroListActivity.this);
-	    latitude = gps.getLatitude();
-        longitude = gps.getLongitude();
 
 		edittext.addTextChangedListener(new TextWatcher() {
 			public void afterTextChanged(Editable s) { }
@@ -173,14 +166,11 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 	     public void onClick(DialogInterface dialog, int whichButton) {  
 	    	 if(!input.getText().toString().trim().equals("") && !input.getText().toString().trim().equals(null)){
 	    		 Double value = Double.valueOf(input.getText().toString());
-		        
-	    		 
 		         if(value != 0){
 		     		if (value > saldorow) {
 						Toast.makeText(CobroListActivity.this, "El valor introducido excede el monto del prestamo", Toast.LENGTH_SHORT).show();
 					}else{
 						showdialogConfirmPay(value);
-						
 					}
 	    		 }else{
 					// insert error here
@@ -210,38 +200,75 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 	public void showdialogConfirmPay(final double ammount) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(CobroListActivity.this);
         builder.setTitle("Atención");
-        builder.setMessage("Esta seguro de adicionar un pago de " + ammount + " Bs. para el cliente " + name + "(" + Address + ") con " + factura)
+        builder.setMessage("Esta seguro de adicionar un pago de " + ammount + " Bs. para el cliente " + 
+        name + "(" + Address + ") con " + factura)
         	.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
         		public void onClick(DialogInterface dialog, int id) {
-            	
-					Calendar c = Calendar.getInstance();
-					SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-					String formattedDate = df.format(c.getTime());
+        			
+					//int idInsert = dbpay.add(new Pay(idDaily, String.valueOf(ammount), utils.getDate("yyyy-MM-dd"), "activo"));
+        			
+        			int idInsert = dbpay.add(new Pay(idDaily, idTransaccion, idCustomer, numVoucher, String.valueOf(ammount), utils.getDate("yyyy-MM-dd"), "activo"));
 					
-					//dbpay.add(new Pay(idDaily, String.valueOf(ammount), formattedDate, "activo"));
+					Log.d("log_tag", "ID INSERT >>>>>>>>>>>>" + idInsert);
+					
+					//Pay thisPay = dbpay.get(idInsert);
+					
+					//Daily newdaily = db.get(thisPay.getIdDaily());
+					
+					//db.delete(idDaily);
+					/*
+					if (utils.checkInternet()) {
+						pDialog = new ProgressDialog(CobroListActivity.this);
+						pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+						pDialog.setMessage("Actualizando Cobro...");
+						pDialog.setCancelable(false);
+						pDialog.setMax(100);
+						
+						SaveCobroDialog asynk = new SaveCobroDialog();
+						asynk.execute();
+					}else{
+						
+					}
+					*/
 					
 					
-					Log.d("log_tag", "CONCILIANDO COBROS ===========> PREPARE ");
+					/*
+			    	JSONObject objectTransactionPagos = new JSONObject();
+					try {
+						Daily newdaily = db.get(thisPay.getIdDaily());
+
+						objectTransactionPagos.put("FechaTransaction", thisPay.getDate());
+						objectTransactionPagos.put("idUser", utils.getSessionMail());
+						objectTransactionPagos.put("idUserSupervisor", utils.getSessionMail());
+						objectTransactionPagos.put("idTransaction", newdaily.getIDTransaction());
+						objectTransactionPagos.put("NumVoucher", newdaily.getVoucher());
+						objectTransactionPagos.put("idCustomer", newdaily.getIDCustomer());
+						objectTransactionPagos.put("Type", "C");
+						objectTransactionPagos.put("Monto", thisPay.getAmmount());
+						objectTransactionPagos.put("Estado", "1");
+						objectTransactionPagos.put("Detalle", "Android");
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
 					
-					/*pDialog = new ProgressDialog(CobroListActivity.this);
-					pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-					pDialog.setMessage("Actualizando...");
-					pDialog.setCancelable(false);
-					pDialog.setMax(100);
-					
-					SaveCobroDialog updateWork = new SaveCobroDialog();
-					updateWork.execute();*/
-					
-					
-					pDialog = new ProgressDialog(CobroListActivity.this);
-					pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-					pDialog.setMessage("Finalizando Transaccion...");
-					pDialog.setCancelable(false);
-					pDialog.setMax(100);
-					
-					CheckIfExistAsyncDialog updateWork = new CheckIfExistAsyncDialog();
-					updateWork.execute();
-					
+					// Building Parameters
+		    		List<NameValuePair> paramsTransactionPagos = new ArrayList<NameValuePair>();
+		    		paramsTransactionPagos.add(new BasicNameValuePair("codeCustomer", objectTransactionPagos.toString()));
+		    			    		
+		    		// getting JSON string from URL
+		    		String returnJsonGPS = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/saveCobro", "POST", paramsTransactionPagos);				    		
+		    		Log.d("log_tag", "COBROOO CONCILIADO -----> " + returnJsonGPS);
+		    		if (returnJsonGPS.trim().equals("ok")){
+		    			// delete pay
+		    			db.delete(thisPay.getID());
+		    			
+		    			Log.d("log_tag", "COBROOO CONCILIADO");
+					}else{
+						Log.d("log_tag", "FALLO AL CONCILIAR COBROOO");
+					}
+		    		*/
+		    		
+		    		
         		}
            });
         builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -453,6 +480,10 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 			TextView txtAmmount;
 			TextView txtSaldo;
 			TextView txtSaldoReal;
+			TextView txtIdTransaction;
+			TextView txtIdCustomer;
+			TextView txtNumVoucher;
+			
 			ImageView go;
 		}
       
@@ -470,7 +501,11 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
   				holder.txtAmmount = (TextView) convertView.findViewById(R.id.transactionDateTime);
 		        holder.txtSaldo = (TextView) convertView.findViewById(R.id.ammount);
 		        holder.txtSaldoReal = (TextView) convertView.findViewById(R.id.saldo);
-		        //holder.go = (ImageView) convertView.findViewById(R.id.imageView1);
+		        
+		        holder.txtIdTransaction = (TextView) convertView.findViewById(R.id.idTransaction);
+		        holder.txtIdCustomer = (TextView) convertView.findViewById(R.id.idCustomer);
+		        holder.txtVoucher = (TextView) convertView.findViewById(R.id.numVoucher);
+		        
 		        holder.go = (ImageView) convertView.findViewById(R.id.imageViewCobroLIst);
 		        
 		        convertView.setTag(holder);
@@ -479,12 +514,15 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 		    	 holder = (ViewHolder) convertView.getTag();
 		    }
 	  		Daily rowItem = (Daily) getItemCustom(position);
-
+	  		
 	  		holder.cobroId.setText(String.valueOf(rowItem.getID()));
 			holder.txtName.setText(String.valueOf(rowItem.getCustomerName()));
 			holder.txtAddress.setText(rowItem.getCustomerAddress());
 			holder.txtVoucher.setText("Factura: " + rowItem.getVoucher());
 			holder.txtAmmount.setText("Monto Total (Bs.): " + rowItem.getAmmount());
+			holder.txtIdTransaction.setText(rowItem.getIDTransaction());
+			holder.txtIdCustomer.setText(rowItem.getIDCustomer());
+			holder.txtVoucher.setText(rowItem.getVoucher());
 			
 			Pay payed = dbpay.get_by_daily(rowItem.getID());
 			Double paymont;
@@ -523,19 +561,19 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		idDaily = Integer.valueOf((String) ((TextView) arg1.findViewById(R.id.id)).getText());
+		idTransaccion = Integer.valueOf((((TextView) arg1.findViewById(R.id.idTransaction)).getText()).toString());
+		idCustomer = Integer.valueOf((((TextView) arg1.findViewById(R.id.idCustomer)).getText()).toString());
+		numVoucher = (String) ((TextView) arg1.findViewById(R.id.numVoucher)).getText();
+		
 		String ammount = (String) ((TextView) arg1.findViewById(R.id.transactionDateTime)).getText();
 		//ammountrow = Double.parseDouble((String) ((TextView) arg1.findViewById(R.id.transactionDateTime)).getText());
 		//saldorow = Double.parseDouble((String) ((TextView) arg1.findViewById(R.id.ammount)).getText());
 		String saldo = (String) ((TextView) arg1.findViewById(R.id.ammount)).getText();
 		String saldoreal = (String) ((TextView) arg1.findViewById(R.id.saldo)).getText();
 		
-		
-		
 		name = (String) ((TextView) arg1.findViewById(R.id.tdIProduct)).getText();
 		Address = (String) ((TextView) arg1.findViewById(R.id.tdQuantity)).getText();
 		factura = (String) ((TextView) arg1.findViewById(R.id.transactionCoordinate)).getText();
-
-		Log.d("log_tag", "DAILY ::::: " + idDaily);
 		
 		saldorow = Double.parseDouble(saldoreal);
 		Log.d("log_tag", "AMMOUNT ::::: " + ammount.substring(19));
@@ -543,34 +581,8 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 		
 		showdialogQuantity(idDaily);
 		
-		/*Pay payed = dbpay.get_by_daily(idDaily);
-		Double paymont;
 		
-		try {
-			paymont = Double.parseDouble(payed.getAmmount());
-		} catch (Exception e) {
-			paymont = Double.parseDouble("0.0");
-		}
 		
-
-		if (paymont.equals(0.0)) {
-			showDialog(DIALOGO_ADDPAY);
-		}else{
-			showDialog(DIALOGO_DELETEPAY);
-		}
-		
-		//get Date, Hour Now
-		Calendar c = Calendar.getInstance();
-		SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-		String formattedDate = df.format(c.getTime());        			
-		DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(CobroListActivity.this, "", null, 1);
-		*/
-		/*Intent intentNewTransaction = new Intent(CobroListActivity.this, PayActivity.class);
-		Bundle bundle = new Bundle();
-		bundle.putString("idDaily", id);
-		intentNewTransaction.putExtras(bundle);
-		startActivity(intentNewTransaction);
-		finish();*/
 	}
 	
 	private void update() { // refresh listview
@@ -624,31 +636,21 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
     	return builder.create();
     }
 
-
-
-
-	private class SaveCobroDialog extends AsyncTask<Void, Integer, Boolean>  {
-
-		@Override
-		protected Boolean doInBackground(Void... params) {
-			// Creating JSON Parser object
-    		JSONParser jsonParser = new JSONParser();
-    		// Session Manager
-    		SessionManager session = new SessionManager(getApplicationContext());
-    	    // get user name data from session
-            HashMap<String, String> user = session.getUserDetails();
-            
-            Log.d("log_tag", "CONCILIANDO COBROS ===========> ");
-            
-            Pay thisPay = dbpay.getByIdDaily(idDaily);
-
-			JSONObject objectTransactionPagos = new JSONObject();
+		
+	private class SaveCobroDialog extends AsyncTask<Void, Integer, Boolean> {
+	    @Override
+	    protected Boolean doInBackground(Void... params) {
+	    	Pay thisPay = dbpay.getByIdDaily(idDaily);
+	    	
+	    	Log.d("log_tag", "BACKGRPOUNDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+	    	
+	    	JSONObject objectTransactionPagos = new JSONObject();
 			try {
 				Daily newdaily = db.get(thisPay.getIdDaily());
 
 				objectTransactionPagos.put("FechaTransaction", thisPay.getDate());
-				objectTransactionPagos.put("idUser", user.get(SessionManager.KEY_EMAIL));
-				objectTransactionPagos.put("idUserSupervisor", user.get(SessionManager.KEY_EMAIL));
+				objectTransactionPagos.put("idUser", utils.getSessionMail());
+				objectTransactionPagos.put("idUserSupervisor", utils.getSessionMail());
 				objectTransactionPagos.put("idTransaction", newdaily.getIDTransaction());
 				objectTransactionPagos.put("NumVoucher", newdaily.getVoucher());
 				objectTransactionPagos.put("idCustomer", newdaily.getIDCustomer());
@@ -659,8 +661,8 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-
-    		// Building Parameters
+			
+			// Building Parameters
     		List<NameValuePair> paramsTransactionPagos = new ArrayList<NameValuePair>();
     		paramsTransactionPagos.add(new BasicNameValuePair("codeCustomer", objectTransactionPagos.toString()));
     			    		
@@ -676,164 +678,46 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 				Log.d("log_tag", "FALLO AL CONCILIAR COBROOO");
 			}
     		
-            
-			return true;
-		}
-		
-		@Override
-    	protected void onProgressUpdate(Integer... values) {
-    		int progreso = values[0].intValue();
-    		
-    		pDialog.setProgress(progreso);
-    	}
-    	
-    	@Override
+	        return true;
+	    }
+	 
+	    @Override
+	    protected void onProgressUpdate(Integer... values) {
+	        //int progreso = values[0].intValue();
+	 
+	        //pbarProgreso.setProgress(progreso);
+	    }
+	 
+	    @Override
     	protected void onPreExecute() {
-    		Log.d("log_tag", "CONCILIANDO COBROS ===========> PRE EXECUTE ");
+	    	Log.d("log_tag", "PRE XECUTEDD");
     		pDialog.setOnCancelListener(new OnCancelListener() {
 				@Override
 				public void onCancel(DialogInterface dialog) {
-					SaveCobroDialog.this.cancel(true);
+					
 				}
 			});
     		
     		pDialog.setProgress(0);
     		pDialog.show();
     	}
-    	
-    	@Override
-    	protected void onPostExecute(Boolean result) {
-    		if(result) {
-    			Log.d("log_tag", "CONCILIANDO COBROS ===========> POST EXECUTE ");
-    			Intent i = new Intent(getApplicationContext(), DashboardActivity.class);
-    			startActivity(i);
-    			pDialog.dismiss();
-    			finish();
-    		}
-    	}
-    	
-    	@Override
-    	protected void onCancelled() {
-    		Toast.makeText(CobroListActivity.this, "Transaccion ", Toast.LENGTH_SHORT).show();
-    	}
-	}
-
-
-
-
-	
-	
-	
-	private class MiTareaAsincrona extends AsyncTask<Void, Integer, Boolean> {
-		 
-	    @Override
-	    protected Boolean doInBackground(Void... params) {
-	 
-	        for(int i=1; i<=10; i++) {
-	            tareaLarga();
-	 
-	            publishProgress(i*10);
-	 
-	            if(isCancelled())
-	                break;
-	        }
-	 
-	        return true;
-	    }
-	 
-	    @Override
-	    protected void onProgressUpdate(Integer... values) {
-	        int progreso = values[0].intValue();
-	 
-	        pbarProgreso.setProgress(progreso);
-	    }
-	 
-	    @Override
-	    protected void onPreExecute() {	       
-	        pbarProgreso.setProgress(0);
-	    }
 	 
 	    @Override
 	    protected void onPostExecute(Boolean result) {
-	        if(result)
-	            Toast.makeText(CobroListActivity.this, "Tarea finalizada!",
-	                    Toast.LENGTH_SHORT).show();
+	        if(result){
+	        	Intent i = new Intent(getApplicationContext(), DashboardActivity.class);
+				startActivity(i);
+	        }
+	        pDialog.dismiss();
+			finish();
 	    }
 	 
 	    @Override
 	    protected void onCancelled() {
 	        Toast.makeText(CobroListActivity.this, "Tarea cancelada!",
 	                Toast.LENGTH_SHORT).show();
+	        pDialog.dismiss();
 	    }
-	}
-	
-	
-	
-	
-	
-	
-	
-	// AsyncTask Finish Transaction
-		private class CheckIfExistAsyncDialog extends AsyncTask<Void, Integer, Boolean> {
-		    
-	    	@Override
-	    	protected Boolean doInBackground(Void... params) {    		
-	    		tareaLarga();
-	    		return true;
-	    	}
-	    	
-	    	@Override
-	    	protected void onProgressUpdate(Integer... values) {
-	    		int progreso = values[0].intValue();
-	    		
-	    		pDialog.setProgress(progreso);
-	    	}
-	    	
-	    	@Override
-	    	protected void onPreExecute() {
-	    		
-	    		pDialog.setOnCancelListener(new OnCancelListener() {
-					@Override
-					public void onCancel(DialogInterface dialog) {
-						
-					}
-				});
-	    		
-	    		pDialog.setProgress(0);
-	    		pDialog.show();
-	    	}
-	    	
-	    	@Override
-	    	protected void onPostExecute(Boolean result) {
-	    		Toast.makeText(CobroListActivity.this, "Usuario nuevo", Toast.LENGTH_SHORT).show();
-	    		
-	    		pDialog.dismiss();
-	    	}
-	    	
-	    	@Override
-	    	protected void onCancelled() {
-	    		//Toast.makeText(TransactionActivity.this, "Informacion Actualizada!", Toast.LENGTH_SHORT).show();
-	    	}
-	    }
-		
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	private void tareaLarga()
-	{
-	    try {
-	        Thread.sleep(1000);
-	    } catch(InterruptedException e) {}
 	}
 
 }

@@ -83,4 +83,31 @@
         android:layout_alignRight="@+id/transactionCoordinate"
         android:src="@drawable/ic_launcher" />
 
+    <TextView
+        android:id="@+id/idTransaction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/ammount"
+        android:layout_below="@+id/ammount"
+        android:text="TextView"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/idCustomer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/ammount"
+        android:text="TextView"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/numVoucher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/ammount"
+        android:text="TextView"
+        android:visibility="gone" />
+
 </RelativeLayout>
