@@ -153,6 +153,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		bundle = getIntent().getExtras();
 		// Get Bundle Transaction Code
 		codeTransaction = Integer.parseInt(bundle.getString("newTransactionCode"));
+		Log.d("log_tag", "TRANSACTION ID ******>>" + codeTransaction);
 		// Create Transaction Object
 		transactionObject = dbTransactions.getTransaction(codeTransaction);
 
@@ -208,22 +209,42 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		btnSave.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				closeTransaction();
-			}		
+			}
 		});
 	}
 
 	public void alertCustomerDailyPending() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
         builder.setTitle("Atención");
-        builder.setMessage("Este usuario ya tiene prestamos pendientes, si continua la transaccion sera almacenada como venta directa")
+        builder.setMessage("Este usuario ya tiene prestamos pendientes, si continua la transacción sera almacenada como venta directa")
         	.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+            	transactionObject.setType("venta_directa");
             	dialog.dismiss();
            }
        });
         builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int id) {
             	   closeTransaction();
+               }
+           }); 
+        AlertDialog alert = builder.create();            
+        alert.show();
+    }
+	
+	public void alertCustomerTransactionSelectType() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
+        builder.setTitle("Atención");
+        builder.setMessage("Esta transacción es venta directa o prestamo?")
+        	.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            	transactionObject.setType("venta_directa");
+            	dialog.dismiss();
+           }
+       });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+               public void onClick(DialogInterface dialog, int id) {
+            	   transactionObject.setType("prestamo");
                }
            }); 
         AlertDialog alert = builder.create();            
@@ -292,6 +313,9 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 			       AlertDialog alert = builder.create();
 			       alert.show();
 				}else{
+					// Set if transaction set venta directa / prestamo 
+					alertCustomerTransactionSelectType();
+					// save transaction
 					saveTransactionStatus();
 				}
 			}
@@ -335,7 +359,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
     }
 	// set Transaction 0 message
 	private Dialog transactionTypeSelectionDialog(){
-    	final String[] items = {"Ningún pedido", "Negocio cerrado"};
+    	final String[] items = {"Ningún pedido", "Negocio cerrado", "Cliente con prestamo"};
     	
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
@@ -348,13 +372,12 @@ public class TransactionActivity extends Activity implements OnItemClickListener
     	    		transactionObject.setObs("Ningun Pedido");
 				if (item == 1) 
 					transactionObject.setObs("Negocio Cerrado");
-				Log.d("log_tag", "actualizado estado");
+				if (item == 2)
+					transactionObject.setObs("Cliente con prestamo");
 				showDialog(DIALOGO_TRANSACTION_0);
-				
 				saveTransactionStatus();
-				
     	    }
-    	});    	    	
+    	});
     	return builder.create();
     }
 	
@@ -507,11 +530,11 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 			
 			if(getTransDetail != null){ // this product already exist in the list
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle("Atenci�n");
-				builder.setMessage("El producto ya existe en la lista, �desea incrementar la cantidad?").
+				builder.setTitle("Atención");
+				builder.setMessage("El producto ya existe en la lista, ¿desea incrementar la cantidad?").
 				setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						 Double totalPrice = (double) ((unitPrice * transaction.getQuantity()) + getTransDetail.getPriceTotal());
+						Double totalPrice = (double) ((unitPrice * transaction.getQuantity()) + getTransDetail.getPriceTotal());
 						int Quantity = (int) (transaction.getQuantity() + getTransDetail.getQuantity());
 						
 						// Edit Transaction Detail
@@ -520,7 +543,6 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 						
 						addPrice((double) ((unitPrice * transaction.getQuantity())));
 						update();
-				    	 
 					}
 				});
 		        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -553,12 +575,12 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		final String total_price_trans_details = (String) ((TextView) arg1.findViewById(R.id.totalPriceTransactionModify)).getText();
 		
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("�Est� seguro de eliminar el producto: "+product_name_trans_details+"?")
+        builder.setMessage("¿Está seguro de eliminar el producto: "+product_name_trans_details+"?")
 	           .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
 	        	   dbTransDetail.deleteTransactionDetail(Integer.parseInt(custom_id_trans_details));
 	        	   lessPrice(Double.parseDouble(total_price_trans_details));
-	        	   System.out.println("OK CLICKED");
+	        	   //System.out.println("OK CLICKED");
 	        	   update();
 	           }
 	       });
@@ -569,7 +591,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
            });
  
         AlertDialog alert = builder.create();
-        alert.setTitle("Atenci�n");
+        alert.setTitle("Atención");
         alert.show();
     }
 	
@@ -754,6 +776,4 @@ public class TransactionActivity extends Activity implements OnItemClickListener
     		Toast.makeText(TransactionActivity.this, "Transaccion ", Toast.LENGTH_SHORT).show();
     	}
     }
-
-
 }

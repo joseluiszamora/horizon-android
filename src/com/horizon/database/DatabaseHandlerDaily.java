@@ -338,6 +338,7 @@ public class DatabaseHandlerDaily extends SQLiteOpenHelper{
 
 	// Deleting single
 	public void delete(int codetransaction) {
+		Log.d("log_tag", "DELETED...... " + codetransaction);
 		SQLiteDatabase db = this.getWritableDatabase();	
 		db.delete(TABLE_TRANSACTION, KEY_ID + " = ?",
 				new String[] { String.valueOf(codetransaction) });

@@ -164,8 +164,7 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
       //get Date, Hour Now
 		Calendar c = Calendar.getInstance();
 		SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-		String formattedDate = df.format(c.getTime());        			
-		Log.d("log_tag", "******************** TRANSACTION BACKGROUND 5 ::::");
+		String formattedDate = df.format(c.getTime());
 		DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(ClientsListActivity.this, "", null, 1);
 		
 		// Create New Transaction        			
@@ -187,29 +186,23 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
     private class StartNewTransactionDialog extends AsyncTask<ArrayList<String>, Void, ArrayList<String>> {
 		
     	protected ArrayList<String> doInBackground(ArrayList<String>... passing) {
-    		Log.d("log_tag", "******************** TRANSACTION BACKGROUND 1 ::::");
             ArrayList<String> result = new ArrayList<String>();            
             result.add("lol");
-            Log.d("log_tag", "******************** TRANSACTION BACKGROUND 2 ::::");
-//        	get passed value
+            // get passed value
             ArrayList<String> value = passing[0]; 
             String codeCustomer = "";
             for (String s : value){
             	codeCustomer = s;
             }
-            Log.d("log_tag", "******************** TRANSACTION BACKGROUND 3 ::::");
     		try {
-    			Log.d("log_tag", "******************** TRANSACTION BACKGROUND 4 ::::");
     			customer = db.getCustomerByCode(codeCustomer);
-    			if (customer != null){    				
-    				Log.d("log_tag", " TRANSACTION CUSTOMER ::::" + customer.getCode());
+    			if (customer != null){
         			result.add("NO_FAIL");
         	        
         			//get Date, Hour Now
         			Calendar c = Calendar.getInstance();
         			SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         			String formattedDate = df.format(c.getTime());        			
-        			Log.d("log_tag", "******************** TRANSACTION BACKGROUND 5 ::::");
         			DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(ClientsListActivity.this, "", null, 1);
         			
         			// Create New Transaction        			
@@ -222,33 +215,24 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
         				result.add(String.valueOf(codeTransaction));
         			}else{
         				result.add("CODE_FAIL");
-        				// insert error here
-        				Log.d("log_tag", "Fucking code not match!!!!");
         			}
-        			Log.d("log_tag", "******************** TRANSACTION BACKGROUND 6 ::::");
         		}else{
-        			Log.d("log_tag", "******************** TRANSACTION BACKGROUND 7 ::::");
-        			Log.d("log_tag", "TRANSACTION CUSTOMER :::: NO es un cliente valido");
         			result.add("EPIC_FAIL");
         		}
 			} catch (Exception e) {
 				Log.d("log_tag", "FAIL CODE");
-				Log.d("log_tag", "******************** TRANSACTION BACKGROUND 8 ::::");
 			}    		
-    		Log.d("log_tag", "******************** TRANSACTION BACKGROUND 9 ::::");
-            return result; //return result
+            return result;
         }
 
     	
     	protected void onProgressUpdate(Integer... values) {
     		int progreso = values[0].intValue();
-    		
     		pDialog.setProgress(progreso);
     	}
     	
     	@Override
     	protected void onPreExecute() {
-    		Log.d("log_tag", " TRANSACTION PRE EXECUTE::::");
     		pDialog.setOnCancelListener(new OnCancelListener() {
 				@Override
 				public void onCancel(DialogInterface dialog) {
@@ -264,7 +248,6 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
     	protected void onPostExecute(ArrayList<String> result) {
     		String tmp = result.get(1);
     		if (tmp.matches("EPIC_FAIL")){
-    			Log.d("log_tag", "********************  EPIC_FAIL");
     			// Dialog Error found client
     			AlertDialog alertDialog = new AlertDialog.Builder(ClientsListActivity.this).create();
     			alertDialog.setTitle("Error");
@@ -279,9 +262,7 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
     			alertDialog.show();
     		}else{
     			if(tmp.matches("NO_FAIL")){
-    				Log.d("log_tag", "NO_FAIL");
     				if(result.get(2).matches("CODE_OK")){
-    					Log.d("log_tag", "POST::::" + result.get(3));
     					Intent intentNewTransaction = new Intent(ClientsListActivity.this, TransactionActivity.class);            	
     					// get Client Info
     	    			Bundle bundle = new Bundle();
@@ -289,7 +270,6 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
     					intentNewTransaction.putExtras(bundle);
     	    			startActivity(intentNewTransaction);
     				}else{
-    					Log.d("log_tag", "NO_FAIL else");
     					// Dialog Error found client
     	    			AlertDialog alertDialog = new AlertDialog.Builder(ClientsListActivity.this).create();
     	    			alertDialog.setTitle("Error");
@@ -384,7 +364,6 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
 	     
   		holder.customerId.setText(String.valueOf(rowItem.getCode()));
 		holder.txtName.setText(data_text[position]);
-  		//holder.txtName.setText(rowItem.getName());
 		holder.txtAddress.setText(rowItem.getAddress());
 		
 		return convertView;

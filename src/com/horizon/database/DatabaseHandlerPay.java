@@ -182,6 +182,7 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 			db.close();
 			return pay;
 		}else{
+			cursor.close();
 			db.close();		
 			return null;
 		}							

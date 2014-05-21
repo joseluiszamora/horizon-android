@@ -37,6 +37,7 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +46,9 @@ import com.horizon.database.Daily;
 import com.horizon.database.DatabaseHandlerDaily;
 import com.horizon.database.DatabaseHandlerPay;
 import com.horizon.database.Pay;
+import com.horizon.main.AccountActivity;
 import com.horizon.main.DashboardActivity;
+import com.horizon.main.MainActivity;
 import com.horizon.webservice.GPSTracker;
 import com.horizon.webservice.JSONParser;
 import com.ruizmier.horizon.R;
@@ -54,8 +57,6 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
     // GPS latitude longitude
  	double latitude = 0.0;
     double longitude = 0.0;
-    // Progress Dialog
-    private ProgressDialog pDialog;
     
     // Dialog options to preventa, venta directa
   	private static final int DIALOGO_ADDPAY = 1;
@@ -74,13 +75,24 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 	List<Daily> rowItems;
 	ListView listview;
 	
-	// pay
+	// daily
 	int idDaily;
+	
+	// pay
+	int idPay;
 	Double ammountrow;
 	Double saldorow;
 	String name;
 	String Address;
 	String factura;
+	
+	
+	ProgressBar pbarProgreso;
+	MiTareaAsincrona tarea2;
+	
+	// Progress Dialog
+    private ProgressDialog pDialog;
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -206,17 +218,30 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 					SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 					String formattedDate = df.format(c.getTime());
 					
-					dbpay.add(new Pay(idDaily, String.valueOf(ammount), formattedDate, "activo"));
-					//update();
+					//dbpay.add(new Pay(idDaily, String.valueOf(ammount), formattedDate, "activo"));
 					
-					pDialog = new ProgressDialog(CobroListActivity.this);
+					
+					Log.d("log_tag", "CONCILIANDO COBROS ===========> PREPARE ");
+					
+					/*pDialog = new ProgressDialog(CobroListActivity.this);
 					pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 					pDialog.setMessage("Actualizando...");
 					pDialog.setCancelable(false);
 					pDialog.setMax(100);
 					
 					SaveCobroDialog updateWork = new SaveCobroDialog();
+					updateWork.execute();*/
+					
+					
+					pDialog = new ProgressDialog(CobroListActivity.this);
+					pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+					pDialog.setMessage("Finalizando Transaccion...");
+					pDialog.setCancelable(false);
+					pDialog.setMax(100);
+					
+					CheckIfExistAsyncDialog updateWork = new CheckIfExistAsyncDialog();
 					updateWork.execute();
+					
         		}
            });
         builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -248,8 +273,6 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
         AlertDialog alert = builder.create();            
         alert.show();
     }
-	
-	
 	
 	
 	/*
@@ -617,53 +640,43 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
             
             Log.d("log_tag", "CONCILIANDO COBROS ===========> ");
             
-    		/** Conciliate all cobros **/
-			List<Pay> allPagos = null;
-			try {
-				allPagos = dbpay.getAll();
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-			    			
-			if(!allPagos.isEmpty() && allPagos != null){
-				for (Pay thisPay : allPagos) {
-					 Log.d("log_tag", "CONCILIANDO UNNNN COBROS ===========> ");
-					JSONObject objectTransactionPagos = new JSONObject();
-					try {
-						Daily newdaily = db.get(thisPay.getIdDaily());
+            Pay thisPay = dbpay.getByIdDaily(idDaily);
 
-						objectTransactionPagos.put("FechaTransaction", thisPay.getDate());
-						objectTransactionPagos.put("idUser", user.get(SessionManager.KEY_EMAIL));
-						objectTransactionPagos.put("idUserSupervisor", user.get(SessionManager.KEY_EMAIL));
-						objectTransactionPagos.put("idTransaction", newdaily.getIDTransaction());
-						objectTransactionPagos.put("NumVoucher", newdaily.getVoucher());
-						objectTransactionPagos.put("idCustomer", newdaily.getIDCustomer());
-						objectTransactionPagos.put("Type", "C");
-						objectTransactionPagos.put("Monto", thisPay.getAmmount());
-						objectTransactionPagos.put("Estado", "1");
-						objectTransactionPagos.put("Detalle", "Android");
-					} catch (JSONException e) {
-						e.printStackTrace();
-					}
-		
-		    		// Building Parameters
-		    		List<NameValuePair> paramsTransactionPagos = new ArrayList<NameValuePair>();
-		    		paramsTransactionPagos.add(new BasicNameValuePair("codeCustomer", objectTransactionPagos.toString()));
-		    			    		
-		    		// getting JSON string from URL
-		    		String returnJsonGPS = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/saveCobro", "POST", paramsTransactionPagos);				    		
-		    		Log.d("log_tag", "COBROOO CONCILIADO -----> " + returnJsonGPS);
-		    		if (returnJsonGPS.trim().equals("ok")){
-		    			// delete pay
-		    			db.delete(thisPay.getID());
-		    			
-		    			Log.d("log_tag", "COBROOO CONCILIADO");
-	    			}else{
-	    				Log.d("log_tag", "FALLO AL CONCILIAR COBROOO");
-	    			}
-		    		//update();
-		        }
+			JSONObject objectTransactionPagos = new JSONObject();
+			try {
+				Daily newdaily = db.get(thisPay.getIdDaily());
+
+				objectTransactionPagos.put("FechaTransaction", thisPay.getDate());
+				objectTransactionPagos.put("idUser", user.get(SessionManager.KEY_EMAIL));
+				objectTransactionPagos.put("idUserSupervisor", user.get(SessionManager.KEY_EMAIL));
+				objectTransactionPagos.put("idTransaction", newdaily.getIDTransaction());
+				objectTransactionPagos.put("NumVoucher", newdaily.getVoucher());
+				objectTransactionPagos.put("idCustomer", newdaily.getIDCustomer());
+				objectTransactionPagos.put("Type", "C");
+				objectTransactionPagos.put("Monto", thisPay.getAmmount());
+				objectTransactionPagos.put("Estado", "1");
+				objectTransactionPagos.put("Detalle", "Android");
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
+
+    		// Building Parameters
+    		List<NameValuePair> paramsTransactionPagos = new ArrayList<NameValuePair>();
+    		paramsTransactionPagos.add(new BasicNameValuePair("codeCustomer", objectTransactionPagos.toString()));
+    			    		
+    		// getting JSON string from URL
+    		String returnJsonGPS = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/saveCobro", "POST", paramsTransactionPagos);				    		
+    		Log.d("log_tag", "COBROOO CONCILIADO -----> " + returnJsonGPS);
+    		if (returnJsonGPS.trim().equals("ok")){
+    			// delete pay
+    			db.delete(thisPay.getID());
+    			
+    			Log.d("log_tag", "COBROOO CONCILIADO");
+			}else{
+				Log.d("log_tag", "FALLO AL CONCILIAR COBROOO");
+			}
+    		
+            
 			return true;
 		}
 		
@@ -676,6 +689,7 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
     	
     	@Override
     	protected void onPreExecute() {
+    		Log.d("log_tag", "CONCILIANDO COBROS ===========> PRE EXECUTE ");
     		pDialog.setOnCancelListener(new OnCancelListener() {
 				@Override
 				public void onCancel(DialogInterface dialog) {
@@ -690,6 +704,7 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
     	@Override
     	protected void onPostExecute(Boolean result) {
     		if(result) {
+    			Log.d("log_tag", "CONCILIANDO COBROS ===========> POST EXECUTE ");
     			Intent i = new Intent(getApplicationContext(), DashboardActivity.class);
     			startActivity(i);
     			pDialog.dismiss();
@@ -705,5 +720,120 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 
 
 
+
+	
+	
+	
+	private class MiTareaAsincrona extends AsyncTask<Void, Integer, Boolean> {
+		 
+	    @Override
+	    protected Boolean doInBackground(Void... params) {
+	 
+	        for(int i=1; i<=10; i++) {
+	            tareaLarga();
+	 
+	            publishProgress(i*10);
+	 
+	            if(isCancelled())
+	                break;
+	        }
+	 
+	        return true;
+	    }
+	 
+	    @Override
+	    protected void onProgressUpdate(Integer... values) {
+	        int progreso = values[0].intValue();
+	 
+	        pbarProgreso.setProgress(progreso);
+	    }
+	 
+	    @Override
+	    protected void onPreExecute() {	       
+	        pbarProgreso.setProgress(0);
+	    }
+	 
+	    @Override
+	    protected void onPostExecute(Boolean result) {
+	        if(result)
+	            Toast.makeText(CobroListActivity.this, "Tarea finalizada!",
+	                    Toast.LENGTH_SHORT).show();
+	    }
+	 
+	    @Override
+	    protected void onCancelled() {
+	        Toast.makeText(CobroListActivity.this, "Tarea cancelada!",
+	                Toast.LENGTH_SHORT).show();
+	    }
+	}
+	
+	
+	
+	
+	
+	
+	
+	// AsyncTask Finish Transaction
+		private class CheckIfExistAsyncDialog extends AsyncTask<Void, Integer, Boolean> {
+		    
+	    	@Override
+	    	protected Boolean doInBackground(Void... params) {    		
+	    		tareaLarga();
+	    		return true;
+	    	}
+	    	
+	    	@Override
+	    	protected void onProgressUpdate(Integer... values) {
+	    		int progreso = values[0].intValue();
+	    		
+	    		pDialog.setProgress(progreso);
+	    	}
+	    	
+	    	@Override
+	    	protected void onPreExecute() {
+	    		
+	    		pDialog.setOnCancelListener(new OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						
+					}
+				});
+	    		
+	    		pDialog.setProgress(0);
+	    		pDialog.show();
+	    	}
+	    	
+	    	@Override
+	    	protected void onPostExecute(Boolean result) {
+	    		Toast.makeText(CobroListActivity.this, "Usuario nuevo", Toast.LENGTH_SHORT).show();
+	    		
+	    		pDialog.dismiss();
+	    	}
+	    	
+	    	@Override
+	    	protected void onCancelled() {
+	    		//Toast.makeText(TransactionActivity.this, "Informacion Actualizada!", Toast.LENGTH_SHORT).show();
+	    	}
+	    }
+		
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private void tareaLarga()
+	{
+	    try {
+	        Thread.sleep(1000);
+	    } catch(InterruptedException e) {}
+	}
 
 }
