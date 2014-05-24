@@ -1602,23 +1602,18 @@ public class DashboardActivity extends Activity{
 									objectTransaction.put("timeFinish", transaction.getTimeFinish());
 									objectTransaction.put("obs", transaction.getObs());
 									objectTransaction.put("userMail", userMail);
+									
+									Log.d("log_tag", "Tipo de Transaccion::::: " + transaction.getType());
 								} catch (JSONException e) {					
 									e.printStackTrace();
 								}								
-								
-								/*// Close transaction
-			    				Log.d("log_tag", "Transaccion guardada para: " + transaction.getCodeCustomer());
-			    				transaction.setStatus("conciliado");
-			    				dbTransactions.updateTransaction(transaction);
-			    				dbTransactionDetail.updateAllTransactionDetailsDelivery(transaction.getID(), "conciliado");
-			    				*/
-								
+																
 					    		// Building Parameters
 					    		List<NameValuePair> paramsTransaction = new ArrayList<NameValuePair>();
 					    		paramsTransaction.add(new BasicNameValuePair("codeCustomer", objectTransaction.toString()));	    		
 					    		
 					    		// getting JSON string from URL
-					    		String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/save_transaction", "POST", paramsTransaction);
+					    		String returnJson = jsonParser.makeHttpRequest(utils.url() + "save_transaction", "POST", paramsTransaction);
 					    		
 					    		Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + returnJson.trim());
 					    		try {
@@ -1646,67 +1641,7 @@ public class DashboardActivity extends Activity{
 				}else{
 					Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NO HAY TRANSACCIONES");
 				}
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
+
 				
 				Log.d("log_tag", "---------------  Iniciando Conciliacion automatica  PAYS -----------------");
 				/** Conciliate all the PAYS **/
@@ -1723,22 +1658,16 @@ public class DashboardActivity extends Activity{
 					for (Pay thisPayed : allPays) {
 						JSONObject objectTransactionPagos = new JSONObject();
 						
-						Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>> PAYED: " + thisPayed);
-						Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>> PAYED: " + thisPayed.getID());
-						Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>> PAYED: " + thisPayed.getIdDaily());
-						Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>> PAYED: " + thisPayed.getAmmount());
-						
 						Daily newdaily = dbDaily.get(thisPayed.getIdDaily());
 						Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>> DAILY" + newdaily);
 						
-						/*
 						try {
 							objectTransactionPagos.put("FechaTransaction", thisPayed.getDate());
 							objectTransactionPagos.put("idUser", utils.getSessionMail());
 							objectTransactionPagos.put("idUserSupervisor", utils.getSessionMail());
-							objectTransactionPagos.put("idTransaction", newdaily.getIDTransaction());
-							objectTransactionPagos.put("NumVoucher", newdaily.getVoucher());
-							objectTransactionPagos.put("idCustomer", newdaily.getIDCustomer());
+							objectTransactionPagos.put("idTransaction", thisPayed.getIdTransaction());
+							objectTransactionPagos.put("NumVoucher", thisPayed.getVoucher());
+							objectTransactionPagos.put("idCustomer", thisPayed.getIdCustomer());
 							objectTransactionPagos.put("Type", "C");
 							objectTransactionPagos.put("Monto", thisPayed.getAmmount());
 							objectTransactionPagos.put("Estado", "1");
@@ -1752,7 +1681,7 @@ public class DashboardActivity extends Activity{
 			    		paramsTransactionPagos.add(new BasicNameValuePair("codeCustomer", objectTransactionPagos.toString()));
 			    			    		
 			    		// getting JSON string from URL
-			    		String returnJsonGPS = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/saveCobro", "POST", paramsTransactionPagos);				    		
+			    		String returnJsonGPS = jsonParser.makeHttpRequest(utils.url() + "saveCobro", "POST", paramsTransactionPagos);				    		
 			    		Log.d("log_tag", "COBROOO CONCILIADO -----> " + returnJsonGPS);
 			    		if (returnJsonGPS.trim().equals("ok")){
 			    			// delete pay
@@ -1761,45 +1690,12 @@ public class DashboardActivity extends Activity{
 			    			Log.d("log_tag", "COBROOO CONCILIADO");
 						}else{
 							Log.d("log_tag", "FALLO AL CONCILIAR COBROOO");
-						}*/
+						}
 			        }
 					
 				}else{
 					Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NO EXISTEN PAGOS");
 				}
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
 				
 				
 				
@@ -1864,7 +1760,7 @@ public class DashboardActivity extends Activity{
 				    		paramsTransaction.add(new BasicNameValuePair("codeCustomer", objectTransaction.toString()));	    		
 				    		
 				    		// getting JSON string from URL
-				    		String returnJson = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/update_transaction", "POST", paramsTransaction);
+				    		String returnJson = jsonParser.makeHttpRequest(utils.url() + "update_transaction", "POST", paramsTransaction);
 				    		
 				    		try {
 				    			Log.d("PRODUCTOS JSON: ", "> " + returnJson.trim());
@@ -1906,7 +1802,7 @@ public class DashboardActivity extends Activity{
             		paramsCheckUser.add(new BasicNameValuePair("codeCustomer", objectCheckUser.toString()));
             			    		
             		// getting JSON string from URL
-            		String returnJsonCheckUser = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/check_if_is_valid_user", "POST", paramsCheckUser);
+            		String returnJsonCheckUser = jsonParser.makeHttpRequest(utils.url() + "check_if_is_valid_user", "POST", paramsCheckUser);
             			    	
             		Log.d("log_tag", "BACKGROUND 6 :::::: " + returnJsonCheckUser.trim());
             		

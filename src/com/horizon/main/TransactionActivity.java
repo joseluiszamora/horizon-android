@@ -69,6 +69,7 @@ import com.horizon.reports.CobroListActivity;
 import com.horizon.webservice.GPSTracker;
 import com.horizon.webservice.InternetDetector;
 import com.horizon.webservice.JSONParser;
+import com.horizon.webservice.Utils;
 import com.ruizmier.horizon.R;
 
 public class TransactionActivity extends Activity implements OnItemClickListener {		
@@ -135,25 +136,25 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	// android unique code
 	String uuid;
 	
+	// flag if is prestamo
+	Boolean prestamo = false;
+	
+	// Utils
+    Utils utils;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);		
 		setContentView(R.layout.transaction);
 		
-		// Session Manager
-		SessionManager session = new SessionManager(getApplicationContext());
-	    // get user name data from session
-        HashMap<String, String> user = session.getUserDetails();
-        // Set user name into action bar layout 
-        String name = user.get(SessionManager.KEY_NAME);
-        userMail = user.get(SessionManager.KEY_EMAIL);
-        TextView actionBarClient = (TextView)findViewById(R.id.actionBarClientName);
-        actionBarClient.setText(name);
-		        
+		// Utils
+	    utils = new Utils(getApplicationContext());
+	    TextView actionBarClient = (TextView)findViewById(R.id.actionBarClientName);
+	    actionBarClient.setText(utils.getSessionName());
+	    
 		bundle = getIntent().getExtras();
 		// Get Bundle Transaction Code
 		codeTransaction = Integer.parseInt(bundle.getString("newTransactionCode"));
-		Log.d("log_tag", "TRANSACTION ID ******>>" + codeTransaction);
 		// Create Transaction Object
 		transactionObject = dbTransactions.getTransaction(codeTransaction);
 
@@ -163,7 +164,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		txtBottomPrice = (TextView)findViewById(R.id.totalPriceTransactionModify);
 		
 		if(transactionObject.getClientType().trim().equals("temporal")){
-			txtClientName.setText(name);
+			txtClientName.setText(utils.getSessionName());
 		    txtClientAddress.setText("Transaccion temporal");
 		}else{
 			customer = dbCustomers.getCustomerByCode(transactionObject.getCodeCustomer());
@@ -174,13 +175,11 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		    daily = dbDaily.getByCustomer(String.valueOf(customer.getIdWeb()));
 			
 			if (daily != null) {
+				prestamo = true;
 				alertCustomerDailyPending();
-				Log.d("log_tag", "******>>" + daily.getCustomerName());
-			}else{
-				Log.d("log_tag", "++++++>>");
 			}
 		}
-		
+
 		// make listransaction transaction
 		listView = (ListView) findViewById(R.id.contentlisttransdetails);	
 	    listView.setOnItemClickListener(this);
@@ -236,17 +235,22 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
         builder.setTitle("Atención");
         builder.setMessage("Esta transacción es venta directa o prestamo?")
-        	.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+        	.setPositiveButton("Venta Directa", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
             	transactionObject.setType("venta_directa");
             	dialog.dismiss();
+            	// save transaction
+        		saveTransactionStatus();
            }
        });
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-               public void onClick(DialogInterface dialog, int id) {
-            	   transactionObject.setType("prestamo");
-               }
-           }); 
+       builder.setNegativeButton("Prestamo", new DialogInterface.OnClickListener() {
+           public void onClick(DialogInterface dialog, int id) {
+        	   transactionObject.setType("prestamo");
+        	   dialog.dismiss();
+	           	// save transaction
+	       		saveTransactionStatus();
+           }
+       }); 
         AlertDialog alert = builder.create();
         alert.show();
     }
@@ -313,10 +317,15 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 			       AlertDialog alert = builder.create();
 			       alert.show();
 				}else{
-					// Set if transaction set venta directa / prestamo 
-					alertCustomerTransactionSelectType();
-					// save transaction
-					saveTransactionStatus();
+					if (prestamo) {
+						transactionObject.setType("venta_directa");
+						// save transaction
+						saveTransactionStatus();
+					}
+					else{
+						// Set if transaction set venta directa / prestamo 
+						alertCustomerTransactionSelectType();
+					}
 				}
 			}
 		});

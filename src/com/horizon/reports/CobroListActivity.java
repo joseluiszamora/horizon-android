@@ -215,7 +215,11 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 					
 					//Daily newdaily = db.get(thisPay.getIdDaily());
 					
-					//db.delete(idDaily);
+					db.delete(idDaily);
+					
+					Intent i = new Intent(getApplicationContext(), DashboardActivity.class);
+					startActivity(i);
+					
 					/*
 					if (utils.checkInternet()) {
 						pDialog = new ProgressDialog(CobroListActivity.this);
@@ -520,8 +524,9 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 			holder.txtAddress.setText(rowItem.getCustomerAddress());
 			holder.txtVoucher.setText("Factura: " + rowItem.getVoucher());
 			holder.txtAmmount.setText("Monto Total (Bs.): " + rowItem.getAmmount());
-			holder.txtIdTransaction.setText(rowItem.getIDTransaction());
-			holder.txtIdCustomer.setText(rowItem.getIDCustomer());
+			
+			holder.txtIdTransaction.setText(String.valueOf(rowItem.getIDTransaction()));
+			holder.txtIdCustomer.setText(String.valueOf(rowItem.getIDCustomer()));
 			holder.txtVoucher.setText(rowItem.getVoucher());
 			
 			Pay payed = dbpay.get_by_daily(rowItem.getID());
@@ -580,9 +585,6 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 		Log.d("log_tag", "SALDO ::::: " + saldorow);
 		
 		showdialogQuantity(idDaily);
-		
-		
-		
 	}
 	
 	private void update() { // refresh listview
