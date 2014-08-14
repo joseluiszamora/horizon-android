@@ -46,6 +46,7 @@ import android.widget.Toast;
 import com.horizon.account.SessionManager;
 import com.horizon.database.Customer;
 import com.horizon.database.Daily;
+import com.horizon.database.DatabaseHandlerBonus;
 import com.horizon.database.DatabaseHandlerCustomers;
 import com.horizon.database.DatabaseHandlerDaily;
 import com.horizon.database.DatabaseHandlerLineVolumes;
@@ -85,27 +86,22 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	
 	// Database transaction class
 	DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(this, "", null, 1);
-	
 	// Database transaction detail class
 	DatabaseHandlerTransactionDetail dbTransDetail = new DatabaseHandlerTransactionDetail(this, "", null, '1');
-	
 	// Database Line class
 	DatabaseHandlerLines dbLine = new DatabaseHandlerLines(this, "", null, '1');
-	
 	// Database Volume class
 	DatabaseHandlerVolumes dbVolume = new DatabaseHandlerVolumes(this, "", null, '1');
-	
 	// Database Product class
 	DatabaseHandlerProducts dbProduct = new DatabaseHandlerProducts(this, "", null, '1');
-
 	// Database Line Volume class
 	DatabaseHandlerLineVolumes dbLineVolume = new DatabaseHandlerLineVolumes(this, "", null, '1');
-	
 	// Database Product class
 	DatabaseHandlerCustomers dbCustomers = new DatabaseHandlerCustomers(this, "", null, '1');
-	
 	// Database Daily class
 	DatabaseHandlerDaily dbDaily = new DatabaseHandlerDaily(this, "", null, '1');
+	// Database Bonus class
+	DatabaseHandlerBonus dbBonus = new DatabaseHandlerBonus(this, "", null, '1');
 	
 	// Creating JSON Parser object
 	JSONParser jsonParser = new JSONParser();

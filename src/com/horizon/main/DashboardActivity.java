@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -45,8 +46,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.horizon.account.SessionManager;
+import com.horizon.database.Bonus;
 import com.horizon.database.Customer;
 import com.horizon.database.Daily;
+import com.horizon.database.DatabaseHandlerBonus;
 import com.horizon.database.DatabaseHandlerCustomers;
 import com.horizon.database.DatabaseHandlerDaily;
 import com.horizon.database.DatabaseHandlerGps;
@@ -1026,7 +1029,50 @@ public class DashboardActivity extends Activity{
     			}
     		}
     		catch (Exception e) {}
-
+    		/** UPDATE DATABASE BONUS **/
+    		Log.d("log_tag", "BONUSSSS >");
+    		DatabaseHandlerBonus dbBonus = new DatabaseHandlerBonus(DashboardActivity.this, "", null, '1');
+    		dbBonus.clearTable();
+    		// Building Parameters
+    		List<NameValuePair> paramsBonus = new ArrayList<NameValuePair>();
+    		String jsonBonus = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/get_bonus",
+    				"GET", paramsBonus);
+			
+    		Log.d("log_tag", "JSON LINES >" + jsonBonus);
+    		
+    		try {				
+    			products = new JSONArray(jsonBonus);
+    			if (products != null) {
+    				// looping through All albums
+    				for (int i = 0; i < products.length(); i++) {					
+    					JSONObject c = products.getJSONObject(i);
+    					// Storing each json item values in variable
+    					String id = c.getString("idbonus");
+    				 	String type = c.getString("type");
+    				 	String idLine = c.getString("idLine");
+    				 	String idProduct = c.getString("idProduct");
+    				 	String cantidad = c.getString("cantidad");
+    				 	String idProduct_bonus = c.getString("idProduct_bonus");
+    				 	String cantidad_bonus = c.getString("cantidad_bonus");
+    				 	String status = c.getString("status");
+    				 	String line = c.getString("line");
+    				 	String nombreproduct = c.getString("nombreproduct");
+    				 	String volume = c.getString("volume");
+    				 	
+    				 	Log.e("log_tag", "Construyendo BONUS > " + id + "---" + nombreproduct+ "---");
+    				 	dbBonus.addBonus(new Bonus(type, Integer.parseInt(idLine), Integer.parseInt(idProduct), 
+    				 			Integer.parseInt(cantidad), nombreproduct, Integer.parseInt(idLine), Integer.parseInt(idProduct_bonus),
+    				 			Integer.parseInt(cantidad_bonus), idProduct_bonus, status));
+    				}
+    			}else{
+    				Log.d("Lines: ", "null");
+    			}
+    		}
+    		catch (Exception e) {
+    	       Toast.makeText(getBaseContext(),"Error al conectar con el servidor. ",Toast.LENGTH_SHORT).show();
+    		}
+    		
+    		
     		/** UPDATE DATABASE DAILY **/
     		// delete All
     		dbDaily.clearTable();
