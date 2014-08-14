@@ -7,9 +7,11 @@ public class Bonus {
 	int _idline_from;
 	int _idproduct_from;
 	int _quantity_from;
+	String _name_from;
 	int _idline_to;
 	int _idproduct_to;
 	int _quantity_to;
+	String _name_to;
 	String _status; // enabled disabled
 	
 	// Empty constructor
@@ -17,27 +19,33 @@ public class Bonus {
 	}
 	
 	// constructor
-	public Bonus(int id, String type, int idlinefrom, int idproductfrom, int quantityfrom, int idlineto, int idproductto, int quantityto, String status){
+	public Bonus(int id, String type, int idlinefrom, int idproductfrom, int quantityfrom, String namefrom, int idlineto, int idproductto, 
+			int quantityto, String nameto, String status){
 		this._id = id;
 		this._type = type;
 		this._idline_from = idlinefrom;
 		this._idproduct_from = idproductfrom;
 		this._quantity_from = quantityfrom;
+		this._name_from = namefrom;
 		this._idline_to = idlineto;
 		this._idproduct_to = idproductto;
 		this._quantity_to = quantityto;
+		this._name_to = nameto;
 		this._status = status;
 	}
 	
 	// constructor
-	public Bonus(String type, int idlinefrom, int idproductfrom, int quantityfrom, int idlineto, int idproductto, int quantityto, String status){
+	public Bonus(String type, int idlinefrom, int idproductfrom, int quantityfrom, String namefrom, int idlineto, int idproductto, 
+			int quantityto, String nameto, String status){
 		this._type = type;
 		this._idline_from = idlinefrom;
 		this._idproduct_from = idproductfrom;
 		this._quantity_from = quantityfrom;
+		this._name_from = namefrom;
 		this._idline_to = idlineto;
 		this._idproduct_to = idproductto;
 		this._quantity_to = quantityto;
+		this._name_to = nameto;
 		this._status = status;
 	}
 
@@ -85,6 +93,15 @@ public class Bonus {
 		this._quantity_from = idquantityfrom;
 	}
 
+	// getting namefrom
+	public String getNameFrom(){
+		return this._name_from;
+	}
+	// setting namefrom
+	public void setNameFrom(String namefrom){
+		this._name_from = namefrom;
+	}
+	
 	// getting IDLineTo
 	public int getIdLineTo(){
 		return this._idline_to;
@@ -111,7 +128,16 @@ public class Bonus {
 	public void setQuantityTo(int quantityto){
 		this._quantity_to = quantityto;
 	}
-
+	
+	// getting nameto
+	public String getNameTo(){
+		return this._name_to;
+	}
+	// setting nameto
+	public void setNameTo(String nameto){
+		this._name_to = nameto;
+	}
+	
 	// getting status
 	public String getStatus(){
 		return this._status;
