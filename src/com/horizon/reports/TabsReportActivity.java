@@ -37,14 +37,21 @@ public class TabsReportActivity extends TabActivity{
         
         // Tab for Last Delivery
         TabSpec deliveryspec = tabHost.newTabSpec("Entregas");
-        deliveryspec.setIndicator("Entregas", getResources().getDrawable(android.R.drawable.ic_menu_agenda	));
+        deliveryspec.setIndicator("Entregas", getResources().getDrawable(android.R.drawable.ic_menu_agenda));
         Intent deliveryIntent = new Intent(this, TabLastDeliveryActivity.class);
         deliveryspec.setContent(deliveryIntent);
+        
+        // Tab for Last Bonus
+        TabSpec bonusspec = tabHost.newTabSpec("Bonos");
+        bonusspec.setIndicator("Bonos", getResources().getDrawable(android.R.drawable.ic_menu_agenda));
+        Intent bonusIntent = new Intent(this, TabLastBonusActivity.class);
+        bonusspec.setContent(bonusIntent);
         
         // Adding all TabSpec to TabHost
         tabHost.addTab(transspec); // Adding Ultimas Transacciones tab
         tabHost.addTab(deliveryspec); // Adding Ultimas Entregas tab
         tabHost.addTab(clientspec); // Adding Clientes tab
         tabHost.addTab(productspec); // Adding Productos tab
+        tabHost.addTab(bonusspec); // Adding Bonus tab
 	}
 }

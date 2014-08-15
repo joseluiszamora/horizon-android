@@ -5,11 +5,11 @@ public class Bonus {
 	int _id;
 	String _type; //line or product
 	int _idline_from;
-	int _idproduct_from;
+	String _idproduct_from;
 	int _quantity_from;
 	String _name_from;
 	int _idline_to;
-	int _idproduct_to;
+	String _idproduct_to;
 	int _quantity_to;
 	String _name_to;
 	String _status; // enabled disabled
@@ -19,7 +19,7 @@ public class Bonus {
 	}
 	
 	// constructor
-	public Bonus(int id, String type, int idlinefrom, int idproductfrom, int quantityfrom, String namefrom, int idlineto, int idproductto, 
+	public Bonus(int id, String type, int idlinefrom, String idproductfrom, int quantityfrom, String namefrom, int idlineto, String idproductto, 
 			int quantityto, String nameto, String status){
 		this._id = id;
 		this._type = type;
@@ -35,7 +35,7 @@ public class Bonus {
 	}
 	
 	// constructor
-	public Bonus(String type, int idlinefrom, int idproductfrom, int quantityfrom, String namefrom, int idlineto, int idproductto, 
+	public Bonus(String type, int idlinefrom, String idproductfrom, int quantityfrom, String namefrom, int idlineto, String idproductto, 
 			int quantityto, String nameto, String status){
 		this._type = type;
 		this._idline_from = idlinefrom;
@@ -76,11 +76,11 @@ public class Bonus {
 		this._idline_from = idlinefrom;
 	}
 	// getting IDProductfrom
-	public int getIdProductFrom(){
+	public String getIdProductFrom(){
 		return this._idproduct_from;
 	}
 	// setting IDProductfrom
-	public void setIdProductFrom(int idproductfrom){
+	public void setIdProductFrom(String idproductfrom){
 		this._idproduct_from = idproductfrom;
 	}
 
@@ -112,11 +112,11 @@ public class Bonus {
 	}
 
 	// getting IDProductTo
-	public int getIdProductTo(){
+	public String getIdProductTo(){
 		return this._idproduct_to;
 	}
 	// setting IDProductTo
-	public void setIdProductTo(int idproductto){
+	public void setIdProductTo(String idproductto){
 		this._idproduct_to = idproductto;
 	}
 

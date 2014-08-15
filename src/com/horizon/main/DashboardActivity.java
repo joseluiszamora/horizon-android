@@ -1038,7 +1038,7 @@ public class DashboardActivity extends Activity{
     		String jsonBonus = jsonParser.makeHttpRequest("http://www.mariani.bo/horizon-sc/index.php/webservice/get_bonus",
     				"GET", paramsBonus);
 			
-    		Log.d("log_tag", "JSON LINES >" + jsonBonus);
+    		Log.d("log_tag", "JSON BONUS >" + jsonBonus);
     		
     		try {				
     			products = new JSONArray(jsonBonus);
@@ -1059,13 +1059,10 @@ public class DashboardActivity extends Activity{
     				 	String nombreproduct = c.getString("nombreproduct");
     				 	String volume = c.getString("volume");
     				 	
-    				 	Log.e("log_tag", "Construyendo BONUS > " + id + "---" + nombreproduct+ "---");
-    				 	dbBonus.addBonus(new Bonus(type, Integer.parseInt(idLine), Integer.parseInt(idProduct), 
-    				 			Integer.parseInt(cantidad), nombreproduct, Integer.parseInt(idLine), Integer.parseInt(idProduct_bonus),
-    				 			Integer.parseInt(cantidad_bonus), idProduct_bonus, status));
+    				 	dbBonus.addBonus(new Bonus(type, Integer.parseInt(idLine), idProduct, Integer.parseInt(cantidad), nombreproduct, 1, idProduct_bonus, Integer.parseInt(cantidad_bonus), idProduct_bonus, "1"));
     				}
     			}else{
-    				Log.d("Lines: ", "null");
+    				Log.d("Bonus: ", "null");
     			}
     		}
     		catch (Exception e) {

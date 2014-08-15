@@ -38,8 +38,8 @@ public class DatabaseHandlerBonus  extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_TABLE = "CREATE TABLE " + TABLE_BONUS + "("
-				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_TYPE + " TEXT," + KEY_ID_LINE_FROM + " INTEGER," + KEY_ID_PRODUCT_FROM + " INTEGER," 
-				+ KEY_QUANTITY_FROM + " INTEGER," + KEY_NAME_FROM + " TEXT," + KEY_ID_LINE_TO + " INTEGER," + KEY_ID_PRODUCT_TO + " INTEGER,"
+				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_TYPE + " TEXT," + KEY_ID_LINE_FROM + " INTEGER," + KEY_ID_PRODUCT_FROM + " TEXT," 
+				+ KEY_QUANTITY_FROM + " INTEGER," + KEY_NAME_FROM + " TEXT," + KEY_ID_LINE_TO + " INTEGER," + KEY_ID_PRODUCT_TO + " TEXT,"
 				+ KEY_QUANTITY_TO + " INTEGER,"+ KEY_NAME_TO + " TEXT," + KEY_STATUS + " TEXT" + ")";		
 		db.execSQL(CREATE_TABLE);
 	}
@@ -50,8 +50,8 @@ public class DatabaseHandlerBonus  extends SQLiteOpenHelper {
 	public void CreateTable() {
 		SQLiteDatabase db = this.getWritableDatabase();
 		String CREATE_TABLE = "CREATE TABLE " + TABLE_BONUS + "("
-				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_TYPE + " TEXT," + KEY_ID_LINE_FROM + " INTEGER," + KEY_ID_PRODUCT_FROM + " INTEGER," 
-				+ KEY_QUANTITY_FROM + " INTEGER," + KEY_NAME_FROM + " TEXT," + KEY_ID_LINE_TO + " INTEGER," + KEY_ID_PRODUCT_TO + " INTEGER,"
+				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_TYPE + " TEXT," + KEY_ID_LINE_FROM + " INTEGER," + KEY_ID_PRODUCT_FROM + " TEXT," 
+				+ KEY_QUANTITY_FROM + " INTEGER," + KEY_NAME_FROM + " TEXT," + KEY_ID_LINE_TO + " INTEGER," + KEY_ID_PRODUCT_TO + " TEXT,"
 				+ KEY_QUANTITY_TO + " INTEGER,"+ KEY_NAME_TO + " TEXT," + KEY_STATUS + " TEXT" + ")";		
 		db.execSQL(CREATE_TABLE);
 	}
@@ -82,8 +82,30 @@ public class DatabaseHandlerBonus  extends SQLiteOpenHelper {
 		db.insert(TABLE_BONUS, null, values);
 		db.close(); // Closing database connection
 	}
+	
+	public String[] getAllNames() {
+		int i = 0;
+		//Select All Query
+		String selectQuery = "SELECT  * FROM " + TABLE_BONUS;
 
-	// Getting All Products
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		String [] customerList;  
+		customerList = new String[cursor.getCount()];
+		
+		// looping through all rows and adding to list
+		if (cursor.moveToFirst()) {
+			do {				
+				//customerList[i] = cursor.getString(2);
+				customerList[i] = new String(cursor.getString(2));
+				i++;
+			} while (cursor.moveToNext());
+		}		
+		return customerList;
+	}
+
+	// Getting All Bonus
 	public List<Bonus> getAllBonus() {
 		List<Bonus> list = new ArrayList<Bonus>();
 		String selectQuery = "SELECT  * FROM " + TABLE_BONUS;
@@ -98,11 +120,11 @@ public class DatabaseHandlerBonus  extends SQLiteOpenHelper {
 				bonus.setID(Integer.parseInt(cursor.getString(0)));
 				bonus.setType(cursor.getString(1));
 				bonus.setIdLineFrom(Integer.parseInt(cursor.getString(2)));
-				bonus.setIdProductFrom(Integer.parseInt(cursor.getString(3)));
+				bonus.setIdProductFrom(cursor.getString(3));
 				bonus.setQuantityFrom(Integer.parseInt(cursor.getString(4)));
 				bonus.setNameFrom(cursor.getString(5));
 				bonus.setIdLineTo(Integer.parseInt(cursor.getString(6)));
-				bonus.setIdProductTo(Integer.parseInt(cursor.getString(7)));
+				bonus.setIdProductTo(cursor.getString(7));
 				bonus.setQuantityTo(Integer.parseInt(cursor.getString(8)));
 				bonus.setNameTo(cursor.getString(9));
 				bonus.setStatus(cursor.getString(10));
@@ -110,6 +132,11 @@ public class DatabaseHandlerBonus  extends SQLiteOpenHelper {
 				list.add(bonus);
 			} while (cursor.moveToNext());
 		}
+		return list;
+	}
+	
+	public List<Bonus> getAllSearch(String like) {
+		List<Bonus> list = new ArrayList<Bonus>();		
 		return list;
 	}
 	
@@ -134,11 +161,11 @@ public class DatabaseHandlerBonus  extends SQLiteOpenHelper {
 				bonus.setID(Integer.parseInt(cursor.getString(0)));
 				bonus.setType(cursor.getString(1));
 				bonus.setIdLineFrom(Integer.parseInt(cursor.getString(2)));
-				bonus.setIdProductFrom(Integer.parseInt(cursor.getString(3)));
+				bonus.setIdProductFrom(cursor.getString(3));
 				bonus.setQuantityFrom(Integer.parseInt(cursor.getString(4)));
 				bonus.setNameFrom(cursor.getString(5));
 				bonus.setIdLineTo(Integer.parseInt(cursor.getString(6)));
-				bonus.setIdProductTo(Integer.parseInt(cursor.getString(7)));
+				bonus.setIdProductTo(cursor.getString(7));
 				bonus.setQuantityTo(Integer.parseInt(cursor.getString(8)));
 				bonus.setNameTo(cursor.getString(9));
 				bonus.setStatus(cursor.getString(10));

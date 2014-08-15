@@ -179,7 +179,7 @@ public class DatabaseHandlerProducts extends SQLiteOpenHelper {
 					product.setID(Integer.parseInt(cursor.getString(0)));
 					product.setIDWeb(Long.parseLong(cursor.getString(1)));
 					product.setIDLineVolume(Integer.parseInt(cursor.getString(2)));
-					product.setName(cursor.getString(3));				
+					product.setName(cursor.getString(3));
 					product.setPrice(Double.parseDouble(cursor.getString(4)));
 					product.setDescription(cursor.getString(5));
 					product.setEstado(cursor.getString(6));
