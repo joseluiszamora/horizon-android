@@ -1346,7 +1346,9 @@ public class DashboardActivity extends Activity{
         				 			+ "---" + idProduct + "---" + productName+ "---" + precio + "---" + Cantidad+ "---" + priceTotal);
         				 	
         				 	dbTransDetail.addTransactionDetail(new TransactionDetail(idDetailTransaction, id_trans,  idProduct, 
-        				 			productName, precio, Cantidad, "por_entregar", priceTotal, "ninguna"));
+        				 			productName, precio, Cantidad, "por_entregar", priceTotal, "ninguna", "normal"));
+        				 	
+        				 	Log.e("log_tag", "saved trans  DETAIL");
         				}
     				}
     			}else{
@@ -1625,6 +1627,7 @@ public class DashboardActivity extends Activity{
 					                jsonArray.put(trans.getCodeProduct());
 					                jsonArray.put(trans.getQuantity());
 					                jsonArray.put(trans.getObs());
+					                jsonArray.put(trans.getType());
 					                try {
 					                	objectAllTransactionsDetails.put("transaction"+i, jsonArray);
 									} catch (JSONException e) {
@@ -1660,7 +1663,7 @@ public class DashboardActivity extends Activity{
 					    		
 					    		Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + returnJson.trim());
 					    		try {
-					    			Log.d("PRODUCTOS JSON: ", "> " + returnJson.trim());
+					    			Log.d("PRODUCTOS JSON TRANSACTION: ", "> " + returnJson.trim());
 					    			if (returnJson.trim().equals("SAVED")){
 					    				Log.d("log_tag", "Transaccion Conciliada correctamente");
 					    				

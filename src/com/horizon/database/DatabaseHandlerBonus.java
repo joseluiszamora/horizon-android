@@ -140,18 +140,18 @@ public class DatabaseHandlerBonus  extends SQLiteOpenHelper {
 		return list;
 	}
 	
-	public List<Bonus> getBonusSearch(int id, String type) {// type: 'line', 'product'
+	public List<Bonus> getBonusSearch(String id, String type) {// type: 'line', 'product'
 		SQLiteDatabase db = this.getReadableDatabase();
 		List<Bonus> list = new ArrayList<Bonus>();
 		Cursor cursor;
 		if (type == "line") {
 			cursor = db.query(TABLE_BONUS, new String[] {KEY_ID, KEY_TYPE, KEY_ID_LINE_FROM, KEY_ID_PRODUCT_FROM, KEY_QUANTITY_FROM
 					, KEY_NAME_FROM, KEY_ID_LINE_TO, KEY_ID_PRODUCT_TO, KEY_QUANTITY_TO, KEY_NAME_TO, KEY_STATUS}, 
-					KEY_ID_LINE_FROM + "=?", new String[] { String.valueOf(id) }, null, null, null, null);	
+					KEY_ID_LINE_FROM + "=?", new String[] { id }, null, null, null, null);	
 		} else {
 			cursor = db.query(TABLE_BONUS, new String[] {KEY_ID, KEY_TYPE, KEY_ID_LINE_FROM, KEY_ID_PRODUCT_FROM, KEY_QUANTITY_FROM
 					, KEY_NAME_FROM, KEY_ID_LINE_TO, KEY_ID_PRODUCT_TO, KEY_QUANTITY_TO, KEY_NAME_TO, KEY_STATUS}, 
-					KEY_ID_PRODUCT_FROM + "=?", new String[] { String.valueOf(id) }, null, null, null, null);
+					KEY_ID_PRODUCT_FROM + "=?", new String[] { id }, null, null, null, null);
 		}
 		
 		if (cursor.moveToFirst()) {

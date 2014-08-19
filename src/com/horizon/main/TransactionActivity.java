@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -44,6 +45,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.horizon.account.SessionManager;
+import com.horizon.database.Bonus;
 import com.horizon.database.Customer;
 import com.horizon.database.Daily;
 import com.horizon.database.DatabaseHandlerBonus;
@@ -526,9 +528,10 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	private void createNewTransactionDetail(MakeTransaction newtransaction){
 		// verify again
 		if (transaction.getIdTransaction() != 0 && transaction.getCodeProduct() != null && transaction.getQuantity() != 0){
-			
 			// verify if this transactions already have this product
-			final TransactionDetail getTransDetail = dbTransDetail.getTransactionDetailIfExist(transaction.getIdTransaction(), transaction.getCodeProduct());
+			final TransactionDetail getTransDetail = dbTransDetail.getTransactionDetailIfExist(transaction.getIdTransaction(), 
+					transaction.getCodeProduct());
+			
 			final Product  getproduct = dbProduct.getProduct(transaction.getCodeProduct());
 			final Double unitPrice = Double.parseDouble(getproduct.getPrice());
 			
@@ -542,8 +545,8 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 						int Quantity = (int) (transaction.getQuantity() + getTransDetail.getQuantity());
 						
 						// Edit Transaction Detail
-						dbTransDetail.updateTransactionDetail(new TransactionDetail(getTransDetail.getID(), null, transaction.getIdTransaction(), transaction.getCodeProduct(),
-								getproduct.getName(), unitPrice, Quantity, "creado", totalPrice, null));
+						dbTransDetail.updateTransactionDetail(new TransactionDetail(getTransDetail.getID(), null, transaction.getIdTransaction(), 
+								transaction.getCodeProduct(), getproduct.getName(), unitPrice, Quantity, "creado", totalPrice, null, null));
 						
 						addPrice((double) ((unitPrice * transaction.getQuantity())));
 						update();
@@ -553,16 +556,15 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		               public void onClick(DialogInterface dialog, int id) {
 		                 dialog.dismiss();
 		               }
-		           }); 
-		        AlertDialog alert = builder.create();            
-		        alert.show();											
-				
+		           });
+		        AlertDialog alert = builder.create();
+		        alert.show();
 				
 			}else{ // product new
 				Double totalPrice = (double) (unitPrice * transaction.getQuantity());
 				// Add new Transaction Detail
 				dbTransDetail.addTransactionDetail(new TransactionDetail(null, transaction.getIdTransaction(),  transaction.getCodeProduct(), 
-						getproduct.getName(), unitPrice, transaction.getQuantity(), "creado", totalPrice, "ninguna"));
+						getproduct.getName(), unitPrice, transaction.getQuantity(), "creado", totalPrice, "ninguna", "normal"));
 				
 				addPrice(totalPrice);
 			}
@@ -571,8 +573,49 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		else{
 			Toast.makeText(TransactionActivity.this,"Error al agregar el producto", Toast.LENGTH_SHORT).show();
 		}
+		// delete all bonus
+		dbTransDetail.deleteTransactionDetailBonus(transaction.getIdTransaction());
+		// update all bonus
+		updateBonus();
 	}
 
+	private void updateBonus() {
+		List<TransactionDetail> rowItems2;
+		rowItems2 = dbTransDetail.getAllTransactionDetailsForThisTransactionPendingNoBonus(codeTransaction);
+		
+		for(int i = 0; i < rowItems2.size(); i++){
+			TransactionDetail trans = rowItems2.get(i);
+			Log.i("log_tag", "EXISTENT PRODUCT NO BONUS>>>>>>>> " + trans.getNameProduct() + " TIPO " + trans.getType());
+			
+			final List<Bonus> getBonus = dbBonus.getBonusSearch(trans.getCodeProduct(), "product");
+			
+			//create json transaction details Main Object
+			for(int j = 0; j < getBonus.size(); j++) {
+				Bonus bonus = getBonus.get(j);
+				
+				final Product pro = dbProduct.getProduct(bonus.getIdProductTo());
+				Log.e("log_tag", "BONO >>>>>>>> " + pro.getName() + " " + pro.getPrice());
+				
+				final int bonusCount = (trans.getQuantity() / bonus.getQuantityFrom()) * bonus.getQuantityTo();
+				
+				Log.e("log_tag", "BONO CANTIDAD >>>>>>>> " + bonusCount + " detail TraNS " + trans.getQuantity() + " BONUS " + bonus.getQuantityTo() );
+				
+				if (bonusCount > 0) {
+					dbTransDetail.addTransactionDetail(
+					new TransactionDetail(null, transaction.getIdTransaction(), bonus.getIdProductTo(), 
+							pro.getName(), Double.parseDouble(pro.getPrice()), bonusCount, "creado", 0.0, "ninguna", "bonus")
+					);
+					Log.i("log_tag", "Anadiendo producto BONIFICADO:::: ");
+				}else{
+					Log.i("log_tag", "Anadiendo producto BONIFICADO FAIL:::: ");
+				}
+				//Log.d("log_tag", "Anadiendo producto:::: " + bonus.getIdProductFrom());
+				//Log.d("log_tag", "Cantidades+++ " + bonus.getQuantityFrom() + " TOO " + transaction.getQuantity());
+			}
+		}
+		update();
+	}
+	
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		final String custom_id_trans_details = (String) ((TextView) arg1.findViewById(R.id.transaction_id_detail)).getText();
 		final String product_name_trans_details = (String) ((TextView) arg1.findViewById(R.id.tdproduct)).getText();

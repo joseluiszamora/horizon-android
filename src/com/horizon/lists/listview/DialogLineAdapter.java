@@ -52,8 +52,8 @@ public class DialogLineAdapter extends BaseAdapter {
         	Line rowItem = (Line) getItem(position);
             // Database Volume class
         	//DatabaseHandlerVolumes dbVolume = new DatabaseHandlerVolumes(context, "", null, '1');
-        	Log.d("log_tag", "LINE IDWEB >>>" + rowItem.getIDWeb());
-        	Log.d("log_tag", "LINE DESC >>>" + rowItem.getDescription());
+        	//Log.d("log_tag", "LINE IDWEB >>>" + rowItem.getIDWeb());
+        	//Log.d("log_tag", "LINE DESC >>>" + rowItem.getDescription());
             
         	//List<Volume> rowItems = dbVolume.getAllVolumesForLine(rowItem.getIDWeb());
         	//Log.d("log_tag", "LINE CANTIDAD >>>" + rowItems.size());

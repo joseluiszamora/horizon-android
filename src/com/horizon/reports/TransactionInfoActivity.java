@@ -374,14 +374,14 @@ public class TransactionInfoActivity extends Activity implements OnItemClickList
 				
 				// Edit Transaction Detail
 				dbTransDetail.updateTransactionDetail(new TransactionDetail(getTransDetail.getID(), null, transaction.getIdTransaction(), transaction.getCodeProduct(),
-						getproduct.getName(), unitPrice, Quantity, "creado", totalPrice, null));
+						getproduct.getName(), unitPrice, Quantity, "creado", totalPrice, null, null));
 				
 				addPrice((double) ((unitPrice * transaction.getQuantity())));
 			}else{ // product new
 				Double totalPrice = (double) (unitPrice * transaction.getQuantity());
 				// Add new Transaction Detail
 				dbTransDetail.addTransactionDetail(new TransactionDetail(null, transaction.getIdTransaction(),  transaction.getCodeProduct(), 
-						getproduct.getName(), unitPrice, transaction.getQuantity(), "creado", totalPrice, "ninguna"));
+						getproduct.getName(), unitPrice, transaction.getQuantity(), "creado", totalPrice, "ninguna", "normal"));
 				
 				addPrice(totalPrice);
 			}

@@ -12,13 +12,14 @@ public class TransactionDetail {
 	String _status;
 	Double _priceTotal;
 	String _obs;
+	String _type; //normal, bonus
 	
 	// Empty constructor
 	public TransactionDetail() {	
 	}
 	// constructor
 	public TransactionDetail(int id, String idWeb, int idtransaction, String codeProduct, String nameProduct, 
-			Double singleprice, int quantity, String status, Double totalprice, String obs){
+			Double singleprice, int quantity, String status, Double totalprice, String obs, String type){
 		this._id = id;
 		this._idWeb = idWeb;
 		this._idTransaction = idtransaction;
@@ -29,11 +30,12 @@ public class TransactionDetail {
 		this._status = status;
 		this._priceTotal = totalprice;
 		this._obs = obs;
+		this._type = type;
 	}
 	
 	// constructor
 	public TransactionDetail(String idWeb, int idtransaction, String codeProduct, String nameProduct, 
-			Double singleprice, int quantity, String status, Double totalprice, String obs){		
+			Double singleprice, int quantity, String status, Double totalprice, String obs, String type){		
 		this._idWeb = idWeb;
 		this._idTransaction = idtransaction;
 		this._codeProduct = codeProduct;
@@ -43,6 +45,7 @@ public class TransactionDetail {
 		this._status = status;
 		this._priceTotal = totalprice;
 		this._obs = obs;
+		this._type = type;
 	}
 	
 	// getting ID
@@ -143,5 +146,15 @@ public class TransactionDetail {
 	// setting Observations
 	public void setObs(String obs){
 		this._obs = obs;
+	}
+	
+	// getting Type
+	public String getType(){
+		return this._type;
+	}
+	
+	// setting Type
+	public void setType(String type){
+		this._type = type;
 	}
 }
