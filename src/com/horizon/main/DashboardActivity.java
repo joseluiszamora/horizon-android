@@ -458,7 +458,7 @@ public class DashboardActivity extends Activity{
 					transactionTpye = "preventa";
 					showDialog(DIALOGO_SELECCION);
 				}
-				if (item == 3){
+				if (item == 2){
 					transactionTpye = "venta_directa";
 					showDialog(DIALOGO_SELECCION);
 				}
@@ -540,7 +540,7 @@ public class DashboardActivity extends Activity{
 			            			DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(DashboardActivity.this, "", null, 1);
 			            			
 			            			// Create New Transaction
-			            			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", value, " ", "pending", transactionTpye, "regular", 
+			            			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", value, " ", "pending", transactionTpye, "0", "regular", 
 			            					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude));        			
 			            			
 				    				
@@ -600,7 +600,7 @@ public class DashboardActivity extends Activity{
 	    			
 	    			// Create New Transaction
 	    			Long idNewTransaction = dbTransactions.addTransaction(new Transaction(null, null, null, "pending", 
-	    					transactionTpye, "temporal", formattedDate, "", latitude + " ; "+ longitude, "0.0"));
+	    					transactionTpye, "0", "temporal", formattedDate, "", latitude + " ; "+ longitude, "0.0"));
 	    			
 	    			if(idNewTransaction != null && idNewTransaction != 0){
 	    				// cancel conciliate
@@ -684,7 +684,7 @@ public class DashboardActivity extends Activity{
 			            			DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(DashboardActivity.this, "", null, 1);
 			            			
 			            			// Create New Transaction
-			            			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", value, " ", "pending", transactionTpye, "regular", 
+			            			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", value, " ", "pending", transactionTpye, "0", "regular", 
 			            					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude));        			
 			            			
 				    				
@@ -958,7 +958,7 @@ public class DashboardActivity extends Activity{
             			DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(DashboardActivity.this, "", null, 1);
             			
             			// Create New Transaction
-            			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", codeScan, " ", "pending", transactionTpye, "regular", 
+            			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", codeScan, " ", "pending", transactionTpye, "0", "regular", 
             					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude));        			
             			
 	    				
@@ -1008,7 +1008,7 @@ public class DashboardActivity extends Activity{
     		
     		Log.d("log_tag", "PRODUCTOS JSON: > " + jsonProducts); // Check your log cat for JSON reponse
 
-    		try {				
+    		try {
     			products = new JSONArray(jsonProducts);
     			if (products != null) {
     				// looping through All albums
@@ -1326,8 +1326,9 @@ public class DashboardActivity extends Activity{
     					String customer = c.getString("customer");
 
     				 	JSONArray transactionList = c.getJSONArray("transactionsList");
+
     				 	int id_trans = (int) (long) dbTransactions.addTransaction(
-    				 			new Transaction(idWeb, customer, " ", "por_entregar", "preventa", "regular", "", "", "0.0", "0.0"));
+    				 			new Transaction(idWeb, customer, " ", "por_entregar", "preventa", "0", "regular", "", "", "0.0", "0.0"));
     				 	
     				 	for (int j = 0; j < transactionList.length(); j++) {	
         					Log.d("log_tag", "Transaccion YEAAA::::");
@@ -1431,7 +1432,7 @@ public class DashboardActivity extends Activity{
         			DatabaseHandlerTransactions dbTransactions = new DatabaseHandlerTransactions(DashboardActivity.this, "", null, 1);
         			
         			// Create New Transaction
-        			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", codeCustomer, " ", "pending", transactionTpye, "regular", 
+        			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", codeCustomer, " ", "pending", transactionTpye, "0", "regular", 
         					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude));        			
         			
         			if(idNewTransaction != null && idNewTransaction != 0){
@@ -1634,6 +1635,7 @@ public class DashboardActivity extends Activity{
 										e.printStackTrace();
 									}
 					    		}
+					    		//Log.d("log_tag", "+++++++++++++++++++++++++++++++++++++++ " + paramsTransaction);
 					    		
 					    		// create Main json Object for this transaction
 					    		JSONObject objectTransaction = new JSONObject();
@@ -1641,6 +1643,7 @@ public class DashboardActivity extends Activity{
 									objectTransaction.put("TransactionsArray", objectAllTransactionsDetails);
 									objectTransaction.put("codeCustomer", transaction.getCodeCustomer());
 									objectTransaction.put("transactionType", transaction.getType());
+									objectTransaction.put("transactionPrestamo", transaction.getPrestamo());
 									objectTransaction.put("clientType", transaction.getClientType());
 									objectTransaction.put("coordinateStart", transaction.getCoordinateStart());
 									objectTransaction.put("coordinateFinish", transaction.getCoordinateFinish());
@@ -1658,10 +1661,12 @@ public class DashboardActivity extends Activity{
 					    		List<NameValuePair> paramsTransaction = new ArrayList<NameValuePair>();
 					    		paramsTransaction.add(new BasicNameValuePair("codeCustomer", objectTransaction.toString()));	    		
 					    		
+					    		Log.d("log_tag", "+++++++++++++++++++++++++++++++++++++++ " + paramsTransaction);
+					    		
 					    		// getting JSON string from URL
 					    		String returnJson = jsonParser.makeHttpRequest(utils.url() + "save_transaction", "POST", paramsTransaction);
 					    		
-					    		Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + returnJson.trim());
+					    		Log.d("log_tag", "+++++++++++++++++++++++++++++++++++++++ " + returnJson.trim());
 					    		try {
 					    			Log.d("PRODUCTOS JSON TRANSACTION: ", "> " + returnJson.trim());
 					    			if (returnJson.trim().equals("SAVED")){
@@ -1678,7 +1683,7 @@ public class DashboardActivity extends Activity{
 					    				sw = false;
 					    			}
 					    		}
-					    		catch (Exception e) {}	    	
+					    		catch (Exception e) {}
 							} catch (Exception e) {}
 				        }	        	       
 					} catch (Exception e) {

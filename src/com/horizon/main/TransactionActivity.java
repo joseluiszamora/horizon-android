@@ -236,6 +236,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
         	.setPositiveButton("Venta Directa", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
             	transactionObject.setType("venta_directa");
+            	transactionObject.setPrestamo("0");
             	dialog.dismiss();
             	// save transaction
         		saveTransactionStatus();
@@ -244,6 +245,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
        builder.setNegativeButton("Prestamo", new DialogInterface.OnClickListener() {
            public void onClick(DialogInterface dialog, int id) {
         	   transactionObject.setType("prestamo");
+        	   transactionObject.setPrestamo("1");
         	   dialog.dismiss();
 	           	// save transaction
 	       		saveTransactionStatus();
@@ -345,6 +347,8 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		transactionObject.setStatus("creado");
 		dbTransactions.updateTransaction(transactionObject);
 		
+		//Log.d("log_tag", "Tipo de Transaccion::::: " + transactionObject.getType() );
+		
 		Intent i = new Intent(getApplicationContext(), DashboardActivity.class);
 		startActivity(i);
 		finish();
@@ -428,7 +432,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	    
 	    Log.d("log_tag", " SHOW VOLUMES BY LINE:  > " + transaction.getLine());
 		List<Volume> rowItems = dbVolume.getAllVolumesForLine(transaction.getLine());
-		DialogVolumeAdapter modeAdapter = new DialogVolumeAdapter(TransactionActivity.this, rowItems);	    
+		DialogVolumeAdapter modeAdapter = new DialogVolumeAdapter(TransactionActivity.this, rowItems);
 	    modeList.setAdapter(modeAdapter);
 	    modeList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 	    builder.setView(modeList);

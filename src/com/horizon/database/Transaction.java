@@ -8,6 +8,7 @@ public class Transaction {
 	String _obs;
 	String _status;
 	String _type;
+	String _prestamo; // 1=si, 0=no
 	String _clienttype;
 	String _timestart;
 	String _timefinish;
@@ -19,13 +20,14 @@ public class Transaction {
 		
 	}
 	// constructor
-	public Transaction(int id, String idweb, String codecustom, String obs, String status, String type, String clienttype, String timestart, String timefinish, String coordstart, String coordfinish){
+	public Transaction(int id, String idweb, String codecustom, String obs, String status, String type, String prestamo, String clienttype, String timestart, String timefinish, String coordstart, String coordfinish){
 		this._id = id;
 		this._idweb = idweb;
 		this._codecustomer = codecustom;
 		this._obs = obs;
 		this._status = status;
 		this._type = type;
+		this._prestamo = prestamo;
 		this._clienttype = clienttype;
 		this._timestart = timestart;
 		this._timefinish = timefinish;
@@ -34,12 +36,13 @@ public class Transaction {
 	}
 	
 	// constructor
-	public Transaction(String idweb, String codecustom, String obs, String status, String type, String clienttype, String timestart, String timefinish, String coordstart, String coordfinish){
+	public Transaction(String idweb, String codecustom, String obs, String status, String type, String prestamo, String clienttype, String timestart, String timefinish, String coordstart, String coordfinish){
 		this._idweb = idweb;
 		this._codecustomer = codecustom;
 		this._obs = obs;
 		this._status = status;
 		this._type = type;
+		this._prestamo = prestamo;
 		this._clienttype = clienttype;
 		this._timestart = timestart;
 		this._timefinish = timefinish;
@@ -106,6 +109,16 @@ public class Transaction {
 	// setting Type
 	public void setType(String stat){
 		this._type = stat;
+	}
+	
+	// getting Prestamo
+	public String getPrestamo(){
+		return this._prestamo;
+	}
+	
+	// setting Prestamo
+	public void setPrestamo(String prestamo){
+		this._prestamo = prestamo;
 	}
 	
 	// getting Client Type
