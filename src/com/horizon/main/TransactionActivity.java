@@ -144,7 +144,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);		
 		setContentView(R.layout.transaction);
-		
+			
 		// Utils
 	    utils = new Utils(getApplicationContext());
 	    TextView actionBarClient = (TextView)findViewById(R.id.actionBarClientName);
@@ -158,7 +158,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 
 		// Define TextViews
 		TextView txtClientName = (TextView)findViewById(R.id.TransDetailInfoCustomName);
-		TextView txtClientAddress = (TextView)findViewById(R.id.txtClientAddress);
+		TextView txtClientAddress = (TextView)findViewById(R.id.txtClientAddress);	
 		txtBottomPrice = (TextView)findViewById(R.id.totalPriceTransactionModify);
 		
 		if(transactionObject.getClientType().trim().equals("temporal")){
@@ -168,7 +168,6 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 			customer = dbCustomers.getCustomerByCode(transactionObject.getCodeCustomer());
 			txtClientName.setText( "(" + customer.getCode() + ") "+ customer.getName());
 		    txtClientAddress.setText(customer.getAddress());
-		    
 		    // check if have pendings dailies 
 		    daily = dbDaily.getByCustomer(String.valueOf(customer.getIdWeb()));
 			
@@ -183,15 +182,12 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	    listView.setOnItemClickListener(this);
 	    rowItems = dbTransDetail.getAllTransactionDetailsForThisTransactionPending(codeTransaction);
 	    adapter = new TransactionListAdapter(TransactionActivity.this, rowItems);
-	    listView.setAdapter(adapter);
-	    
+	    listView.setAdapter(adapter);	    
 	    // Define Buttons
 		final Button btnadd = (Button)findViewById(R.id.btnConciliar);
 		final Button btnSave = (Button)findViewById(R.id.btnSave);
         
-        
 		uuid = Secure.getString(TransactionActivity.this.getContentResolver(),Secure.ANDROID_ID);
-        
 
 		//btn Add Product
 		btnadd.setOnClickListener(new OnClickListener() {
