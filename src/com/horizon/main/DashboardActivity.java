@@ -1653,10 +1653,12 @@ public class DashboardActivity extends Activity{
 									objectTransaction.put("userMail", userMail);
 									
 									Log.d("log_tag", "Tipo de Transaccion::::: " + transaction.getType());
-								} catch (JSONException e) {					
+									Log.d("log_tag", "Tipo de Transaccion Prestamo::::: " + transaction.getPrestamo());
+									Log.d("log_tag", "Tipo de Cliente::::: " + transaction.getClientType());
+								} catch (JSONException e) {
 									e.printStackTrace();
-								}								
-																
+								}
+
 					    		// Building Parameters
 					    		List<NameValuePair> paramsTransaction = new ArrayList<NameValuePair>();
 					    		paramsTransaction.add(new BasicNameValuePair("codeCustomer", objectTransaction.toString()));	    		

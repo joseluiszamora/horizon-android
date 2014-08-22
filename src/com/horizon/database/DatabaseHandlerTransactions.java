@@ -373,6 +373,11 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 				KEY_ID_WEB, KEY_CO_CU, KEY_OBS, KEY_STATUS, KEY_TYPE, KEY_PRESTAMO, KEY_CLIENT_TYPE, KEY_DA_ST, KEY_DA_FI, KEY_CO_ST, KEY_CO_FI }, KEY_ID + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()){
+			
+			//Log.d("log_tag", cursor.getString(0)+" - "+cursor.getString(1)+" - "+cursor.getString(2)+" - "+cursor.getString(3)+" - "+
+		//cursor.getString(4)+" - "+ cursor.getString(5)+" - "+cursor.getString(6)+" - "+cursor.getString(7)+" - "+cursor.getString(8)+" - "+
+			//		cursor.getString(9)+" - "+cursor.getString(10)+" - "+cursor.getString(11));
+			
 			Transaction transaction = new Transaction(Integer.parseInt(cursor.getString(0)), cursor.getString(1),
 					cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5),
 					cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11));			
@@ -414,7 +419,7 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 		values.put(KEY_OBS, transaction.getObs()); // Transaction obs
 		values.put(KEY_STATUS, transaction.getStatus()); // Transaction status
 		values.put(KEY_TYPE, transaction.getType()); // Transaction type
-		values.put(KEY_TYPE, transaction.getPrestamo()); // if prestamo?
+		values.put(KEY_PRESTAMO, transaction.getPrestamo()); // if prestamo?
 		values.put(KEY_CLIENT_TYPE, transaction.getClientType()); // Transaction type
 		values.put(KEY_DA_ST, transaction.getTimeStart()); // Transaction time start
 		values.put(KEY_DA_FI, transaction.getTimeFinish()); // Transaction time finish
