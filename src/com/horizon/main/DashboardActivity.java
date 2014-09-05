@@ -258,18 +258,18 @@ public class DashboardActivity extends Activity{
 			@SuppressWarnings("deprecation")
 			@Override
 			public void onClick(View arg0) {
-				// check if GPS enabled
-    	        if(gps.canGetLocation()){
+				/*// check if GPS enabled
+    	        if(gps.canGetLocation()){*/
     	        	showDialog(DIALOGO_PREVENTA);
     	        	latitude = gps.getLatitude();
         	        longitude = gps.getLongitude();
         	        
-    	        }else{
+    	        /*}else{
     	        	// can't get location
     	            // GPS or Network is not enabled
     	            // Ask user to enable GPS/network in settings
     	            gps.showSettingsAlert();
-    	        }
+    	        }*/
 			}		
 		});
 		
@@ -1728,17 +1728,21 @@ public class DashboardActivity extends Activity{
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
-						
+
 						// Building Parameters
 			    		List<NameValuePair> paramsTransactionPagos = new ArrayList<NameValuePair>();
 			    		paramsTransactionPagos.add(new BasicNameValuePair("codeCustomer", objectTransactionPagos.toString()));
-			    			    		
+
 			    		// getting JSON string from URL
-			    		String returnJsonGPS = jsonParser.makeHttpRequest(utils.url() + "saveCobro", "POST", paramsTransactionPagos);				    		
+			    		String returnJsonGPS = jsonParser.makeHttpRequest(utils.url() + "saveCobro", "POST", paramsTransactionPagos);
 			    		Log.d("log_tag", "COBROOO CONCILIADO -----> " + returnJsonGPS);
 			    		if (returnJsonGPS.trim().equals("ok")){
 			    			// delete pay
+			    			Log.d("log_tag", "++++++++ BORRANDO PAGO " + thisPayed.getID());
 			    			dbPay.delete(thisPayed.getID());
+			    			
+			    			//thisPayed.setStatus("2"); // conciliado
+			    			dbPay.update(thisPayed);
 			    			
 			    			Log.d("log_tag", "COBROOO CONCILIADO");
 						}else{

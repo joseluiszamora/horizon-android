@@ -100,13 +100,14 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 	public List<Pay> getAll() {
 		List<Pay> list = new ArrayList<Pay>();
 		//Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_NAME + "";
+		String selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_STATUS + "='1'";
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
-		// looping through all rows and adding to list
 		if (cursor.moveToFirst()) {
 			do {
 				Pay pay = new Pay();
+				Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>> JALANDO PAGO DESDE LA DB " + cursor.getString(0));
+				
 				pay.setID(Integer.parseInt(cursor.getString(0)));
 				pay.setIdDaily(Integer.parseInt(cursor.getString(1)));
 				pay.setIdTransaction(Integer.parseInt(cursor.getString(2)));
@@ -219,9 +220,11 @@ public class DatabaseHandlerPay extends SQLiteOpenHelper{
 
 	// Deleting single
 	public void delete(int id) {
+		Log.d("log_tag", "++++++++DELETING PAGOooooooooooooooo " + id);
 		SQLiteDatabase db = this.getWritableDatabase();	
-		db.delete(TABLE_NAME, KEY_ID_DAILY + " = ?",
-				new String[] { String.valueOf(id) });
+		//db.delete(TABLE_NAME, KEY_ID_DAILY + " = ?", new String[] { String.valueOf(id) });
+		
+		db.delete(TABLE_NAME, KEY_ID_DAILY + "='" + id + "'", null);
 		db.close();
 	}
 }
