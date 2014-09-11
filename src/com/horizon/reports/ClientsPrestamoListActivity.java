@@ -157,7 +157,7 @@ public class ClientsPrestamoListActivity extends Activity implements OnItemClick
 		
 		// Create New Transaction        			
 		Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", custom_id, "", "pending", transactionTpye, "0", "regular", 
-				formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude));
+				formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude, ""));
 
 		String codeTransaction = String.valueOf(idNewTransaction);
 		
@@ -200,7 +200,7 @@ public class ClientsPrestamoListActivity extends Activity implements OnItemClick
         			
         			// Create New Transaction        			
         			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", codeCustomer, "", "pending", transactionTpye, "0", "regular", 
-        					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude));        			
+        					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude, ""));        			
         			
         			if(idNewTransaction != null && idNewTransaction != 0){
         				int codeTransaction = (int) (long) idNewTransaction;        				

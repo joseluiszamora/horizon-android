@@ -46,11 +46,14 @@ import android.widget.Toast;
 import com.horizon.account.SessionManager;
 import com.horizon.database.Bonus;
 import com.horizon.database.Customer;
+import com.horizon.database.Daily;
 import com.horizon.database.DatabaseHandlerBonus;
 import com.horizon.database.DatabaseHandlerCustomers;
+import com.horizon.database.DatabaseHandlerDaily;
 import com.horizon.database.DatabaseHandlerGps;
 import com.horizon.database.DatabaseHandlerLineVolumes;
 import com.horizon.database.DatabaseHandlerLines;
+import com.horizon.database.DatabaseHandlerPay;
 import com.horizon.database.DatabaseHandlerProducts;
 import com.horizon.database.DatabaseHandlerTransactionDetail;
 import com.horizon.database.DatabaseHandlerTransactions;
@@ -783,6 +786,60 @@ public class DashboardActivity extends Activity{
 		
     	@Override
     	protected Boolean doInBackground(Void... params) {
+    		/** UPDATE DATABASE DAILY **/
+    		final DatabaseHandlerDaily dbDaily = new DatabaseHandlerDaily(DashboardActivity.this, "", null, '1');
+    		dbDaily.clearTable();
+    		// Building Parameters
+    		List<NameValuePair> paramsDaily = new ArrayList<NameValuePair>();
+    		JSONObject objectDaily = new JSONObject();
+    		try {
+    			objectDaily.put("userMail", userMail);
+			} catch (JSONException e1) {
+				Log.d("log_tag","mail from the user failll :(");
+			}
+    		paramsDaily.add(new BasicNameValuePair("codeCustomer", objectDaily.toString()));
+    		
+    		// getting JSON string from URL
+    		String jsonDaily = jsonParser.makeHttpRequest
+    				("http://www.mariani.bo/horizon-sc/index.php/webservice/get_daily", "POST", paramsDaily);
+    		
+    		Log.d("log_tag", "PRODUCTOS JSON: > " + jsonDaily);
+    		
+    		try {				
+    			daily = new JSONArray(jsonDaily);
+    			if (daily != null) {
+    				// looping through All
+    				for (int i = 0; i < daily.length(); i++) {					
+    					JSONObject c = daily.getJSONObject(i);
+    					// Storing each json item values in variable
+    					String idweb = c.getString("iddiario");
+    					String idTransaction = c.getString("idTransaction");
+    					String idCustomer = c.getString("idCustomer");
+    					String fechaTransaction = c.getString("FechaTransaction");
+    				 	String voucher = c.getString("NumVoucher");
+    				 	String type = c.getString("Type");
+    				 	String ammount = c.getString("Monto");
+    				 	String pagado = c.getString("pagado");
+    				 	String code = c.getString("code");
+    				 	String custname = c.getString("custname");
+    				 	String custaddress = c.getString("custaddress");
+    				 	String status = "activo";
+    				 	
+    				 	Log.d("log_tag", "NEW DAILY: > " + idweb);
+    				 	
+    				 	dbDaily.add(new Daily(Integer.parseInt(idweb), Integer.parseInt(idTransaction), Integer.parseInt(idCustomer), 
+    				 			fechaTransaction, voucher, type, ammount, pagado, code, custname, custaddress, status));
+    				}
+    			}else{
+    				Log.d("log_tag", "null");
+    			}
+    		}
+    		catch (Exception e) { }
+    		
+    		/** UPDATE DATABASE PAY **/
+    		final DatabaseHandlerPay dbPay = new DatabaseHandlerPay(DashboardActivity.this, "", null, '1');
+    		dbPay.clearTable();
+
     		/** UPDATE DATABASE PRODUCTS  **/
     		final DatabaseHandlerProducts dbProducts = new DatabaseHandlerProducts(DashboardActivity.this, "", null, '1');
     		// delete All Products
@@ -1380,6 +1437,7 @@ public class DashboardActivity extends Activity{
 									objectTransaction.put("timeStart", transaction.getTimeStart());
 									objectTransaction.put("timeFinish", transaction.getTimeFinish());
 									objectTransaction.put("obs", transaction.getObs());
+									objectTransaction.put("voucher", transaction.getVoucher());
 									objectTransaction.put("userMail", userMail);
 									
 									Log.d("log_tag", "Tipo de Transaccion::::: " + transaction.getType());
