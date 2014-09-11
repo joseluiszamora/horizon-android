@@ -7,7 +7,6 @@ import java.util.HashMap;
 import android.content.Context;
 
 import com.horizon.account.SessionManager;
-import com.horizon.reports.CobroListActivity;
 
 public class Utils {
 	private Context _context;

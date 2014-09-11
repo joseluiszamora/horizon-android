@@ -3,7 +3,6 @@ package com.horizon.main;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -14,7 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -48,14 +46,11 @@ import android.widget.Toast;
 import com.horizon.account.SessionManager;
 import com.horizon.database.Bonus;
 import com.horizon.database.Customer;
-import com.horizon.database.Daily;
 import com.horizon.database.DatabaseHandlerBonus;
 import com.horizon.database.DatabaseHandlerCustomers;
-import com.horizon.database.DatabaseHandlerDaily;
 import com.horizon.database.DatabaseHandlerGps;
 import com.horizon.database.DatabaseHandlerLineVolumes;
 import com.horizon.database.DatabaseHandlerLines;
-import com.horizon.database.DatabaseHandlerPay;
 import com.horizon.database.DatabaseHandlerProducts;
 import com.horizon.database.DatabaseHandlerTransactionDetail;
 import com.horizon.database.DatabaseHandlerTransactions;
@@ -64,14 +59,12 @@ import com.horizon.database.DatabaseHandlerVolumes;
 import com.horizon.database.Gps;
 import com.horizon.database.Line;
 import com.horizon.database.LineVolume;
-import com.horizon.database.Pay;
 import com.horizon.database.Product;
 import com.horizon.database.Transaction;
 import com.horizon.database.TransactionDetail;
 import com.horizon.database.Volume;
 import com.horizon.reports.ClientsListActivity;
 import com.horizon.reports.ClientsPrestamoListActivity;
-import com.horizon.reports.CobroListActivity;
 import com.horizon.reports.TabsHistoryActivity;
 import com.horizon.reports.TabsReportActivity;
 import com.horizon.webservice.GPSTracker;
@@ -96,12 +89,9 @@ public class DashboardActivity extends Activity{
 	
 	// Dialog options prestamos
 	private static final int DIALOGO_PRESTAMO = 3;
-
-	// Dialog options cobros
-	private static final int DIALOGO_COBRO = 4;
 		
 	// Session Manager Class
-	SessionManager session;	
+	SessionManager session;
 	
 	// CHeck if the user exist, get GPS data, time
 	StartNewTransaction nt = new StartNewTransaction();
@@ -128,9 +118,6 @@ public class DashboardActivity extends Activity{
  	DatabaseHandlerTransactions dbTransactions;			
 	// Database transaction detail class
 	DatabaseHandlerTransactionDetail dbTransactionDetail;
-	// Database daily
-	DatabaseHandlerDaily dbDaily;
-	DatabaseHandlerPay dbPay;
 	
 	DatabaseHandlerGps GpsObj;
 	
@@ -170,8 +157,6 @@ public class DashboardActivity extends Activity{
         
         dbTransactions = new DatabaseHandlerTransactions(getApplicationContext(), "", null, 1);
     	dbTransactionDetail = new DatabaseHandlerTransactionDetail(getApplicationContext(), "", null, '1');
-    	dbDaily = new DatabaseHandlerDaily(getApplicationContext(), "", null, '1');
-    	dbPay = new DatabaseHandlerPay(getApplicationContext(), "", null, '1');
     	GpsObj = new DatabaseHandlerGps(getApplicationContext(), "", null, 1);
     	uuid = Secure.getString(DashboardActivity.this.getContentResolver(),Secure.ANDROID_ID);
     	
@@ -434,15 +419,11 @@ public class DashboardActivity extends Activity{
 			dialogo = prestamoDialog();
 			return dialogo;
 		}
-		if (id == 4) {
-			dialogo = cobroDialog();
-			return dialogo;
-		}
 		return dialogo;
     }
 		
 	private Dialog transactionTypeSelectionDialog(){
-    	final String[] items = {"Cobro", "Preventa", "Venta Directa"};
+    	final String[] items = {"Preventa", "Venta"};
     	
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
@@ -451,14 +432,10 @@ public class DashboardActivity extends Activity{
     	    public void onClick(DialogInterface dialog, int item) {
     	        Log.i("log_tag", "Opción elegidaXXXXX: " + items[item]);
 				if (item == 0){
-					Log.i("log_tag", "COBROOO " );
-					showDialog(DIALOGO_COBRO);
-				}
-				if (item == 1){
 					transactionTpye = "preventa";
 					showDialog(DIALOGO_SELECCION);
 				}
-				if (item == 2){
+				if (item == 1){
 					transactionTpye = "venta_directa";
 					showDialog(DIALOGO_SELECCION);
 				}
@@ -541,7 +518,7 @@ public class DashboardActivity extends Activity{
 			            			
 			            			// Create New Transaction
 			            			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", value, " ", "pending", transactionTpye, "0", "regular", 
-			            					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude));        			
+			            					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude, ""));        			
 			            			
 				    				
 				    				Intent intentNewTransaction = new Intent(DashboardActivity.this, TransactionActivity.class);            	
@@ -600,7 +577,7 @@ public class DashboardActivity extends Activity{
 	    			
 	    			// Create New Transaction
 	    			Long idNewTransaction = dbTransactions.addTransaction(new Transaction(null, null, null, "pending", 
-	    					transactionTpye, "0", "temporal", formattedDate, "", latitude + " ; "+ longitude, "0.0"));
+	    					transactionTpye, "0", "temporal", formattedDate, "", latitude + " ; "+ longitude, "0.0", ""));
 	    			
 	    			if(idNewTransaction != null && idNewTransaction != 0){
 	    				// cancel conciliate
@@ -685,7 +662,7 @@ public class DashboardActivity extends Activity{
 			            			
 			            			// Create New Transaction
 			            			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", value, " ", "pending", transactionTpye, "0", "regular", 
-			            					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude));        			
+			            					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude, ""));        			
 			            			
 				    				
 				    				Intent intentNewTransaction = new Intent(DashboardActivity.this, TransactionActivity.class);            	
@@ -732,198 +709,7 @@ public class DashboardActivity extends Activity{
     	});    	    	
     	return builder.create();
     }
-	private Dialog cobroDialog() {
-		final String[] items = {"Buscar en la lista", "Introducir Numero de Factura"};
-    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    	
-    	builder.setTitle("Selección de Cobro");
-    	builder.setItems(items, new DialogInterface.OnClickListener() {
-    	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opción elegida: " + items[item]);    	    	
-    	    	if (item == 0){
-    	    		Intent intent = new Intent(DashboardActivity.this, CobroListActivity.class);
-	    			Bundle bundle = new Bundle();
-    				bundle.putString("transactionType", transactionTpye);
-    				intent.putExtras(bundle);
-    				startActivity(intent);
-    				finish();
-    	    	}
-				if (item == 1) {
-					AlertDialog.Builder alert = new AlertDialog.Builder(DashboardActivity.this);
-					alert.setTitle("Nuevo Cobro");  
-					alert.setMessage("Ingresar Numero de Factura :");                
-					
-					// Set an EditText view to get user input
-					final EditText input = new EditText(DashboardActivity.this);
-					alert.setView(input);
-					
-					input.setInputType(InputType.TYPE_CLASS_NUMBER);
-					input.setFilters(new InputFilter[] {
-							new InputFilter.LengthFilter(20), // maximum 20 characteres
-					});
-
-					alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {  
-						@SuppressWarnings("unchecked")
-						public void onClick(DialogInterface dialog, int whichButton) {  
-							String value = input.getText().toString();
-							Log.d( "log_tag", "FACTURAAAAA : " + value);
-							showdialogVoucher(Integer.valueOf(value));
-							//return;
-							
-							/*AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
-					        builder.setTitle("Atención");
-					        builder.setMessage("Esta seguro de adicionar un pago de " + value + " Bs. para el cliente " + name + "(" + Address + ") con " + factura)
-					        	.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-					            public void onClick(DialogInterface dialog, int id) {
-									dbpay.add(new Pay(idDaily, String.valueOf(ammount), "today", "activo"));
-									db.delete(idDaily);
-									update();
-					               }
-					           });
-					        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-					               public void onClick(DialogInterface dialog, int id) {
-					                 dialog.dismiss();	                     
-					               }
-					           }); 
-					        AlertDialog alert = builder.create();            
-					        alert.show();
-							
-							
-							*/
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-						}
-					});
-					
-					alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							return;
-						}
-					});
-					AlertDialog alertToShow = alert.create();
-					alertToShow.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-					alertToShow.show();
-
-	    	        
-				}
-				if (item == 2){	
-					try {
-						Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-		    			intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
-		    			startActivityForResult(intent, 0);
-					} catch (Exception e) {
-						Toast toast3 = Toast.makeText(DashboardActivity.this, "NO tiene instalado un servicio para lectura de QRCode", Toast.LENGTH_SHORT);
-		    			toast3.show();
-					}
-				}
-    	    }
-    	});    	    	
-    	return builder.create();
-	}
-	
-	
-	//Cobros verificar numero de factura 
-	public void showdialogVoucher(final int factura) {
-		Daily dail = dbDaily.getByVoucher(String.valueOf(factura));
-		 if(!(dail == null)){
-			 showdialogQuantity(dail);
- 		 }else{
- 			Toast.makeText(DashboardActivity.this, "Numero de factura invalido", Toast.LENGTH_SHORT).show();
- 		 }
-    }
-	
-	// adicionar pago
-	public void showdialogQuantity(final Daily daily) {
-		final AlertDialog.Builder alert = new AlertDialog.Builder(DashboardActivity.this);
-		final Double valsaldo = Double.valueOf(daily.getAmmount()) - Double.valueOf(daily.getSaldo());
-		if (daily.getSaldo() != null){
-			alert.setTitle("Cantidad (maximo "+ valsaldo +" Bs):");
-		}else{
-			alert.setTitle("Cantidad (maximo "+  daily.getAmmount() +" Bs):");
-		}
 		
-		// Set an EditText view to get user input   
-		final EditText input = new EditText(DashboardActivity.this);
-		alert.setView(input);
-		
-		input.setInputType(InputType.TYPE_CLASS_NUMBER);
-		input.setFilters(new InputFilter[] {
-			// Maximum 5 characters.
-			new InputFilter.LengthFilter(7),
-		});
-
-		alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {  
-	     public void onClick(DialogInterface dialog, int whichButton) {  
-	    	 if(!input.getText().toString().trim().equals("") && !input.getText().toString().trim().equals(null)){
-	    		Double value = Double.valueOf(input.getText().toString());
-	    		
-		         if(value != 0){
-		     		if (value > valsaldo) {
-						Toast.makeText(DashboardActivity.this, "El valor introducido excede el monto del prestamo", Toast.LENGTH_SHORT).show();
-					}else{
-						showdialogConfirmPay(daily, value);
-						
-					}
-	    		 }else{
-					// insert error here
-	    			Toast.makeText(DashboardActivity.this, "Debe introducir una cantidad valida", Toast.LENGTH_SHORT).show();
-	    		 }
-	    	 }else{
-	    		Toast.makeText(DashboardActivity.this, "Debe introducir una cantidad valida", Toast.LENGTH_SHORT).show();
-	    	 }
-	    	 
-	    	 return;                  
-	        }  
-	      });  
-	
-	     alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-	         public void onClick(DialogInterface dialog, int which) {
-	             // TODO Auto-generated method stub
-	             return;   
-	         }
-	     });				
-		
-	    AlertDialog alertToShow = alert.create();
-		alertToShow.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-		alertToShow.show();	
-    }
-	
-
-	public void showdialogConfirmPay(final Daily daily, final double ammount) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
-        builder.setTitle("Atención");
-        builder.setMessage("Esta seguro de adicionar un pago de " + ammount + " Bs. para el cliente " + daily.getCustomerName() 
-        		+ "(" + daily.getCustomerAddress() + ") con factura N. " + daily.getVoucher())
-        	.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-            	//dbPay.add(new Pay(daily.getID(), String.valueOf(ammount), "today", "activo"));
-            	dbDaily.delete(daily.getID());
-            	dialog.dismiss();
-               }
-           });
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-               public void onClick(DialogInterface dialog, int id) {
-                 dialog.dismiss();
-               }
-           }); 
-        AlertDialog alert = builder.create();            
-        alert.show();
-    }
-	
-
-	
-	
-	
-	
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
     	if (requestCode == 0) {
     		if (resultCode == RESULT_OK) {
@@ -959,7 +745,7 @@ public class DashboardActivity extends Activity{
             			
             			// Create New Transaction
             			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", codeScan, " ", "pending", transactionTpye, "0", "regular", 
-            					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude));        			
+            					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude, ""));        			
             			
 	    				
 	    				Intent intentNewTransaction = new Intent(DashboardActivity.this, TransactionActivity.class);            	
@@ -1068,62 +854,6 @@ public class DashboardActivity extends Activity{
     		catch (Exception e) {
     	       Toast.makeText(getBaseContext(),"Error al conectar con el servidor. ",Toast.LENGTH_SHORT).show();
     		}
-    		
-    		
-    		/** UPDATE DATABASE DAILY **/
-    		// delete All
-    		dbDaily.clearTable();
-    		// Building Parameters
-    		List<NameValuePair> paramsDaily = new ArrayList<NameValuePair>();
-    		JSONObject objectDaily = new JSONObject();
-    		try {
-    			objectDaily.put("userMail", userMail);
-			} catch (JSONException e1) {
-				Log.d("log_tag","mail from the user failll :(");
-			}
-    		paramsDaily.add(new BasicNameValuePair("codeCustomer", objectDaily.toString()));
-    		
-    		// getting JSON string from URL
-    		String jsonDaily = jsonParser.makeHttpRequest
-    				("http://www.mariani.bo/horizon-sc/index.php/webservice/get_daily", "POST", paramsDaily);
-    		
-    		Log.d("log_tag", "PRODUCTOS JSON: > " + jsonDaily);
-    		
-    		try {				
-    			daily = new JSONArray(jsonDaily);
-    			if (daily != null) {
-    				// looping through All
-    				for (int i = 0; i < daily.length(); i++) {					
-    					JSONObject c = daily.getJSONObject(i);
-    					// Storing each json item values in variable
-    					String idweb = c.getString("iddiario");
-    					String idTransaction = c.getString("idTransaction");
-    					String idCustomer = c.getString("idCustomer");
-    					String fechaTransaction = c.getString("FechaTransaction");
-    				 	String voucher = c.getString("NumVoucher");
-    				 	String type = c.getString("Type");
-    				 	String ammount = c.getString("Monto");
-    				 	String pagado = c.getString("pagado");
-    				 	String code = c.getString("code");
-    				 	String custname = c.getString("custname");
-    				 	String custaddress = c.getString("custaddress");
-    				 	String status = "activo";
-    				 	
-    				 	Log.d("log_tag", "NEW DAILY: > " + idweb);
-    				 	
-    				 	dbDaily.add(new Daily(Integer.parseInt(idweb), Integer.parseInt(idTransaction), Integer.parseInt(idCustomer), 
-    				 			fechaTransaction, voucher, type, ammount, pagado, code, custname, custaddress, status));
-    				}
-    			}else{
-    				Log.d("log_tag", "null");
-    			}
-    		}
-    		catch (Exception e) { }
-    		
-    		/** UPDATE DATABASE PAY **/
-    		final DatabaseHandlerPay dbPay = new DatabaseHandlerPay(DashboardActivity.this, "", null, '1');
-    		// delete All
-    		dbPay.clearTable();
     		
     		/** UPDATE DATABASE CUSTOMERS **/ 
     		final DatabaseHandlerCustomers dbCustomers = new DatabaseHandlerCustomers(DashboardActivity.this, "", null, '1');
@@ -1328,7 +1058,7 @@ public class DashboardActivity extends Activity{
     				 	JSONArray transactionList = c.getJSONArray("transactionsList");
 
     				 	int id_trans = (int) (long) dbTransactions.addTransaction(
-    				 			new Transaction(idWeb, customer, " ", "por_entregar", "preventa", "0", "regular", "", "", "0.0", "0.0"));
+    				 			new Transaction(idWeb, customer, " ", "por_entregar", "preventa", "0", "regular", "", "", "0.0", "0.0", ""));
     				 	
     				 	for (int j = 0; j < transactionList.length(); j++) {	
         					Log.d("log_tag", "Transaccion YEAAA::::");
@@ -1433,7 +1163,7 @@ public class DashboardActivity extends Activity{
         			
         			// Create New Transaction
         			Long idNewTransaction = dbTransactions.addTransaction(new Transaction("", codeCustomer, " ", "pending", transactionTpye, "0", "regular", 
-        					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude));        			
+        					formattedDate, formattedDate, latitude + " ; "+ longitude, latitude + " ; "+ longitude, ""));        			
         			
         			if(idNewTransaction != null && idNewTransaction != 0){
         				int codeTransaction = (int) (long) idNewTransaction;        			
@@ -1691,71 +1421,7 @@ public class DashboardActivity extends Activity{
 					} catch (Exception e) {
 						Log.d("log_tag: ", "Base de Datos nula");
 					}
-				}else{
-					Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NO HAY TRANSACCIONES");
 				}
-
-				
-				Log.d("log_tag", "---------------  Iniciando Conciliacion automatica  PAYS -----------------");
-				/** Conciliate all the PAYS **/
-				List<Pay> allPays = null;
-				try {
-					allPays = dbPay.getAll();
-				} catch (Exception e) {
-					allPays = null;
-				}
-				
-				if(allPays != null){
-					Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SI EXISTEN PAGOS");
-					
-					for (Pay thisPayed : allPays) {
-						JSONObject objectTransactionPagos = new JSONObject();
-						
-						Daily newdaily = dbDaily.get(thisPayed.getIdDaily());
-						Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>> DAILY" + newdaily);
-						
-						try {
-							objectTransactionPagos.put("FechaTransaction", thisPayed.getDate());
-							objectTransactionPagos.put("idUser", utils.getSessionMail());
-							objectTransactionPagos.put("idUserSupervisor", utils.getSessionMail());
-							objectTransactionPagos.put("idTransaction", thisPayed.getIdTransaction());
-							objectTransactionPagos.put("NumVoucher", thisPayed.getVoucher());
-							objectTransactionPagos.put("idCustomer", thisPayed.getIdCustomer());
-							objectTransactionPagos.put("Type", "C");
-							objectTransactionPagos.put("Monto", thisPayed.getAmmount());
-							objectTransactionPagos.put("Estado", "1");
-							objectTransactionPagos.put("Detalle", "Android");
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
-
-						// Building Parameters
-			    		List<NameValuePair> paramsTransactionPagos = new ArrayList<NameValuePair>();
-			    		paramsTransactionPagos.add(new BasicNameValuePair("codeCustomer", objectTransactionPagos.toString()));
-
-			    		// getting JSON string from URL
-			    		String returnJsonGPS = jsonParser.makeHttpRequest(utils.url() + "saveCobro", "POST", paramsTransactionPagos);
-			    		Log.d("log_tag", "COBROOO CONCILIADO -----> " + returnJsonGPS);
-			    		if (returnJsonGPS.trim().equals("ok")){
-			    			// delete pay
-			    			Log.d("log_tag", "++++++++ BORRANDO PAGO " + thisPayed.getID());
-			    			dbPay.delete(thisPayed.getID());
-			    			
-			    			//thisPayed.setStatus("2"); // conciliado
-			    			dbPay.update(thisPayed);
-			    			
-			    			Log.d("log_tag", "COBROOO CONCILIADO");
-						}else{
-							Log.d("log_tag", "FALLO AL CONCILIAR COBROOO");
-						}
-			        }
-					
-				}else{
-					Log.d("log_tag", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NO EXISTEN PAGOS");
-				}
-				
-				
-				
 				
 				Log.d("log_tag", "---------------  Iniciando Conciliacion automatica  doInBackground Deliveries -----------------");
 				/** Conciliate all the deliveries **/

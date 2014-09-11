@@ -2,26 +2,13 @@ package com.horizon.main;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
@@ -44,7 +31,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.horizon.account.SessionManager;
 import com.horizon.database.Bonus;
 import com.horizon.database.Customer;
 import com.horizon.database.Daily;
@@ -59,7 +45,6 @@ import com.horizon.database.DatabaseHandlerTransactions;
 import com.horizon.database.DatabaseHandlerVolumes;
 import com.horizon.database.Line;
 import com.horizon.database.MakeTransaction;
-import com.horizon.database.Pay;
 import com.horizon.database.Product;
 import com.horizon.database.Transaction;
 import com.horizon.database.TransactionDetail;
@@ -68,7 +53,6 @@ import com.horizon.lists.listview.DialogLineAdapter;
 import com.horizon.lists.listview.DialogProductAdapter;
 import com.horizon.lists.listview.DialogVolumeAdapter;
 import com.horizon.lists.listview.TransactionListAdapter;
-import com.horizon.reports.CobroListActivity;
 import com.horizon.webservice.GPSTracker;
 import com.horizon.webservice.InternetDetector;
 import com.horizon.webservice.JSONParser;
@@ -126,7 +110,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	TextView txtBottomPrice;
 	String userMail;
 	
-	// Dialog options to preventa, venta directa
+	// Dialog options to preventa, venta
 	private static final int DIALOGO_TRANSACTION_0 = 1;	
 	//notify Icon
 	private static final int NOTIF_ALERTA_ID = 1;
@@ -209,7 +193,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	public void alertCustomerDailyPending() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
         builder.setTitle("Atención");
-        builder.setMessage("Este usuario ya tiene prestamos pendientes, si continua la transacción sera almacenada como venta directa")
+        builder.setMessage("Este usuario ya tiene prestamos pendientes, si continua la transacción sera almacenada como venta")
         	.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
             	transactionObject.setType("venta_directa");
@@ -228,8 +212,8 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	public void alertCustomerTransactionSelectType() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
         builder.setTitle("Atención");
-        builder.setMessage("Esta transacción es venta directa o prestamo?")
-        	.setPositiveButton("Venta Directa", new DialogInterface.OnClickListener() {
+        builder.setMessage("Esta transacción es venta o prestamo?")
+        	.setPositiveButton("Venta", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
             	transactionObject.setType("venta_directa");
             	transactionObject.setPrestamo("0");
@@ -244,11 +228,58 @@ public class TransactionActivity extends Activity implements OnItemClickListener
         	   transactionObject.setPrestamo("1");
         	   dialog.dismiss();
 	           	// save transaction
-	       		saveTransactionStatus();
+        	   alertPrestamoVoucherInsert();
            }
        }); 
         AlertDialog alert = builder.create();
         alert.show();
+    }
+	
+	public void alertPrestamoVoucherInsert() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(TransactionActivity.this);
+		alert.setTitle("Numero de Factura: ");  
+		
+		// Set an EditText view to get user input   
+		final EditText input = new EditText(TransactionActivity.this);
+		alert.setView(input);
+		
+		input.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+		input.setFilters(new InputFilter[] {
+			// Maximum 5 characters.
+			new InputFilter.LengthFilter(5),
+		});
+
+		alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {  
+	     public void onClick(DialogInterface dialog, int whichButton) {  
+
+	    	 if(!input.getText().toString().trim().equals("") && !input.getText().toString().trim().equals(null)){
+	    		 Integer value = Integer.parseInt(input.getText().toString());
+		         if(value != 0){
+		        	transactionObject.setVoucher(String.valueOf(value));
+	            	dialog.dismiss();
+	            	// save transaction
+	        		saveTransactionStatus();
+	    		 }else{
+	    			Toast.makeText(TransactionActivity.this, "Debe introducir una factura valida", Toast.LENGTH_SHORT).show();
+	    		 }
+	    	 }else{
+	    		Toast.makeText(TransactionActivity.this, "Debe introducir una factura valida", Toast.LENGTH_SHORT).show();
+	    	 }
+	    	 return;
+	        }
+	      });
+	
+	     alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+	         public void onClick(DialogInterface dialog, int which) {
+	        	 dialog.dismiss();
+	             return;
+	         }
+	     });
+
+	    AlertDialog alertToShow = alert.create();
+		alertToShow.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		alertToShow.show();	
     }
 	
 	//** Total Price Management **//
@@ -502,13 +533,11 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		        	 transaction.setQuantity(value);
 	    			 createNewTransactionDetail(transaction);
 	    		 }else{
-					// insert error here
 	    			Toast.makeText(TransactionActivity.this, "Debe introducir una cantidad valida", Toast.LENGTH_SHORT).show();
 	    		 }
 	    	 }else{
 	    		Toast.makeText(TransactionActivity.this, "Debe introducir una cantidad valida", Toast.LENGTH_SHORT).show();
 	    	 }
-	    	 
 	    	 return;                  
 	        }  
 	      });  
@@ -626,8 +655,11 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	           .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
 	        	   dbTransDetail.deleteTransactionDetail(Integer.parseInt(custom_id_trans_details));
-	        	   lessPrice(Double.parseDouble(total_price_trans_details));
-	        	   //System.out.println("OK CLICKED");
+	        	   
+	        	   String newPriced = total_price_trans_details.replace(",", ".");
+	        	   Double priced = Double.parseDouble(newPriced);
+	        	   
+	        	   lessPrice(priced);
 	        	   update();
 	           }
 	       });

@@ -14,13 +14,12 @@ public class Transaction {
 	String _timefinish;
 	String _coordinatestart;
 	String _coordinatefinish;
+	String _voucher;
 	
 	// Empty constructor
-	public Transaction() {
-		
-	}
+	public Transaction() {}
 	// constructor
-	public Transaction(int id, String idweb, String codecustom, String obs, String status, String type, String prestamo, String clienttype, String timestart, String timefinish, String coordstart, String coordfinish){
+	public Transaction(int id, String idweb, String codecustom, String obs, String status, String type, String prestamo, String clienttype, String timestart, String timefinish, String coordstart, String coordfinish, String voucher){
 		this._id = id;
 		this._idweb = idweb;
 		this._codecustomer = codecustom;
@@ -33,10 +32,11 @@ public class Transaction {
 		this._timefinish = timefinish;
 		this._coordinatestart = coordstart;
 		this._coordinatefinish = coordfinish;
+		this._voucher = voucher;
 	}
 	
 	// constructor
-	public Transaction(String idweb, String codecustom, String obs, String status, String type, String prestamo, String clienttype, String timestart, String timefinish, String coordstart, String coordfinish){
+	public Transaction(String idweb, String codecustom, String obs, String status, String type, String prestamo, String clienttype, String timestart, String timefinish, String coordstart, String coordfinish, String voucher){
 		this._idweb = idweb;
 		this._codecustomer = codecustom;
 		this._obs = obs;
@@ -48,6 +48,7 @@ public class Transaction {
 		this._timefinish = timefinish;
 		this._coordinatestart = coordstart;
 		this._coordinatefinish = coordfinish;
+		this._voucher = voucher;
 	}
 	
 	// getting ID
@@ -165,9 +166,17 @@ public class Transaction {
 	public String getCoordinateFinish(){
 		return this._coordinatefinish;
 	}
-	
 	// setting Coordinate Finish
 	public void setCoordinateFinish(String cs){
 		this._coordinatefinish = cs;
+	}
+	
+	// getting Voucher
+	public String getVoucher(){
+		return this._voucher;
+	}
+	// setting Voucher
+	public void setVoucher(String voucher){
+		this._voucher = voucher;
 	}
 }

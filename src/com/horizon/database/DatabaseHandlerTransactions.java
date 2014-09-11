@@ -36,6 +36,7 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 	private static final String KEY_DA_FI = "fechaHoraFin";
 	private static final String KEY_CO_ST = "coordenadaInicio";
 	private static final String KEY_CO_FI = "coordenadaFin";
+	private static final String KEY_VOUCHER = "voucher";
 	
 	public DatabaseHandlerTransactions(Context context, String name,CursorFactory factory, int version) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -45,7 +46,7 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_TRANSACTION_TABLE = "CREATE TABLE " + TABLE_TRANSACTION + "("
 				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_ID_WEB + " TEXT," + KEY_CO_CU + " TEXT," + KEY_OBS + " TEXT,"
-				+ KEY_STATUS + " TEXT," + KEY_TYPE + " TEXT," + KEY_PRESTAMO + " TEXT," + KEY_CLIENT_TYPE + " TEXT," + KEY_DA_ST + " TEXT," + KEY_DA_FI + " TEXT," + KEY_CO_ST + " TEXT," + KEY_CO_FI + " TEXT" + ")";
+				+ KEY_STATUS + " TEXT," + KEY_TYPE + " TEXT," + KEY_PRESTAMO + " TEXT," + KEY_CLIENT_TYPE + " TEXT," + KEY_DA_ST + " TEXT," + KEY_DA_FI + " TEXT," + KEY_CO_ST + " TEXT," + KEY_CO_FI + " TEXT," + KEY_VOUCHER + " TEXT" + ")";
 		db.execSQL(CREATE_TRANSACTION_TABLE);
 	}
 
@@ -61,7 +62,7 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		String CREATE_TRANSACTION_TABLE = "CREATE TABLE " + TABLE_TRANSACTION + "("
 				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_ID_WEB + " TEXT," + KEY_CO_CU + " TEXT," + KEY_OBS + " TEXT,"
-				+ KEY_STATUS + " TEXT," + KEY_TYPE + " TEXT," + KEY_PRESTAMO + " TEXT," + KEY_CLIENT_TYPE + " TEXT," + KEY_DA_ST + " TEXT," + KEY_DA_FI + " TEXT," + KEY_CO_ST + " TEXT," + KEY_CO_FI + " TEXT" + ")";
+				+ KEY_STATUS + " TEXT," + KEY_TYPE + " TEXT," + KEY_PRESTAMO + " TEXT," + KEY_CLIENT_TYPE + " TEXT," + KEY_DA_ST + " TEXT," + KEY_DA_FI + " TEXT," + KEY_CO_ST + " TEXT," + KEY_CO_FI + " TEXT," + KEY_VOUCHER + " TEXT" + ")";
 		db.execSQL(CREATE_TRANSACTION_TABLE);
 	}
 	
@@ -114,6 +115,7 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 		values.put(KEY_DA_FI, transaction.getTimeFinish()); // Transaction time finish
 		values.put(KEY_CO_ST, transaction.getCoordinateStart()); // Transaction coordinate start
 		values.put(KEY_CO_FI, transaction.getCoordinateFinish()); // Transaction coordinate finish
+		values.put(KEY_VOUCHER, transaction.getVoucher()); // Transaction Voucher
 
 		// Inserting Row
 		long id = db.insert(TABLE_TRANSACTION, null, values);
@@ -126,14 +128,11 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 	// Getting All Transactions created status = creado .... transaction section
 	public List<Transaction> getAllTransactions() {
 		List<Transaction> transactionList = new ArrayList<Transaction>();
-		//Select All Query
 		String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_STATUS + "= 'creado'";
-		//String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + "";
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
-		// looping through all rows and adding to list
 		if (cursor.moveToFirst()) {
 			do {
 				Transaction transaction = new Transaction();
@@ -150,6 +149,7 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 				transaction.setTimeFinish(cursor.getString(9));
 				transaction.setCoordinateStart(cursor.getString(10));
 				transaction.setCoordinateFinish(cursor.getString(11));
+				transaction.setVoucher(cursor.getString(12));
 				
 				// Adding contact to list
 				transactionList.add(transaction);
@@ -168,13 +168,11 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 	// Getting All Transactions created status = conciliado .... transaction section
 	public List<Transaction> getAllTransactionsClosed() {
 		List<Transaction> transactionList = new ArrayList<Transaction>();
-		//Select All Query
 		String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_STATUS + "= 'conciliado'";
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
-		// looping through all rows and adding to list
 		if (cursor.moveToFirst()) {
 			do {
 				Transaction transaction = new Transaction();
@@ -191,7 +189,7 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 				transaction.setTimeFinish(cursor.getString(9));
 				transaction.setCoordinateStart(cursor.getString(10));
 				transaction.setCoordinateFinish(cursor.getString(11));
-							
+				transaction.setVoucher(cursor.getString(12));
 								
 				// Adding contact to list
 				transactionList.add(transaction);
@@ -226,7 +224,8 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 				transaction.setTimeStart(cursor.getString(8));
 				transaction.setTimeFinish(cursor.getString(9));
 				transaction.setCoordinateStart(cursor.getString(10));
-				transaction.setCoordinateFinish(cursor.getString(11));					
+				transaction.setCoordinateFinish(cursor.getString(11));
+				transaction.setVoucher(cursor.getString(12));
 				// Adding contact to list
 				transactionList.add(transaction);
 			} while (cursor.moveToNext());
@@ -242,7 +241,7 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		
 		Cursor cursor = db.query(TABLE_TRANSACTION, new String[] {KEY_ID, KEY_ID_WEB, KEY_CO_CU, KEY_OBS, KEY_STATUS
-				, KEY_TYPE, KEY_CLIENT_TYPE, KEY_DA_ST, KEY_DA_FI, KEY_CO_ST, KEY_CO_FI}, 
+				, KEY_TYPE, KEY_CLIENT_TYPE, KEY_DA_ST, KEY_DA_FI, KEY_CO_ST, KEY_CO_FI, KEY_VOUCHER}, 
 				KEY_CO_CU + " LIKE '"+like +"%'", null, null, null, KEY_CO_CU);
 	
 		// looping through all rows and adding to list
@@ -261,7 +260,8 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 				transaction.setTimeStart(cursor.getString(8));
 				transaction.setTimeFinish(cursor.getString(9));
 				transaction.setCoordinateStart(cursor.getString(10));
-				transaction.setCoordinateFinish(cursor.getString(11));					
+				transaction.setCoordinateFinish(cursor.getString(11));
+				transaction.setVoucher(cursor.getString(12));
 				// Adding contact to list
 				transactionList.add(transaction);
 			} while (cursor.moveToNext());
@@ -320,7 +320,8 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 				transaction.setTimeStart(cursor.getString(8));
 				transaction.setTimeFinish(cursor.getString(9));
 				transaction.setCoordinateStart(cursor.getString(10));
-				transaction.setCoordinateFinish(cursor.getString(11));						
+				transaction.setCoordinateFinish(cursor.getString(11));
+				transaction.setVoucher(cursor.getString(12));
 				// Adding contact to list
 				transactionList.add(transaction);
 			} while (cursor.moveToNext());
@@ -356,7 +357,8 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 				transaction.setTimeStart(cursor.getString(8));
 				transaction.setTimeFinish(cursor.getString(9));
 				transaction.setCoordinateStart(cursor.getString(10));
-				transaction.setCoordinateFinish(cursor.getString(11));								
+				transaction.setCoordinateFinish(cursor.getString(11));
+				transaction.setVoucher(cursor.getString(12));
 				// Adding contact to list
 				transactionList.add(transaction);
 			} while (cursor.moveToNext());
@@ -370,17 +372,13 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 	public Transaction getTransaction(int id) {	
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_TRANSACTION, new String[] { KEY_ID,
-				KEY_ID_WEB, KEY_CO_CU, KEY_OBS, KEY_STATUS, KEY_TYPE, KEY_PRESTAMO, KEY_CLIENT_TYPE, KEY_DA_ST, KEY_DA_FI, KEY_CO_ST, KEY_CO_FI }, KEY_ID + "=?",
+				KEY_ID_WEB, KEY_CO_CU, KEY_OBS, KEY_STATUS, KEY_TYPE, KEY_PRESTAMO, KEY_CLIENT_TYPE, KEY_DA_ST, KEY_DA_FI, KEY_CO_ST, KEY_CO_FI, KEY_VOUCHER }, KEY_ID + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()){
 			
-			//Log.d("log_tag", cursor.getString(0)+" - "+cursor.getString(1)+" - "+cursor.getString(2)+" - "+cursor.getString(3)+" - "+
-		//cursor.getString(4)+" - "+ cursor.getString(5)+" - "+cursor.getString(6)+" - "+cursor.getString(7)+" - "+cursor.getString(8)+" - "+
-			//		cursor.getString(9)+" - "+cursor.getString(10)+" - "+cursor.getString(11));
-			
 			Transaction transaction = new Transaction(Integer.parseInt(cursor.getString(0)), cursor.getString(1),
 					cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5),
-					cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11));			
+					cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11), cursor.getString(12));			
 			return transaction;
 		}else{
 			cursor.close();
@@ -394,12 +392,12 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 	public Transaction getTransactionByIdweb(int id) {		
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_TRANSACTION, new String[] { KEY_ID,
-				KEY_ID_WEB, KEY_CO_CU, KEY_OBS, KEY_STATUS, KEY_TYPE, KEY_PRESTAMO, KEY_CLIENT_TYPE, KEY_DA_ST, KEY_DA_FI, KEY_CO_ST, KEY_CO_FI }, KEY_ID_WEB + "=?",
+				KEY_ID_WEB, KEY_CO_CU, KEY_OBS, KEY_STATUS, KEY_TYPE, KEY_PRESTAMO, KEY_CLIENT_TYPE, KEY_DA_ST, KEY_DA_FI, KEY_CO_ST, KEY_CO_FI, KEY_VOUCHER }, KEY_ID_WEB + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()){			
 			Transaction transaction = new Transaction(Integer.parseInt(cursor.getString(0)), cursor.getString(1), 
 					cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), 
-					cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11));
+					cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11), cursor.getString(12));
 			cursor.close();
 			db.close();
 			return transaction;
@@ -425,6 +423,7 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 		values.put(KEY_DA_FI, transaction.getTimeFinish()); // Transaction time finish
 		values.put(KEY_CO_ST, transaction.getCoordinateStart()); // Transaction coordinate start
 		values.put(KEY_CO_FI, transaction.getCoordinateFinish()); // Transaction coordinate finish
+		values.put(KEY_VOUCHER, transaction.getVoucher()); // Transaction voucher
 
 		// updating row
 		return db.update(TABLE_TRANSACTION, values, KEY_ID + " = ?",
