@@ -179,4 +179,5 @@ public class Transaction {
 	public void setVoucher(String voucher){
 		this._voucher = voucher;
 	}
+	
 }
