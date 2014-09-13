@@ -92,7 +92,7 @@ public class ClientsPrestamoListActivity extends Activity implements OnItemClick
 	    
 	    try {
 	    	edittext = (EditText) findViewById(R.id.textSearch);
-			listview = (ListView) findViewById(R.id.contentlistclient);
+			listview = (ListView) findViewById(R.id.contentlistclientbonus);
 			
 			text = db.getAllCustomerNames();
 			final List<Customer> rowItems = db.getAllCustomers();

@@ -886,23 +886,23 @@ public class DashboardActivity extends Activity{
     		try {				
     			products = new JSONArray(jsonBonus);
     			if (products != null) {
-    				// looping through All albums
     				for (int i = 0; i < products.length(); i++) {					
     					JSONObject c = products.getJSONObject(i);
-    					// Storing each json item values in variable
-    					String id = c.getString("idbonus");
+    					
+    					String id = c.getString("id");
     				 	String type = c.getString("type");
-    				 	String idLine = c.getString("idLine");
-    				 	String idProduct = c.getString("idProduct");
-    				 	String cantidad = c.getString("cantidad");
-    				 	String idProduct_bonus = c.getString("idProduct_bonus");
-    				 	String cantidad_bonus = c.getString("cantidad_bonus");
     				 	String status = c.getString("status");
-    				 	String line = c.getString("line");
-    				 	String nombreproduct = c.getString("nombreproduct");
-    				 	String volume = c.getString("volume");
     				 	
-    				 	dbBonus.addBonus(new Bonus(type, Integer.parseInt(idLine), idProduct, Integer.parseInt(cantidad), nombreproduct, 1, idProduct_bonus, Integer.parseInt(cantidad_bonus), idProduct_bonus, "1"));
+    				 	String idLineFrom = c.getString("idline_from");
+    				 	String idProductFrom = c.getString("idproduct_from");
+    				 	String cantidadFrom = c.getString("quantity_from");
+    				 	String nombreProductFrom = c.getString("name_from");
+    				 	
+    				 	String idProductTo = c.getString("idproduct_to");
+    				 	String cantidadTo = c.getString("quantity_to");
+    				 	String nombreProductTo = c.getString("name_to");
+    				 	
+    				 	dbBonus.addBonus(new Bonus(type, Integer.parseInt(idLineFrom), idProductFrom, Integer.parseInt(cantidadFrom), nombreProductFrom, 1, idProductTo, Integer.parseInt(cantidadTo), nombreProductTo, "1"));
     				}
     			}else{
     				Log.d("Bonus: ", "null");

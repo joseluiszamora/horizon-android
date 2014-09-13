@@ -33,7 +33,7 @@
    	
 	</LinearLayout>	    
 	<ListView
-		android:id="@+id/contentlistclient"
+		android:id="@+id/contentlistclientbonus"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:divider="#b5b5b5"

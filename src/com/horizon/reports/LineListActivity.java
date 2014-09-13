@@ -35,7 +35,7 @@ public class LineListActivity extends Activity implements OnItemClickListener {
          listDialog.setCancelable(true);
          //there are a lot of settings, for dialog, check them all out!
  
-         ListView list1 = (ListView) listDialog.findViewById(R.id.contentlistclient);
+         ListView list1 = (ListView) listDialog.findViewById(R.id.contentlistclientbonus);
          list1.setOnItemClickListener(this);
          list1.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, val));
          //now that the dialog is set up, it's time to show it

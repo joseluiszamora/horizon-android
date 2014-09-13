@@ -27,12 +27,10 @@ import com.horizon.database.Product;
 import com.ruizmier.horizon.R;
 
 public class TabLastBonusActivity extends Activity implements OnItemClickListener {
-/** Called when the activity is first created. */
 	
 	DatabaseHandlerBonus db = new DatabaseHandlerBonus(this, "", null, '1');
 	ListView listView;
 	List<Product> rowItems;
-	
 	
 	// search functionality
 	EditText edittext;
@@ -44,15 +42,13 @@ public class TabLastBonusActivity extends Activity implements OnItemClickListene
 
 	 ArrayList<String> text_sort = new ArrayList<String>();
 	 ArrayList<Integer> image_sort = new ArrayList<Integer>();
-	
-	/** Called when the activity is first created. */
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
-	    setContentView(R.layout.tab_clients);
+	    setContentView(R.layout.tab_bonus);
 	    
-	    listView = (ListView) findViewById(R.id.contentlistclient);
-	    edittext = (EditText) findViewById(R.id.textSearch);
+	    listView = (ListView) findViewById(R.id.contentlistclientbonusx);
 	    
 	    // set all Customers List
 	    text = db.getAllNames();
@@ -64,53 +60,11 @@ public class TabLastBonusActivity extends Activity implements OnItemClickListene
 	    listView.setOnItemClickListener(this);
 	    
 		//listview.setAdapter(new CustomAdapter(this, text, rowItems));
-	    
-	    
-	   edittext.addTextChangedListener(new TextWatcher() {
-
-	   public void afterTextChanged(Editable s) {
-
-	   }
-
-	   public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-	   }
-
-	   public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-	    textlength = edittext.getText().length();
-	    text_sort.clear();
-	    image_sort.clear();
-
-	    for (int i = 0; i < text.length; i++) {
-	     if (textlength <= text[i].length()) {
-	      if (edittext.getText().toString().equalsIgnoreCase ( (String) text[i].subSequence(0,textlength))) {
-	    	  text_sort.add(text[i]);
-	    	  Log.d("log_tag", "Edit text " + edittext.getText().toString());
-	      }
-	     }
-	    }
-
-	    List<Bonus> SearchRowItems = db.getAllSearch(edittext.getText().toString());
-	    
-	    CustomAdapterProducts adapter = new CustomAdapterProducts(TabLastBonusActivity.this, text_sort, SearchRowItems);
-	    listView.setAdapter(adapter);
-	   }
-	  });
 	}
 	
 	
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		
-		String custom_name = (String) ((TextView) arg1.findViewById(R.id.customer_id)).getText();		
-        
-        Intent intentNewProduct = new Intent(this, ProductInfoActivity.class);
-		Bundle bundle = new Bundle();
-		bundle.putString("productCode", custom_name);		
-		intentNewProduct.putExtras(bundle);
-		startActivity(intentNewProduct);
-	}
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {}
 	
 	
 	
@@ -166,9 +120,10 @@ public class TabLastBonusActivity extends Activity implements OnItemClickListene
 
   	  /* private view holder class */
       private class ViewHolder {
-          TextView customerId;
-          TextView txtName;
-          TextView txtAddress;
+          TextView title1;
+          TextView subTitle1;
+          TextView title2;
+          TextView subTitle2;
       }
       
   	  public View getView(int position, View convertView, ViewGroup parent) {
@@ -176,12 +131,13 @@ public class TabLastBonusActivity extends Activity implements OnItemClickListene
   		ViewHolder holder = null;
   		if (convertView == null) {
   			LayoutInflater inflater = getLayoutInflater();
-  			convertView = inflater.inflate(R.layout.row_clients, null);
+  			convertView = inflater.inflate(R.layout.row_bonus, null);
   			
 	        holder = new ViewHolder();
-	        holder.customerId = (TextView) convertView.findViewById(R.id.customer_id);
-	        holder.txtName = (TextView) convertView.findViewById(R.id.customerName);
-	        holder.txtAddress = (TextView) convertView.findViewById(R.id.customerAddress);
+	        holder.title1 = (TextView) convertView.findViewById(R.id.customerName);
+	        holder.subTitle1 = (TextView) convertView.findViewById(R.id.customerAddress);
+	        holder.title2 = (TextView) convertView.findViewById(R.id.textView1);
+	        holder.subTitle2 = (TextView) convertView.findViewById(R.id.textView2);
 	        convertView.setTag(holder);
 	     }
 	     else {
@@ -189,10 +145,17 @@ public class TabLastBonusActivity extends Activity implements OnItemClickListene
 	     }
   		
 		Bonus rowItem = (Bonus) getItem(position);
-        holder.customerId.setText(String.valueOf(rowItem.getID()));
-        holder.txtName.setText(rowItem.getNameFrom());
-        holder.txtAddress.setText(String.valueOf(rowItem.getNameTo())); 
+        
+		if (rowItem.getType().equals("P")) {
+			holder.title1.setText("Producto: " + rowItem.getNameFrom());
+		}else{
+			holder.title1.setText("Linea: " + rowItem.getNameFrom());
+		}
 		
+		holder.subTitle1.setText("Cantidad: " + rowItem.getQuantityFrom()+"");
+		holder.title2.setText("Bonificación: " + rowItem.getNameTo());
+		holder.subTitle2.setText("Cantidad: " + rowItem.getQuantityTo()+"");
+
 		return convertView;
   	  }
   }

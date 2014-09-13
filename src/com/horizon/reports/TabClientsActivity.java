@@ -50,7 +50,7 @@ public class TabClientsActivity extends Activity implements OnItemClickListener 
 	    
 	    
 	    edittext = (EditText) findViewById(R.id.textSearch);
-		listview = (ListView) findViewById(R.id.contentlistclient);
+		listview = (ListView) findViewById(R.id.contentlistclientbonus);
 		
 		// set all Customers List
 		text = db.getAllCustomerNames();

@@ -8,6 +8,7 @@ public class Bonus {
 	String _idproduct_from;
 	int _quantity_from;
 	String _name_from;
+	
 	int _idline_to;
 	String _idproduct_to;
 	int _quantity_to;
@@ -15,12 +16,11 @@ public class Bonus {
 	String _status; // enabled disabled
 	
 	// Empty constructor
-	public Bonus(){
-	}
+	public Bonus(){}
 	
 	// constructor
-	public Bonus(int id, String type, int idlinefrom, String idproductfrom, int quantityfrom, String namefrom, int idlineto, String idproductto, 
-			int quantityto, String nameto, String status){
+	public Bonus(int id, String type, int idlinefrom, String idproductfrom, int quantityfrom, String namefrom, int idlineto, String idproductto, int quantityto, String nameto, String status){
+		
 		this._id = id;
 		this._type = type;
 		this._idline_from = idlinefrom;
@@ -35,8 +35,8 @@ public class Bonus {
 	}
 	
 	// constructor
-	public Bonus(String type, int idlinefrom, String idproductfrom, int quantityfrom, String namefrom, int idlineto, String idproductto, 
-			int quantityto, String nameto, String status){
+	public Bonus(String type, int idlinefrom, String idproductfrom, int quantityfrom, String namefrom, int idlineto, String idproductto, int quantityto, String nameto, String status){
+		
 		this._type = type;
 		this._idline_from = idlinefrom;
 		this._idproduct_from = idproductfrom;

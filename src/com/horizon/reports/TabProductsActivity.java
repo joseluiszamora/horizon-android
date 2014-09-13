@@ -52,7 +52,7 @@ public class TabProductsActivity extends Activity implements OnItemClickListener
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.tab_clients);
 	    
-	    listView = (ListView) findViewById(R.id.contentlistclient);
+	    listView = (ListView) findViewById(R.id.contentlistclientbonus);
 	    edittext = (EditText) findViewById(R.id.textSearch);
 	    
 	    // set all Customers List

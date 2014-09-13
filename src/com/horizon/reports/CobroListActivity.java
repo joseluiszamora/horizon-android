@@ -108,7 +108,7 @@ public class CobroListActivity extends Activity implements OnItemClickListener {
 	    
 	    try {
 	    	edittext = (EditText) findViewById(R.id.textSearch);
-			listview = (ListView) findViewById(R.id.contentlistclient);
+			listview = (ListView) findViewById(R.id.contentlistclientbonus);
 			
 			text = db.getAllNames();
 			rowItems = db.getAll();

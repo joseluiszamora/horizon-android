@@ -616,19 +616,14 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 			TransactionDetail trans = rowItems2.get(i);
 			Log.i("log_tag", "EXISTENT PRODUCT NO BONUS>>>>>>>> " + trans.getNameProduct() + " TIPO " + trans.getType());
 			
+			// bonus product
 			final List<Bonus> getBonus = dbBonus.getBonusSearch(trans.getCodeProduct(), "product");
-			
-			//create json transaction details Main Object
 			for(int j = 0; j < getBonus.size(); j++) {
 				Bonus bonus = getBonus.get(j);
-				
 				final Product pro = dbProduct.getProduct(bonus.getIdProductTo());
 				Log.e("log_tag", "BONO >>>>>>>> " + pro.getName() + " " + pro.getPrice());
-				
 				final int bonusCount = (trans.getQuantity() / bonus.getQuantityFrom()) * bonus.getQuantityTo();
-				
 				Log.e("log_tag", "BONO CANTIDAD >>>>>>>> " + bonusCount + " detail TraNS " + trans.getQuantity() + " BONUS " + bonus.getQuantityTo() );
-				
 				if (bonusCount > 0) {
 					dbTransDetail.addTransactionDetail(
 					new TransactionDetail(null, transaction.getIdTransaction(), bonus.getIdProductTo(), 
@@ -638,8 +633,6 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 				}else{
 					Log.i("log_tag", "Anadiendo producto BONIFICADO FAIL:::: ");
 				}
-				//Log.d("log_tag", "Anadiendo producto:::: " + bonus.getIdProductFrom());
-				//Log.d("log_tag", "Cantidades+++ " + bonus.getQuantityFrom() + " TOO " + transaction.getQuantity());
 			}
 		}
 		update();

@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DatabaseHandlerBonus  extends SQLiteOpenHelper {
 	// Database Version
@@ -66,6 +67,7 @@ public class DatabaseHandlerBonus  extends SQLiteOpenHelper {
 		
 	// Adding new
 	public void addBonus(Bonus bonus) {
+		Log.i("log_tag", "SAVED BONUSSSS > " + bonus.getNameFrom());
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put(KEY_TYPE, bonus.getType());

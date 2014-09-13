@@ -89,7 +89,7 @@ public class ClientsListActivity extends Activity implements OnItemClickListener
 	    
 	    try {
 	    	edittext = (EditText) findViewById(R.id.textSearch);
-			listview = (ListView) findViewById(R.id.contentlistclient);
+			listview = (ListView) findViewById(R.id.contentlistclientbonus);
 			
 			text = db.getAllCustomerNames();
 			final List<Customer> rowItems = db.getAllCustomers();
