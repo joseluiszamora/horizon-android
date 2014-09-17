@@ -902,7 +902,8 @@ public class DashboardActivity extends Activity{
     				 	String cantidadTo = c.getString("quantity_to");
     				 	String nombreProductTo = c.getString("name_to");
     				 	
-    				 	dbBonus.addBonus(new Bonus(type, Integer.parseInt(idLineFrom), idProductFrom, Integer.parseInt(cantidadFrom), nombreProductFrom, 1, idProductTo, Integer.parseInt(cantidadTo), nombreProductTo, "1"));
+    				 	dbBonus.addBonus(new Bonus(type, Integer.parseInt(idLineFrom), idProductFrom, Integer.parseInt(cantidadFrom), 
+    				 			nombreProductFrom, 1, idProductTo, Integer.parseInt(cantidadTo), nombreProductTo, "1"));
     				}
     			}else{
     				Log.d("Bonus: ", "null");
@@ -1134,7 +1135,7 @@ public class DashboardActivity extends Activity{
         				 			+ "---" + idProduct + "---" + productName+ "---" + precio + "---" + Cantidad+ "---" + priceTotal);
         				 	
         				 	dbTransDetail.addTransactionDetail(new TransactionDetail(idDetailTransaction, id_trans,  idProduct, 
-        				 			productName, precio, Cantidad, "por_entregar", priceTotal, "ninguna", "normal"));
+        				 			productName, precio, Cantidad, "por_entregar", priceTotal, "ninguna", "normal", "1"));
         				 	
         				 	Log.e("log_tag", "saved trans  DETAIL");
         				}

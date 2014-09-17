@@ -3,8 +3,6 @@ package com.horizon.database;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -37,6 +35,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 	private static final String KEY_PR_TO = "priceTotal";
 	private static final String KEY_OBS = "obs";
 	private static final String KEY_TYPE = "type";
+	private static final String KEY_LINE = "codeLine";
 			
 	public DatabaseHandlerTransactionDetail(Context context, String name,CursorFactory factory, int version) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -46,7 +45,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_TRANSACTION_TABLE = "CREATE TABLE " + TABLE_TRANSACTION + "("
 				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_ID_WEB + " TEXT," + KEY_ID_TR + " INTEGER," + KEY_PR + " TEXT," + KEY_NA_PR + " TEXT," + KEY_PR_PR + " DOUBLE,"
-				+ KEY_QUANTITY + " INTEGER," + KEY_STATUS + " TEXT," + KEY_PR_TO + " DOUBLE," + KEY_OBS + " TEXT," + KEY_TYPE + " TEXT" + ")";
+				+ KEY_QUANTITY + " INTEGER," + KEY_STATUS + " TEXT," + KEY_PR_TO + " DOUBLE," + KEY_OBS + " TEXT," + KEY_TYPE + " TEXT," + KEY_LINE + " TEXT" + ")";
 		db.execSQL(CREATE_TRANSACTION_TABLE);		
 	}
 
@@ -61,7 +60,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 		SQLiteDatabase db = this.getWritableDatabase();
 		String CREATE_TRANSACTION_TABLE = "CREATE TABLE " + TABLE_TRANSACTION + "("
 				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_ID_WEB + " TEXT," + KEY_ID_TR + " INTEGER," + KEY_PR + " TEXT," + KEY_NA_PR + " TEXT," + KEY_PR_PR + " DOUBLE,"
-				+ KEY_QUANTITY + " INTEGER," + KEY_STATUS + " TEXT," + KEY_PR_TO + " DOUBLE," + KEY_OBS + " TEXT," + KEY_TYPE + " TEXT" + ")";
+				+ KEY_QUANTITY + " INTEGER," + KEY_STATUS + " TEXT," + KEY_PR_TO + " DOUBLE," + KEY_OBS + " TEXT," + KEY_TYPE + " TEXT," + KEY_LINE + " TEXT" + ")";
 		db.execSQL(CREATE_TRANSACTION_TABLE);		
 	}
 	
@@ -101,6 +100,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 		values.put(KEY_PR_TO, transactionDetail.getPriceTotal()); // Transaction Total Price
 		values.put(KEY_OBS, transactionDetail.getObs()); // Transaction Obs
 		values.put(KEY_TYPE, transactionDetail.getType()); // Transaction Obs
+		values.put(KEY_LINE, transactionDetail.getCodeLine()); // Transaction Line
 		// Inserting Row
 		db.insert(TABLE_TRANSACTION, null, values);		
 		db.close(); // Closing database connection
@@ -111,7 +111,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 		SQLiteDatabase db = this.getReadableDatabase();
 		
 		String MY_QUERY = "SELECT td.idDetalTransaction, td.idWeb, td.idTransaction, td.codeProduct, " +
-				"td.nameProduct, td.priceProduct, td.cantidad, td.status, td.priceTotal, td.obs, td.type FROM detailTransactions td " +
+				"td.nameProduct, td.priceProduct, td.cantidad, td.status, td.priceTotal, td.obs, td.type, td.codeLine FROM detailTransactions td " +
 				"WHERE td.idTransaction = ? AND td.codeProduct=? AND td.status=?";
 		Cursor cursor = db.rawQuery(MY_QUERY, new String[]{String.valueOf(idtransaction), String.valueOf(codeproduct), "creado"});
 		
@@ -119,7 +119,27 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 			TransactionDetail transactionDetail = new TransactionDetail(Integer.parseInt(cursor.getString(0)), cursor.getString(1), 
 					Integer.parseInt(cursor.getString(2)), cursor.getString(3), cursor.getString(4), 
 					Double.valueOf(cursor.getString(5)) , Integer.parseInt(cursor.getString(6)),
-					cursor.getString(7), Double.valueOf(cursor.getString(8)), cursor.getString(9), cursor.getString(10));
+					cursor.getString(7), Double.valueOf(cursor.getString(8)), cursor.getString(9), cursor.getString(10), cursor.getString(11));
+			return transactionDetail;
+		}else{		
+			return null;
+		}							
+	}
+	
+	// Verify is already exist detail transaction product Bonus 
+	public TransactionDetail getTransactionDetailIfExistBonus(int idtransaction, String codeproduct) {	
+		SQLiteDatabase db = this.getReadableDatabase();
+		
+		String MY_QUERY = "SELECT td.idDetalTransaction, td.idWeb, td.idTransaction, td.codeProduct, " +
+				"td.nameProduct, td.priceProduct, td.cantidad, td.status, td.priceTotal, td.obs, td.type, td.codeLine FROM detailTransactions td " +
+				"WHERE td.idTransaction = ? AND td.codeProduct=? AND td.status=? AND td.type=?";
+		Cursor cursor = db.rawQuery(MY_QUERY, new String[]{String.valueOf(idtransaction), String.valueOf(codeproduct), "creado", "bonus"});
+		
+		if (cursor != null && cursor.moveToFirst()){
+			TransactionDetail transactionDetail = new TransactionDetail(Integer.parseInt(cursor.getString(0)), cursor.getString(1), 
+					Integer.parseInt(cursor.getString(2)), cursor.getString(3), cursor.getString(4), 
+					Double.valueOf(cursor.getString(5)) , Integer.parseInt(cursor.getString(6)),
+					cursor.getString(7), Double.valueOf(cursor.getString(8)), cursor.getString(9), cursor.getString(10), cursor.getString(11));
 			return transactionDetail;
 		}else{		
 			return null;
@@ -150,6 +170,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 				transactionDetail.setPriceTotal(Double.parseDouble(cursor.getString(8)));
 				transactionDetail.setObs(cursor.getString(9));
 				transactionDetail.setType(cursor.getString(10));
+				transactionDetail.setCodeLine(cursor.getString(11));
 				// Adding contact to list			
 				transactionDetailList.add(transactionDetail);
 			} while (cursor.moveToNext());
@@ -163,7 +184,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 		SQLiteDatabase db = this.getWritableDatabase();
 		
 		String MY_QUERY = "SELECT td.idDetalTransaction, td.idWeb, td.idTransaction, td.codeProduct, " +
-				"td.nameProduct, td.priceProduct, td.cantidad, td.status, td.priceTotal, td.obs, td.type FROM Transactions t, detailTransactions td " +
+				"td.nameProduct, td.priceProduct, td.cantidad, td.status, td.priceTotal, td.obs, td.type, td.codeLine FROM Transactions t, detailTransactions td " +
 		//		"WHERE t.idTransaction = td.idTransaction AND t.estado = 'creado' AND td.status = 'creado' " +
 				"WHERE t.idTransaction = td.idTransaction " +
 				" AND t.idTransaction=?";
@@ -183,9 +204,8 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 				transactionDetail.setPriceTotal(Double.parseDouble(cursor.getString(8)));
 				transactionDetail.setObs(cursor.getString(9));
 				transactionDetail.setType(cursor.getString(10));
+				transactionDetail.setCodeLine(cursor.getString(11));
 				// Adding contact to list
-							
-				//Log.d("log_tag", "estoy devolviendo algo valido: " + cursor.getString(1) );
 				transactionDetailList.add(transactionDetail);
 			} while (cursor.moveToNext());
 		}
@@ -199,7 +219,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 		SQLiteDatabase db = this.getWritableDatabase();
 		
 		String MY_QUERY = "SELECT td.idDetalTransaction, td.idWeb, td.idTransaction, td.codeProduct, " +
-				"td.nameProduct, td.priceProduct, td.cantidad, td.status, td.priceTotal, td.obs, td.type FROM Transactions t, detailTransactions td " +
+				"td.nameProduct, td.priceProduct, td.cantidad, td.status, td.priceTotal, td.obs, td.type, td.codeLine FROM Transactions t, detailTransactions td " +
 				"WHERE t.idTransaction = td.idTransaction AND t.estado = 'pending' AND td.status = 'creado' " +
 		//		"WHERE t.idTransaction = td.idTransaction " +
 				" AND t.idTransaction=?";			
@@ -219,9 +239,8 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 				transactionDetail.setPriceTotal(Double.parseDouble(cursor.getString(8)));
 				transactionDetail.setObs(cursor.getString(9));
 				transactionDetail.setType(cursor.getString(10));
+				transactionDetail.setCodeLine(cursor.getString(11));
 				// Adding contact to list
-							
-				//Log.d("log_tag", "estoy devolviendo algo valido: " + cursor.getString(1) );
 				transactionDetailList.add(transactionDetail);
 			} while (cursor.moveToNext());
 		}
@@ -234,7 +253,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 		SQLiteDatabase db = this.getWritableDatabase();
 		
 		String MY_QUERY = "SELECT td.idDetalTransaction, td.idWeb, td.idTransaction, td.codeProduct, " +
-				"td.nameProduct, td.priceProduct, td.cantidad, td.status, td.priceTotal, td.obs, td.type FROM Transactions t, detailTransactions td " +
+				"td.nameProduct, td.priceProduct, td.cantidad, td.status, td.priceTotal, td.obs, td.type, td.codeLine FROM Transactions t, detailTransactions td " +
 				"WHERE t.idTransaction = td.idTransaction AND t.estado = 'pending' AND td.status = 'creado' AND td.type = 'normal' " +
 		//		"WHERE t.idTransaction = td.idTransaction " +
 				" AND t.idTransaction=?";			
@@ -254,9 +273,8 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 				transactionDetail.setPriceTotal(Double.parseDouble(cursor.getString(8)));
 				transactionDetail.setObs(cursor.getString(9));
 				transactionDetail.setType(cursor.getString(10));
+				transactionDetail.setCodeLine(cursor.getString(11));
 				// Adding contact to list
-							
-				//Log.d("log_tag", "estoy devolviendo algo valido: " + cursor.getString(1) );
 				transactionDetailList.add(transactionDetail);
 			} while (cursor.moveToNext());
 		}
@@ -270,7 +288,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 		SQLiteDatabase db = this.getWritableDatabase();
 		
 		String MY_QUERY = "SELECT td.idDetalTransaction, td.idWeb, td.idTransaction, td.codeProduct, " +
-				"td.nameProduct, td.priceProduct, td.cantidad, td.status, td.priceTotal, td.obs, td.type FROM Transactions t, detailTransactions td " +
+				"td.nameProduct, td.priceProduct, td.cantidad, td.status, td.priceTotal, td.obs, td.type, td.codeLine FROM Transactions t, detailTransactions td " +
 				"WHERE t.idTransaction = td.idTransaction AND t.estado = '"+ value +"' AND td.status = '"+ value +"' " +
 				" AND t.idTransaction=?";			
 		Cursor cursor = db.rawQuery(MY_QUERY, new String[]{String.valueOf(idTransaction)});
@@ -289,9 +307,8 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 				transactionDetail.setPriceTotal(Double.parseDouble(cursor.getString(8)));
 				transactionDetail.setObs(cursor.getString(9));
 				transactionDetail.setType(cursor.getString(10));
+				transactionDetail.setCodeLine(cursor.getString(11));
 				// Adding contact to list
-							
-				//Log.d("log_tag", "estoy devolviendo algo valido: " + cursor.getString(1) );
 				transactionDetailList.add(transactionDetail);
 			} while (cursor.moveToNext());
 		}
@@ -305,7 +322,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 		SQLiteDatabase db = this.getWritableDatabase();
 		
 		Cursor cursor = db.query(TABLE_TRANSACTION, new String[] { KEY_ID,
-				KEY_ID_WEB, KEY_ID_TR, KEY_PR, KEY_NA_PR, KEY_PR_PR, KEY_QUANTITY, KEY_STATUS, KEY_PR_TO, KEY_OBS, KEY_TYPE}, KEY_ID_TR + "=?",
+				KEY_ID_WEB, KEY_ID_TR, KEY_PR, KEY_NA_PR, KEY_PR_PR, KEY_QUANTITY, KEY_STATUS, KEY_PR_TO, KEY_OBS, KEY_TYPE, KEY_LINE}, KEY_ID_TR + "=?",
 				new String[] { String.valueOf(idTransaction) }, null, null, null, null);	
 		
 		// looping through all rows and adding to list
@@ -323,13 +340,13 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 				transactionDetail.setPriceTotal(Double.parseDouble(cursor.getString(8)));
 				transactionDetail.setObs(cursor.getString(9));
 				transactionDetail.setType(cursor.getString(10));
+				transactionDetail.setCodeLine(cursor.getString(11));
 				// Adding contact to list
-				Log.d("log_tag", "estoy devolviendo algo valido: " + cursor.getString(1) );
 				transactionDetailList.add(transactionDetail);
 			} while (cursor.moveToNext());
 		}
 		return transactionDetailList;
-	}		
+	}
 	
 	/*TABLE_TRANSACTION = "detailTransactions";
 
@@ -352,7 +369,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 			SQLiteDatabase db = this.getWritableDatabase();
 			
 			Cursor cursor = db.query(TABLE_TRANSACTION, new String[] { KEY_ID,
-			KEY_ID_WEB, KEY_ID_TR, KEY_PR, KEY_NA_PR, KEY_PR_PR, KEY_QUANTITY, KEY_STATUS, KEY_PR_TO, KEY_OBS, KEY_TYPE}, KEY_ID_TR + "=?",
+			KEY_ID_WEB, KEY_ID_TR, KEY_PR, KEY_NA_PR, KEY_PR_PR, KEY_QUANTITY, KEY_STATUS, KEY_PR_TO, KEY_OBS, KEY_TYPE, KEY_LINE}, KEY_ID_TR + "=?",
 			new String[] { String.valueOf(idTransaction) }, null, null, null, null);	
 			
 			// looping through all rows and adding to list
@@ -370,9 +387,8 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 					transactionDetail.setPriceTotal(Double.parseDouble(cursor.getString(8)));
 					transactionDetail.setObs(cursor.getString(9));
 					transactionDetail.setType(cursor.getString(10));
+					transactionDetail.setCodeLine(cursor.getString(11));
 					// Adding contact to list
-					
-					Log.d("log_tag", "estoy devolviendo algo valido: " + cursor.getString(1) );
 					transactionDetailList.add(transactionDetail);
 				} while (cursor.moveToNext());
 			}
@@ -384,31 +400,54 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 	public TransactionDetail getTransactionDetail(String id) {	
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_TRANSACTION, new String[] { KEY_ID,
-				KEY_ID_WEB, KEY_ID_TR, KEY_PR, KEY_NA_PR, KEY_PR_PR, KEY_QUANTITY, KEY_STATUS, KEY_PR_TO, KEY_OBS, KEY_TYPE}, KEY_ID + "=?",
+				KEY_ID_WEB, KEY_ID_TR, KEY_PR, KEY_NA_PR, KEY_PR_PR, KEY_QUANTITY, KEY_STATUS, KEY_PR_TO, KEY_OBS, KEY_TYPE, KEY_LINE}, KEY_ID + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);		
 		if (cursor != null && cursor.moveToFirst()){
-			//Log.d("log_tag", "Producto existente:::" );
-			//Log.d("log_tag", "Cursor 0:::" + cursor.getString(0));
-			//Log.d("log_tag", "Cursor 1:::" + cursor.getString(1));
-			//Log.d("log_tag", "Cursor 2:::" + cursor.getString(2));
-			//Log.d("log_tag", "Cursor 3:::" + cursor.getString(3));
-			//Log.d("log_tag", "Cursor 4:::" + cursor.getString(4));
-			//Log.d("log_tag", "Cursor 5:::" + cursor.getString(5));
-			//Log.d("log_tag", "Cursor 6:::" + cursor.getString(6));
-			//Log.d("log_tag", "Cursor 7:::" + cursor.getString(7));
-			//Log.d("log_tag", "Cursor 8:::" + cursor.getString(8));
-			//Log.d("log_tag", "Cursor 9:::" + cursor.getString(9));
-			
 			TransactionDetail transactionDetail = new TransactionDetail(Integer.parseInt(cursor.getString(0)), cursor.getString(1), 
 					Integer.parseInt(cursor.getString(2)), cursor.getString(3), cursor.getString(4), 
 					Double.valueOf(cursor.getString(5)) , Integer.parseInt(cursor.getString(6)),
-					cursor.getString(7), Double.valueOf(cursor.getString(8)), cursor.getString(9), cursor.getString(10));
+					cursor.getString(7), Double.valueOf(cursor.getString(8)), cursor.getString(9), cursor.getString(10), cursor.getString(11));
 			return transactionDetail;
 		}else{		
 			return null;
 		}							
 	}
+	
+	// Getting All Bonus for this product
+	public List<TransactionDetail> getAllBonusForThisProduct(String idTransaction, String idProduct) {	
+		List<TransactionDetail> transactionDetailList = new ArrayList<TransactionDetail>();
+		SQLiteDatabase db = this.getReadableDatabase();
 		
+		/*Cursor cursor = db.query(TABLE_TRANSACTION, new String[] { KEY_ID,
+				KEY_ID_WEB, KEY_ID_TR, KEY_PR, KEY_NA_PR, KEY_PR_PR, KEY_QUANTITY, KEY_STATUS, KEY_PR_TO, KEY_OBS, KEY_TYPE}, KEY_ID_TR + "=?",
+				new String[] { String.valueOf(idTransaction) }, null, null, null, null);	
+		*/
+		String MY_QUERY = "SELECT td.idDetalTransaction, td.idWeb, td.idTransaction, td.codeProduct, " +
+				"td.nameProduct, td.priceProduct, td.cantidad, td.status, td.priceTotal, td.obs, td.type, td.codeLine FROM detailTransactions td " +
+				"WHERE td.idTransaction = '"+ idTransaction +"' AND td.codeProduct = '"+ idProduct +"'  AND td.status = 'creado' ";
+		Cursor cursor = db.rawQuery(MY_QUERY, new String[]{});
+		
+		if (cursor.moveToFirst()) {
+			do {
+				TransactionDetail transactionDetail = new TransactionDetail();
+				transactionDetail.setID(Integer.parseInt(cursor.getString(0)));
+				transactionDetail.setIDWeb(cursor.getString(1));
+				transactionDetail.setIdTransaction(Integer.parseInt(cursor.getString(2)));
+				transactionDetail.setCodeProduct(cursor.getString(3));
+				transactionDetail.setNameProduct(cursor.getString(4));
+				transactionDetail.setPriceProduct(Double.parseDouble(cursor.getString(5)));
+				transactionDetail.setQuantity(Integer.parseInt(cursor.getString(6)));
+				transactionDetail.setStatus(cursor.getString(7));
+				transactionDetail.setPriceTotal(Double.parseDouble(cursor.getString(8)));
+				transactionDetail.setObs(cursor.getString(9));
+				transactionDetail.setType(cursor.getString(10));
+				transactionDetail.setCodeLine(cursor.getString(11));
+
+				transactionDetailList.add(transactionDetail);
+			} while (cursor.moveToNext());
+		}
+		return transactionDetailList;
+	}
 	
 	// Updating single Transaction Detail
 	public int updateTransactionDetail(TransactionDetail transactiondetail) {
@@ -425,6 +464,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 		values.put(KEY_PR_TO, transactiondetail.getPriceTotal()); // Transaction Total Price
 		values.put(KEY_OBS, transactiondetail.getObs()); // Transaction Obs
 		values.put(KEY_TYPE, transactiondetail.getType()); // Transaction type
+		values.put(KEY_LINE, transactiondetail.getCodeLine()); // Transaction LINE
 
 		// updating row
 		return db.update(TABLE_TRANSACTION, values, KEY_ID + " = ?",
@@ -455,7 +495,13 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 	public void deleteTransactionDetailBonus( int id) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.delete(TABLE_TRANSACTION, KEY_ID_TR + "=" + id + " and " + KEY_TYPE + "=" + "'bonus'", null);
-		Log.e("log_tag", "DELETING detail transaction>*****" + id );
+		db.close();
+	}
+	// Deleting All Bonus by product
+	public void deleteTransactionDetailBonusByProduct( String codeProduct) {
+		Log.d("log_tag", "DELETING TRANSACTION BY CODE PRODUCT*********::::::::::::::: " + codeProduct);
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TABLE_TRANSACTION, KEY_PR + "=" + codeProduct + " and " + KEY_TYPE + "=" + "'bonus'", null);
 		db.close();
 	}
 	
@@ -465,7 +511,6 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 		try {
 			db.delete(TABLE_TRANSACTION, null, null);
 		} catch (Exception e) {
-			Log.d("log_tag", "No existe la tabla transactions");
 			// Create tables again
 			onCreate(db);
 		}

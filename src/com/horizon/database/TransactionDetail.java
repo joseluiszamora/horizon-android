@@ -13,13 +13,14 @@ public class TransactionDetail {
 	Double _priceTotal;
 	String _obs;
 	String _type; //normal, bonus
+	String _codeLine;
 	
 	// Empty constructor
 	public TransactionDetail() {	
 	}
 	// constructor
 	public TransactionDetail(int id, String idWeb, int idtransaction, String codeProduct, String nameProduct, 
-			Double singleprice, int quantity, String status, Double totalprice, String obs, String type){
+			Double singleprice, int quantity, String status, Double totalprice, String obs, String type, String codeline){
 		this._id = id;
 		this._idWeb = idWeb;
 		this._idTransaction = idtransaction;
@@ -31,11 +32,12 @@ public class TransactionDetail {
 		this._priceTotal = totalprice;
 		this._obs = obs;
 		this._type = type;
+		this._codeLine = codeline;
 	}
 	
 	// constructor
 	public TransactionDetail(String idWeb, int idtransaction, String codeProduct, String nameProduct, 
-			Double singleprice, int quantity, String status, Double totalprice, String obs, String type){		
+			Double singleprice, int quantity, String status, Double totalprice, String obs, String type, String codeline){		
 		this._idWeb = idWeb;
 		this._idTransaction = idtransaction;
 		this._codeProduct = codeProduct;
@@ -46,6 +48,7 @@ public class TransactionDetail {
 		this._priceTotal = totalprice;
 		this._obs = obs;
 		this._type = type;
+		this._codeLine = codeline;
 	}
 	
 	// getting ID
@@ -156,5 +159,14 @@ public class TransactionDetail {
 	// setting Type
 	public void setType(String type){
 		this._type = type;
+	}
+	
+	// getting Code Line
+	public String getCodeLine(){
+		return this._codeLine;
+	}
+	// setting Code Line
+	public void setCodeLine(String codeline){
+		this._codeLine = codeline;
 	}
 }

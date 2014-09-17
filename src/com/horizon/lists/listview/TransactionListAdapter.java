@@ -65,7 +65,11 @@ public class TransactionListAdapter extends BaseAdapter {
         holder.txtproductName.setText(rowItem.getNameProduct());
         
         //holder.txtproductPrice.setText("Precio Unitario Bs " + round(rowItem.getPriceProduct(), 2, BigDecimal.ROUND_HALF_UP));
-        holder.txtproductPrice.setText("Precio Unitario Bs " + String.format("%.2f", rowItem.getPriceProduct()));
+        if (rowItem.getType().equals("bonus")) {
+        	holder.txtproductPrice.setText("BONIFICACIÓN");
+		} else {
+			holder.txtproductPrice.setText("Precio Unitario Bs " + String.format("%.2f", rowItem.getPriceProduct()));
+		}
         holder.txttotalPrice.setText(String.format("%.2f", rowItem.getPriceTotal()));
         holder.txtQuantity.setText(rowItem.getQuantity() + " unidades");
         return convertView;

@@ -147,9 +147,9 @@ public class TabLastBonusActivity extends Activity implements OnItemClickListene
 		Bonus rowItem = (Bonus) getItem(position);
         
 		if (rowItem.getType().equals("P")) {
-			holder.title1.setText("Producto: " + rowItem.getNameFrom());
+			holder.title1.setText("Producto: " + rowItem.getNameFrom() + "  - ProductoID: " + rowItem.getIdProductFrom());
 		}else{
-			holder.title1.setText("Linea: " + rowItem.getNameFrom());
+			holder.title1.setText("Linea: " + rowItem.getNameFrom() + "  - LineID: " + rowItem.getIdLineFrom());
 		}
 		
 		holder.subTitle1.setText("Cantidad: " + rowItem.getQuantityFrom()+"");

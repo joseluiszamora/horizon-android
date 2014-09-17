@@ -575,7 +575,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 						
 						// Edit Transaction Detail
 						dbTransDetail.updateTransactionDetail(new TransactionDetail(getTransDetail.getID(), null, transaction.getIdTransaction(), 
-								transaction.getCodeProduct(), getproduct.getName(), unitPrice, Quantity, "creado", totalPrice, null, null));
+								transaction.getCodeProduct(), getproduct.getName(), unitPrice, Quantity, "creado", totalPrice, null, null, String.valueOf(transaction.getLine())));
 						
 						addPrice((double) ((unitPrice * transaction.getQuantity())));
 						update();
@@ -593,7 +593,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 				Double totalPrice = (double) (unitPrice * transaction.getQuantity());
 				// Add new Transaction Detail
 				dbTransDetail.addTransactionDetail(new TransactionDetail(null, transaction.getIdTransaction(),  transaction.getCodeProduct(), 
-						getproduct.getName(), unitPrice, transaction.getQuantity(), "creado", totalPrice, "ninguna", "normal"));
+						getproduct.getName(), unitPrice, transaction.getQuantity(), "creado", totalPrice, "ninguna", "normal", String.valueOf(transaction.getLine())));
 				
 				addPrice(totalPrice);
 			}
@@ -609,31 +609,96 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	}
 
 	private void updateBonus() {
-		List<TransactionDetail> rowItems2;
-		rowItems2 = dbTransDetail.getAllTransactionDetailsForThisTransactionPendingNoBonus(codeTransaction);
+		List<TransactionDetail> rowItems2 = dbTransDetail.getAllTransactionDetailsForThisTransactionPendingNoBonus(codeTransaction);
+		
+		// delete all bonus
+		dbTransDetail.deleteTransactionDetailBonus(codeTransaction);
+		TransactionDetail trans;
+		List<Bonus> getBonusLine;
+		List<Bonus> getBonusProduct;
 		
 		for(int i = 0; i < rowItems2.size(); i++){
-			TransactionDetail trans = rowItems2.get(i);
-			Log.i("log_tag", "EXISTENT PRODUCT NO BONUS>>>>>>>> " + trans.getNameProduct() + " TIPO " + trans.getType());
+			trans = rowItems2.get(i);
 			
-			// bonus product
-			final List<Bonus> getBonus = dbBonus.getBonusSearch(trans.getCodeProduct(), "product");
-			for(int j = 0; j < getBonus.size(); j++) {
-				Bonus bonus = getBonus.get(j);
-				final Product pro = dbProduct.getProduct(bonus.getIdProductTo());
-				Log.e("log_tag", "BONO >>>>>>>> " + pro.getName() + " " + pro.getPrice());
-				final int bonusCount = (trans.getQuantity() / bonus.getQuantityFrom()) * bonus.getQuantityTo();
-				Log.e("log_tag", "BONO CANTIDAD >>>>>>>> " + bonusCount + " detail TraNS " + trans.getQuantity() + " BONUS " + bonus.getQuantityTo() );
-				if (bonusCount > 0) {
-					dbTransDetail.addTransactionDetail(
-					new TransactionDetail(null, transaction.getIdTransaction(), bonus.getIdProductTo(), 
-							pro.getName(), Double.parseDouble(pro.getPrice()), bonusCount, "creado", 0.0, "ninguna", "bonus")
-					);
-					Log.i("log_tag", "Anadiendo producto BONIFICADO:::: ");
-				}else{
-					Log.i("log_tag", "Anadiendo producto BONIFICADO FAIL:::: ");
+			getBonusLine = dbBonus.getBonusSearch(trans.getCodeLine(), "line");
+			
+			if (getBonusLine.size() > 0) { // bono por linea
+				
+				//bonus line
+				for(int j = 0; j < getBonusLine.size(); j++) {
+					Bonus bonus = getBonusLine.get(j);
+					final Product pro = dbProduct.getProduct(bonus.getIdProductTo());
+					final int bonusCount = (trans.getQuantity() / bonus.getQuantityFrom()) * bonus.getQuantityTo();
+
+					if (bonusCount > 0) {
+						
+
+						// verify if this transactions already have this product
+						final TransactionDetail getTransDetail = dbTransDetail.getTransactionDetailIfExistBonus(trans.getIdTransaction(), 
+								trans.getCodeProduct());
+						
+						if(getTransDetail != null){ // this product already exist in the list
+							
+							int Quantity = (int) (bonusCount + getTransDetail.getQuantity());
+							
+							// Edit Transaction Detail
+							dbTransDetail.updateTransactionDetail(new TransactionDetail(null, transaction.getIdTransaction(), bonus.getIdProductTo(), 
+									pro.getName(), Double.parseDouble(pro.getPrice()), Quantity, "creado", 0.0, "ninguna", "bonus", trans.getCodeLine())
+							);
+							
+							update();
+							
+						}else{
+							dbTransDetail.addTransactionDetail(
+							new TransactionDetail(null, transaction.getIdTransaction(), bonus.getIdProductTo(), 
+									pro.getName(), Double.parseDouble(pro.getPrice()), bonusCount, "creado", 0.0, "ninguna", "bonus", trans.getCodeLine())
+							);
+						}
+						
+						
+					}
+				}
+				
+				
+				
+			}else{ // bono por producto
+				getBonusProduct = dbBonus.getBonusSearch(trans.getCodeProduct(), "product");
+				if (getBonusProduct.size() > 0) {
+					
+					// bonus product
+					for(int j = 0; j < getBonusProduct.size(); j++) {
+						Bonus bonus = getBonusProduct.get(j);
+						final Product pro = dbProduct.getProduct(bonus.getIdProductTo());
+						final int bonusCount = (trans.getQuantity() / bonus.getQuantityFrom()) * bonus.getQuantityTo();
+						if (bonusCount > 0) {
+							
+							// verify if this transactions already have this product
+							final TransactionDetail getTransDetail = dbTransDetail.getTransactionDetailIfExistBonus(trans.getIdTransaction(), 
+									trans.getCodeProduct());
+							
+							if(getTransDetail != null){ // this product already exist in the list
+								
+								int Quantity = (int) (bonusCount + getTransDetail.getQuantity());
+								
+								// Edit Transaction Detail
+								dbTransDetail.updateTransactionDetail(new TransactionDetail(null, transaction.getIdTransaction(), bonus.getIdProductTo(), 
+										pro.getName(), Double.parseDouble(pro.getPrice()), Quantity, "creado", 0.0, "ninguna", "bonus", trans.getCodeLine())
+								);
+								
+								update();
+								
+							}else{
+								dbTransDetail.addTransactionDetail(
+								new TransactionDetail(null, transaction.getIdTransaction(), bonus.getIdProductTo(), 
+										pro.getName(), Double.parseDouble(pro.getPrice()), bonusCount, "creado", 0.0, "ninguna", "bonus", trans.getCodeLine())
+								);
+							}
+							
+						}
+					}
 				}
 			}
+
 		}
 		update();
 	}

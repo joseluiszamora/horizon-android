@@ -147,13 +147,31 @@ public class DatabaseHandlerBonus  extends SQLiteOpenHelper {
 		List<Bonus> list = new ArrayList<Bonus>();
 		Cursor cursor;
 		if (type == "line") {
-			cursor = db.query(TABLE_BONUS, new String[] {KEY_ID, KEY_TYPE, KEY_ID_LINE_FROM, KEY_ID_PRODUCT_FROM, KEY_QUANTITY_FROM
-					, KEY_NAME_FROM, KEY_ID_LINE_TO, KEY_ID_PRODUCT_TO, KEY_QUANTITY_TO, KEY_NAME_TO, KEY_STATUS}, 
-					KEY_ID_LINE_FROM + "=?", new String[] { id }, null, null, null, null);	
+			//cursor = db.query(TABLE_BONUS, new String[] {KEY_ID, KEY_TYPE, KEY_ID_LINE_FROM, KEY_ID_PRODUCT_FROM, KEY_QUANTITY_FROM
+			//		, KEY_NAME_FROM, KEY_ID_LINE_TO, KEY_ID_PRODUCT_TO, KEY_QUANTITY_TO, KEY_NAME_TO, KEY_STATUS}, 
+			//		KEY_ID_LINE_FROM + "=?", new String[] { id }, null, null, null, null);
+			
+			
+			String MY_QUERY = "SELECT "+ KEY_ID + ", " + KEY_TYPE + ", " + KEY_ID_LINE_FROM + ", " + KEY_ID_PRODUCT_FROM + ", " + KEY_QUANTITY_FROM
+			+ ", " + KEY_NAME_FROM + ", " + KEY_ID_LINE_TO + ", " + KEY_ID_PRODUCT_TO + ", " + KEY_QUANTITY_TO + ", " + KEY_NAME_TO + ", " + KEY_STATUS 
+			+" FROM "+ TABLE_BONUS
+			+" WHERE " + KEY_ID_LINE_FROM + " = ? AND " + KEY_TYPE + "=?";
+			
+			cursor = db.rawQuery(MY_QUERY, new String[]{id, "L"});
+			
+			
 		} else {
-			cursor = db.query(TABLE_BONUS, new String[] {KEY_ID, KEY_TYPE, KEY_ID_LINE_FROM, KEY_ID_PRODUCT_FROM, KEY_QUANTITY_FROM
-					, KEY_NAME_FROM, KEY_ID_LINE_TO, KEY_ID_PRODUCT_TO, KEY_QUANTITY_TO, KEY_NAME_TO, KEY_STATUS}, 
-					KEY_ID_PRODUCT_FROM + "=?", new String[] { id }, null, null, null, null);
+			//cursor = db.query(TABLE_BONUS, new String[] {KEY_ID, KEY_TYPE, KEY_ID_LINE_FROM, KEY_ID_PRODUCT_FROM, KEY_QUANTITY_FROM
+			//		, KEY_NAME_FROM, KEY_ID_LINE_TO, KEY_ID_PRODUCT_TO, KEY_QUANTITY_TO, KEY_NAME_TO, KEY_STATUS}, 
+			//		KEY_ID_PRODUCT_FROM + "=?", new String[] { id }, null, null, null, null);
+			
+			String MY_QUERY = "SELECT "+ KEY_ID + ", " + KEY_TYPE + ", " + KEY_ID_LINE_FROM + ", " + KEY_ID_PRODUCT_FROM + ", " + KEY_QUANTITY_FROM
+			+ ", " + KEY_NAME_FROM + ", " + KEY_ID_LINE_TO + ", " + KEY_ID_PRODUCT_TO + ", " + KEY_QUANTITY_TO + ", " + KEY_NAME_TO + ", " + KEY_STATUS 
+			+" FROM "+ TABLE_BONUS
+			+" WHERE " + KEY_ID_PRODUCT_FROM + " = ? AND " + KEY_TYPE + "=?";
+			
+			
+			cursor = db.rawQuery(MY_QUERY, new String[]{id, "P"});
 		}
 		
 		if (cursor.moveToFirst()) {

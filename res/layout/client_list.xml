@@ -30,7 +30,6 @@
 
     	</EditText>
 	    
-   	
 	</LinearLayout>	    
 	<ListView
 		android:id="@+id/contentlistclientbonus"
