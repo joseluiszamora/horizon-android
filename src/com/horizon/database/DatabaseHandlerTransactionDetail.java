@@ -101,7 +101,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 		values.put(KEY_OBS, transactionDetail.getObs()); // Transaction Obs
 		values.put(KEY_TYPE, transactionDetail.getType()); // Transaction Obs
 		values.put(KEY_LINE, transactionDetail.getCodeLine()); // Transaction Line
-		// Inserting Row
+
 		db.insert(TABLE_TRANSACTION, null, values);		
 		db.close(); // Closing database connection
 	}
@@ -114,7 +114,7 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 				"td.nameProduct, td.priceProduct, td.cantidad, td.status, td.priceTotal, td.obs, td.type, td.codeLine FROM detailTransactions td " +
 				"WHERE td.idTransaction = ? AND td.codeProduct=? AND td.status=?";
 		Cursor cursor = db.rawQuery(MY_QUERY, new String[]{String.valueOf(idtransaction), String.valueOf(codeproduct), "creado"});
-		
+
 		if (cursor != null && cursor.moveToFirst()){
 			TransactionDetail transactionDetail = new TransactionDetail(Integer.parseInt(cursor.getString(0)), cursor.getString(1), 
 					Integer.parseInt(cursor.getString(2)), cursor.getString(3), cursor.getString(4), 

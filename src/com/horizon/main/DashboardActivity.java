@@ -1373,16 +1373,9 @@ public class DashboardActivity extends Activity{
 			    			}
 				        }
     				}    				
-				} catch (Exception e) {					
-				}
-    			
+				} catch (Exception e) {}
     			
     			Boolean sw = true;
-    			
-    			
-    			
-    			
-    			
     			
     			Log.d("log_tag", "---------------  Iniciando Conciliacion automatica  doInBackground Transactions -----------------");
 				/** Conciliate all the transactions **/

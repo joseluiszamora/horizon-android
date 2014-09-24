@@ -57,6 +57,7 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 		// Create tables again
 		onCreate(db);
 		 */
+		
 	}
 	public void CreateTable() {
 		SQLiteDatabase db = this.getWritableDatabase();
