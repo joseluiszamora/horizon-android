@@ -212,8 +212,8 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	public void alertCustomerTransactionSelectType() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
         builder.setTitle("Atención");
-        builder.setMessage("Esta transacción es venta o prestamo?")
-        	.setPositiveButton("Venta", new DialogInterface.OnClickListener() {
+        builder.setMessage("Esta transacción es Venta Directa o Prestamo?")
+        	.setPositiveButton("Venta Directa", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
             	transactionObject.setType("venta_directa");
             	transactionObject.setPrestamo("0");

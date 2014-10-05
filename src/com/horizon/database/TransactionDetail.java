@@ -38,6 +38,7 @@ public class TransactionDetail {
 	// constructor
 	public TransactionDetail(String idWeb, int idtransaction, String codeProduct, String nameProduct, 
 			Double singleprice, int quantity, String status, Double totalprice, String obs, String type, String codeline){		
+		
 		this._idWeb = idWeb;
 		this._idTransaction = idtransaction;
 		this._codeProduct = codeProduct;

@@ -36,6 +36,7 @@ public class Transaction {
 	}
 	
 	// constructor
+	
 	public Transaction(String idweb, String codecustom, String obs, String status, String type, String prestamo, String clienttype, String timestart, String timefinish, String coordstart, String coordfinish, String voucher){
 		this._idweb = idweb;
 		this._codecustomer = codecustom;
