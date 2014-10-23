@@ -200,8 +200,7 @@ public class DashboardActivity extends Activity{
 	            builder.setMessage("¿Está seguro de salir de Horizon?")
 	                       .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
 	                       public void onClick(DialogInterface dialog, int id) {
-							session.logoutUser();
-							finish();
+	                    	   finish();
 	                       }
 	                   });
 	            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {

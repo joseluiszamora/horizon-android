@@ -14,8 +14,8 @@
             android:id="@+id/coordinateStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/dateFinish"
-            android:layout_below="@+id/dateFinish"
+            android:layout_alignLeft="@+id/dateFinishs"
+            android:layout_below="@+id/dateFinishs"
             android:text="Precio:"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -37,7 +37,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/dateFinish"
+            android:id="@+id/dateFinishs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -50,7 +50,7 @@
             android:id="@+id/infoClientPageName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/dateFinish"
+            android:layout_alignLeft="@+id/dateFinishs"
             android:layout_alignParentTop="true"
             android:text="Cliente:"
             android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/infoClientPhone"
-            android:layout_alignTop="@+id/dateFinish"
+            android:layout_alignTop="@+id/dateFinishs"
             android:text="Av. principal # 23"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 

@@ -5,11 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +18,6 @@ import android.widget.TextView;
 
 import com.horizon.database.Bonus;
 import com.horizon.database.DatabaseHandlerBonus;
-import com.horizon.database.DatabaseHandlerProducts;
 import com.horizon.database.Product;
 import com.ruizmier.horizon.R;
 
@@ -130,32 +125,36 @@ public class TabLastBonusActivity extends Activity implements OnItemClickListene
   		  
   		ViewHolder holder = null;
   		if (convertView == null) {
-  			LayoutInflater inflater = getLayoutInflater();
-  			convertView = inflater.inflate(R.layout.row_bonus, null);
-  			
+			LayoutInflater inflater = getLayoutInflater();
+			convertView = inflater.inflate(R.layout.row_bonus, null);
+			
 	        holder = new ViewHolder();
-	        holder.title1 = (TextView) convertView.findViewById(R.id.customerName);
-	        holder.subTitle1 = (TextView) convertView.findViewById(R.id.customerAddress);
-	        holder.title2 = (TextView) convertView.findViewById(R.id.textView1);
-	        holder.subTitle2 = (TextView) convertView.findViewById(R.id.textView2);
+	        //holder.title1 = (TextView) convertView.findViewById(R.id.textView1);
+	        //holder.subTitle1 = (TextView) convertView.findViewById(R.id.textView3);
+	        holder.title2 = (TextView) convertView.findViewById(R.id.textView2);
+	        //holder.subTitle2 = (TextView) convertView.findViewById(R.id.textView4);
 	        convertView.setTag(holder);
 	     }
 	     else {
 	         holder = (ViewHolder) convertView.getTag();
 	     }
-  		
 		Bonus rowItem = (Bonus) getItem(position);
         
+		//holder.title1.setText("XXXX: ");
 		if (rowItem.getType().equals("P")) {
-			holder.title1.setText("Producto: " + rowItem.getNameFrom() + "  - ProductoID: " + rowItem.getIdProductFrom());
+			//holder.title1.setText("Producto: " + rowItem.getNameFrom() + "  - ProductoID: " + rowItem.getIdProductFrom());
+			//holder.title1.setText("Categoria: Producto");
+			holder.title2.setText("Producto: " + rowItem.getNameFrom() + " x " + rowItem.getQuantityFrom() + " = " + rowItem.getNameTo() + " x " + rowItem.getQuantityTo());
 		}else{
-			holder.title1.setText("Linea: " + rowItem.getNameFrom() + "  - LineID: " + rowItem.getIdLineFrom());
+			//holder.title1.setText("Linea: " + rowItem.getNameFrom() + "  - LineID: " + rowItem.getIdLineFrom());
+			//holder.title1.setText("Categoria: Linea");
+			holder.title2.setText("Linea: " + rowItem.getNameFrom() + " x " + rowItem.getQuantityFrom() + " = " + rowItem.getNameTo() + " x " + rowItem.getQuantityTo());
 		}
 		
-		holder.subTitle1.setText("Cantidad: " + rowItem.getQuantityFrom()+"");
-		holder.title2.setText("Bonificación: " + rowItem.getNameTo());
-		holder.subTitle2.setText("Cantidad: " + rowItem.getQuantityTo()+"");
-
+		//holder.subTitle1.setText("Cantidad: " + rowItem.getQuantityFrom()+"");
+		//holder.title2.setText("Bonificación: " + rowItem.getNameTo());
+		//holder.subTitle2.setText("Cantidad: " + rowItem.getQuantityTo()+"");
+		
 		return convertView;
   	  }
   }

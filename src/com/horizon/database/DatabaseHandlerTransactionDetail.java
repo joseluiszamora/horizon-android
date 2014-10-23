@@ -85,9 +85,9 @@ public class DatabaseHandlerTransactionDetail extends SQLiteOpenHelper{
 	* All CRUD(Create, Read, Update, Delete) Operations
 	* 	
 	*/
-					
+
 	// Adding new transaction	
-	public void addTransactionDetail(TransactionDetail transactionDetail) {		
+	public void addTransactionDetail(TransactionDetail transactionDetail) {	
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put(KEY_ID_WEB, transactionDetail.getIDWeb()); // Transaction Id

@@ -103,8 +103,7 @@ public class DatabaseHandlerTransactions extends SQLiteOpenHelper {
 	
 	// Adding new transaction
 
-	public Long addTransaction(Transaction transaction) {
-		
+	public Long addTransaction(Transaction transaction) {		
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put(KEY_ID_WEB, transaction.getIDWeb()); // Transaction Id

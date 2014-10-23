@@ -23,8 +23,8 @@
             android:id="@+id/coordinateStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/dateFinish"
-            android:layout_below="@+id/dateFinish"
+            android:layout_alignLeft="@+id/dateFinishs"
+            android:layout_below="@+id/dateFinishs"
             android:text="Encargado:"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -58,13 +58,13 @@
             android:id="@+id/infoClientPageName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/dateFinish"
+            android:layout_alignLeft="@+id/dateFinishs"
             android:layout_alignParentTop="true"
             android:text="Cliente:"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
-            android:id="@+id/dateFinish"
+            android:id="@+id/dateFinishs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -79,7 +79,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/infoClientPhone"
-            android:layout_below="@+id/dateFinish"
+            android:layout_below="@+id/dateFinishs"
             android:layout_marginTop="45dp"
             android:text="Av. principal # 23"
             android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -88,8 +88,8 @@
             android:id="@+id/infoClientCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/dateFinish"
-            android:layout_alignBottom="@+id/dateFinish"
+            android:layout_alignBaseline="@+id/dateFinishs"
+            android:layout_alignBottom="@+id/dateFinishs"
             android:layout_toRightOf="@+id/coordinateStart"
             android:paddingLeft="13dp"
             android:text="insert client code here"
