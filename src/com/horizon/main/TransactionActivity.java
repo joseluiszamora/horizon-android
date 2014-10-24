@@ -403,7 +403,6 @@ public class TransactionActivity extends Activity implements OnItemClickListener
     	builder.setTitle("¿Porque no se agregó productos? ");
     	builder.setItems(items, new DialogInterface.OnClickListener() {
     	    public void onClick(DialogInterface dialog, int item) {
-    	        Log.i("log_tag", "Opción elegida: " + items[item]);
     	        transactionObject.setType("transaccion_0");
     	    	if (item == 0)
     	    		transactionObject.setObs("Ningun Pedido");
@@ -441,7 +440,6 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	    	 public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 	    		 String line_id = (String) ((TextView) view.findViewById(R.id.line_id)).getText();
 
-	    		 Log.d("log_tag", " LINE ID:  > " + line_id);
 	    		 if(line_id != null && Integer.parseInt(line_id) != 0){
 	    			 transaction.setLine(Integer.parseInt(line_id));
 		    		 showdialogVolumes();
@@ -457,7 +455,6 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 	     
 	    final ListView modeList = new ListView(TransactionActivity.this);
 	    
-	    Log.d("log_tag", " SHOW VOLUMES BY LINE:  > " + transaction.getLine());
 		List<Volume> rowItems = dbVolume.getAllVolumesForLine(transaction.getLine());
 		DialogVolumeAdapter modeAdapter = new DialogVolumeAdapter(TransactionActivity.this, rowItems);
 	    modeList.setAdapter(modeAdapter);
@@ -498,7 +495,6 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		modeList.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
 	    	 public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 	    		 String product_id = (String) ((TextView) view.findViewById(R.id.line_id)).getText();
-	    		 Log.d("log_tag", "ID...._> " +product_id);
 	    		 if(product_id != null && Long.parseLong(product_id) != 0){
 	    			 transaction.setCodeProduct(product_id);
 	    			 showdialogQuantity();
@@ -574,8 +570,13 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 						int Quantity = (int) (transaction.getQuantity() + getTransDetail.getQuantity());
 						
 						// Edit Transaction Detail
-						dbTransDetail.updateTransactionDetail(new TransactionDetail(getTransDetail.getID(), null, transaction.getIdTransaction(), 
-								transaction.getCodeProduct(), getproduct.getName(), unitPrice, Quantity, "creado", totalPrice, null, null, String.valueOf(transaction.getLine())));
+						dbTransDetail.updateTransactionDetail(
+								new TransactionDetail(
+										getTransDetail.getID(), null, transaction.getIdTransaction(), transaction.getCodeProduct(), 
+										getproduct.getName(), unitPrice, Quantity, "creado", totalPrice, null, "normal", 
+										String.valueOf(transaction.getLine())
+								)
+						);
 						
 						addPrice((double) ((unitPrice * transaction.getQuantity())));
 						update();
@@ -605,10 +606,12 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 		// delete all bonus
 		dbTransDetail.deleteTransactionDetailBonus(transaction.getIdTransaction());
 		// update all bonus
+		Log.d("log_tag", "go to bonus");
 		updateBonus();
 	}
 
 	private void updateBonus() {
+		Log.d("log_tag", "update bonus");
 		List<TransactionDetail> rowItems2 = dbTransDetail.getAllTransactionDetailsForThisTransactionPendingNoBonus(codeTransaction);
 		
 		// delete all bonus
@@ -622,16 +625,18 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 			
 			getBonusLine = dbBonus.getBonusSearch(trans.getCodeLine(), "line");
 			
+			Log.d("log_tag", "update bonus FOR");
+			
 			if (getBonusLine.size() > 0) { // bono por linea
-				
+				Log.d("log_tag", "LINE bonus");
 				//bonus line
 				for(int j = 0; j < getBonusLine.size(); j++) {
 					Bonus bonus = getBonusLine.get(j);
 					final Product pro = dbProduct.getProduct(bonus.getIdProductTo());
-					final int bonusCount = (trans.getQuantity() / bonus.getQuantityFrom()) * bonus.getQuantityTo();
+					
+					final int bonusCount = (int)(((trans.getQuantity() / bonus.getQuantityFrom()) * bonus.getQuantityTo()) + 0.5);
 
 					if (bonusCount > 0) {
-						
 
 						// verify if this transactions already have this product
 						final TransactionDetail getTransDetail = dbTransDetail.getTransactionDetailIfExistBonus(trans.getIdTransaction(), 
@@ -654,14 +659,11 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 									pro.getName(), Double.parseDouble(pro.getPrice()), bonusCount, "creado", 0.0, "ninguna", "bonus", trans.getCodeLine())
 							);
 						}
-						
-						
+
 					}
 				}
-				
-				
-				
 			}else{ // bono por producto
+				Log.d("log_tag", "product bonus");
 				getBonusProduct = dbBonus.getBonusSearch(trans.getCodeProduct(), "product");
 				if (getBonusProduct.size() > 0) {
 					
@@ -669,17 +671,17 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 					for(int j = 0; j < getBonusProduct.size(); j++) {
 						Bonus bonus = getBonusProduct.get(j);
 						final Product pro = dbProduct.getProduct(bonus.getIdProductTo());
-						final int bonusCount = (trans.getQuantity() / bonus.getQuantityFrom()) * bonus.getQuantityTo();
+						final int bonusCount = (int)(((trans.getQuantity() / bonus.getQuantityFrom()) * bonus.getQuantityTo()) + 0.5);
 						if (bonusCount > 0) {
-							
+							Log.d("log_tag", "bonus count > 0");
 							// verify if this transactions already have this product
 							final TransactionDetail getTransDetail = dbTransDetail.getTransactionDetailIfExistBonus(trans.getIdTransaction(), 
 									trans.getCodeProduct());
-							
+
 							if(getTransDetail != null){ // this product already exist in the list
-								
-								int Quantity = (int) (bonusCount + getTransDetail.getQuantity());
-								
+								Log.d("log_tag", "product bonus already exist");
+								int Quantity = (int)((bonusCount + getTransDetail.getQuantity()) + 0.5);
+								Log.d("log_tag", "product bonus: " + Quantity);
 								// Edit Transaction Detail
 								dbTransDetail.updateTransactionDetail(new TransactionDetail(null, transaction.getIdTransaction(), bonus.getIdProductTo(), 
 										pro.getName(), Double.parseDouble(pro.getPrice()), Quantity, "creado", 0.0, "ninguna", "bonus", trans.getCodeLine())
@@ -688,6 +690,7 @@ public class TransactionActivity extends Activity implements OnItemClickListener
 								update();
 								
 							}else{
+								Log.d("log_tag", "product bonus No exist");
 								dbTransDetail.addTransactionDetail(
 								new TransactionDetail(null, transaction.getIdTransaction(), bonus.getIdProductTo(), 
 										pro.getName(), Double.parseDouble(pro.getPrice()), bonusCount, "creado", 0.0, "ninguna", "bonus", trans.getCodeLine())

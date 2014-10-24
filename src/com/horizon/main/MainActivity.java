@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.widget.Button;
 
 import com.horizon.account.SessionManager;
@@ -70,7 +71,13 @@ public class MainActivity extends Activity {
             AlertDialog alert = builder.create();            
             alert.show();
 		}
-		
-		
 	};
+	
+	//** Pressed return button **//
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+        	finish();
+         }
+        return super.onKeyDown(keyCode, event);
+    }
 }
